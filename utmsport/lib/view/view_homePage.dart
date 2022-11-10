@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -36,7 +37,8 @@ class HomePage extends StatelessWidget {
                   'Sign Out',
                   style: TextStyle(fontSize: 24),
                 ),
-            )
+            ),
+
           ],
         )
       ),
