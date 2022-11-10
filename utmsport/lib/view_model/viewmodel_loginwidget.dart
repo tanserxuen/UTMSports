@@ -7,6 +7,7 @@ import 'package:utmsport/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../utils.dart';
+import '../view/view_forgetPassword.dart';
 
 class LoginWidget extends StatefulWidget {
   final Function() onClickedSignUp;
@@ -64,6 +65,20 @@ class _LoginWidgetState extends State<LoginWidget> {
               style: TextStyle(fontSize: 24)
           ),
           onPressed: signIn,
+        ),
+        SizedBox(height: 24),
+        GestureDetector(
+          child: Text(
+            'Forget Password?',
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Theme.of(context).colorScheme.secondary,
+              fontSize: 20
+            ),
+          ),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ForgetPasswordPage()
+          )),
         ),
         SizedBox(height: 24),
         RichText(
