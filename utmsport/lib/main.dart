@@ -2,12 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/shared/bottom_layout.dart' as bottomBar;
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(MyHomePage());
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -21,13 +34,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          title: Text('UTMSports'),
+          title: Text("UTMSports"),
         ),
         body: FormScreen(),
-      )
-    );
+        bottomNavigationBar: bottomBar.BottomBar(context),
+        floatingActionButton: bottomBar.BookingButton(context),
+        floatingActionButtonLocation: bottomBar.fabLocation);
   }
 }
