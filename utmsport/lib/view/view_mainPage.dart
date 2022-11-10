@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/view/view_authPage.dart';
 import 'package:utmsport/view/view_homePage.dart';
+import 'package:utmsport/view/view_verifyemailPage.dart';
 
 import '../view_model/viewmodel_loginwidget.dart';
 
@@ -18,7 +19,7 @@ class MainPage extends StatelessWidget {
           }else if(snapshot.hasError){
             return Center(child: Text('Something went wrong!'));
           }else if (snapshot.hasData){
-            return HomePage();
+            return VerifyEmailPage();
           }else{
             return AuthPage();
           }
