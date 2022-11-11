@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:utmsport/shared/bottom_layout.dart' as bottomBar;
+import 'package:utmsport/view/shared/v_bottom_layout.dart' as bottomBar;
 
 
 class MyHomePage extends StatefulWidget {
