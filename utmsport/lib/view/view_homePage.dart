@@ -2,15 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:utmsport/shared/bottom_layout.dart' as bottomBar;
 
-class HomePage extends StatelessWidget {
+
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('UTM Sports'),
       ),
       body: Padding(
         padding: EdgeInsets.all(32),
@@ -42,6 +49,9 @@ class HomePage extends StatelessWidget {
           ],
         )
       ),
-    );
+      bottomNavigationBar: bottomBar.BottomBar(context),
+      floatingActionButton: bottomBar.BookingButton(context),
+      floatingActionButtonLocation: bottomBar.fabLocation);
   }
 }
+
