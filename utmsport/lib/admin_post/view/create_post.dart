@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -11,106 +13,147 @@ class FormScreen extends StatefulWidget {
 }
 
 class FormScreenState extends State<FormScreen> {
-  String _eventName;
-  String _description;
-  String _venue;
-  String _date;
-  String _platform;
-  String _image;
-
-  final contollerEventName = TextEditingController();
-  final contollerDescription = TextEditingController();
-  final contollerVenue = TextEditingController();
-  final contollerDate = TextEditingController();
-  final contollerPlatform = TextEditingController();
-  final contollerImage = TextEditingController();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String _eventName = "";
+  String _description = "";
+  String _venue = "";
+  String _date = "";
+  String _platform = "";
+  String _image = "";
+
+  final controllerEventName = TextEditingController();
+  final controllerDescription = TextEditingController();
+  final controllerVenue = TextEditingController();
+  final controllerDate = TextEditingController();
+  final controllerPlatform = TextEditingController();
+  final controllerImage = TextEditingController();
   final eventController = TextEditingController();
 
   Widget _buildEventNameField() {
     return TextFormField(
-        controller: contollerEventName,
-        decoration: InputDecoration(labelText: "Event Name"),
-        validator: (String value) {
-          if (value.isEmpty) {
-            return "Name is required";
-          }
-        },
-        onSaved: (String value) {
-          _eventName = value;
-        });
+      controller: controllerEventName,
+      decoration: InputDecoration(labelText: "Event Name"),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Name is required";
+        }
+      },
+      // onSaved: (value) {
+      //   _eventName = value;
+      // }
+    );
   }
 
-  // Widget _buildDescriptionField() {
-  //   return TextFormField(
-  //       decoration: InputDecoration(labelText: "Description"),
-  //       validator: (String value) {
-  //         if (value.isEmpty) {
-  //           return "Description is required";
-  //         }
-  //       },
-  //       onSaved: (String value) {
-  //         _description = value;
-  //       });
-  // }
-  //
-  // Widget _buildVenueField() {
-  //   return TextFormField(
-  //       decoration: InputDecoration(labelText: "Venue"),
-  //       onSaved: (String value) {
-  //         _venue = value;
-  //       });
-  // }
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      controller: controllerDescription,
+      decoration: InputDecoration(labelText: "Description"),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Description is required";
+        }
+      },
+      // onSaved: (value) {
+      //   _description = value;
+      // }
+    );
+  }
+
+  Widget _buildVenueField() {
+    return TextFormField(
+      controller: controllerVenue,
+      decoration: InputDecoration(labelText: "Venue"),
+      // onSaved: (value) {
+      //   _venue = value;
+      // }
+    );
+  }
 
   Widget _buildDateField() {
-    // String toOriginalFormatString(DateTime dateTime) {
-    //   final y = dateTime.year.toString().padLeft(4, '0');
-    //   final m = dateTime.month.toString().padLeft(2, '0');
-    //   final d = dateTime.day.toString().padLeft(2, '0');
-    //   return "$y$m$d";
-    // }
-    //
-    // bool isValidDate(String input) {
-    //   final date = DateTime.parse(input);
-    //   final originalFormatString = toOriginalFormatString(date);
-    //   return input == originalFormatString;
-    // }
-
     return TextFormField(
-        controller: contollerDate,
-        decoration: InputDecoration(labelText: "Date"),
-        // validator: (String value) {
-        //   if (!isValidDate(value)) {
-        //     return "Invalid Date";
-        //   } else if (value.isEmpty) {
-        //     return "Date is required.";
-        //   }
-        // },
-        onSaved: (String value) {
-          _date = value;
+        controller: controllerDate,
+        decoration: InputDecoration(
+            labelText: "Date", suffixIcon: Icon(Icons.calendar_today)),
+        readOnly: true,
+        onTap: () async {
+          DateTime? value = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100));
+          if (value == null) return null;
+          setState(() => {
+                _date = DateFormat('yyyy-MM-dd').format(value),
+                controllerDate.text = _date,
+                print(_date),
+              });
         });
   }
 
   Widget _buildPlatformField() {
     return TextFormField(
-        decoration: InputDecoration(labelText: "Platform"),
-        onSaved: (String value) {
-          _platform = value;
-        });
+      controller: controllerPlatform,
+      decoration: InputDecoration(labelText: "Platform"),
+      // onSaved: (val) {
+      //   _platform = val;
+      // }
+    );
   }
+
+  // Widget _buildImageField() {
+  //   PlatformFile? pickedFile;
+  //
+  //   Future selectFile() async {
+  //     print("abc");
+  //     final result = await FilePicker.platform.pickFiles();
+  //     if (result == null) return;
+  //
+  //     setState(() {
+  //       pickedFile = result.files.first;
+  //     });
+  //   }
+  //
+  //   return Column(
+  //     children: [
+  //       if (pickedFile != null)
+  //         Expanded(
+  //           child: Container(
+  //             color: Colors.blue[100],
+  //             child: Center(
+  //               child: Image.file(
+  //                 File(pickedFile!.path!),
+  //                 width: double.infinity,
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       TextFormField(
+  //         controller: controllerImage,
+  //         decoration: InputDecoration(
+  //             labelText: "Image", suffixIcon: Icon(Icons.image)),
+  //         onTap: selectFile,
+  //         readOnly: true,
+  //         validator: (value) {
+  //           if (value == null || value.isEmpty) return "Image is required";
+  //         },
+  //         // onSaved: (value) {
+  //         //   _image = value;
+  //         // }
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildImageField() {
     return TextFormField(
-        decoration: InputDecoration(labelText: "Image"),
-        validator: (String value) {
-          if (value.isEmpty) {
-            return "Image is required";
-          }
-        },
-        onSaved: (String value) {
-          _image = value;
-        });
+      controller: controllerImage,
+      decoration: InputDecoration(labelText: "Image"),
+      // onSaved: (value) {
+      //   _venue = value;
+      // }
+    );
   }
 
   @override
@@ -130,27 +173,34 @@ class FormScreenState extends State<FormScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _buildEventNameField(),
-                    // _buildDescriptionField(),
-                    // _buildVenueField(),
-                    // _buildDateField(),
-                    // _buildPlatformField(),
-                    // _buildImageField(),
+                    _buildDescriptionField(),
+                    _buildVenueField(),
+                    _buildDateField(),
+                    _buildPlatformField(),
+                    _buildImageField(),
                     SizedBox(height: 50),
                     ElevatedButton(
                       child: Text("Submit",
                           style: TextStyle(color: Colors.white, fontSize: 16)),
                       onPressed: () {
-                        if (!_formKey.currentState.validate()) {
+                        if (!_formKey.currentState!.validate()) {
                         } else {
-                          _formKey.currentState.save();
+                          _formKey.currentState!.save();
                           final _event = Event(
-                            id: FirebaseFirestore.instance.collection('events').doc().id,
-                            name: contollerEventName.text.trim(),
-                            // date: DateTime.parse(contollerDate.text),
+                            id: FirebaseFirestore.instance
+                                .collection('events')
+                                .doc()
+                                .id,
+                            name: controllerEventName.text.trim(),
+                            description: controllerDescription.text.trim(),
+                            venue: controllerVenue.text.trim(),
+                            platform: controllerPlatform.text.trim(),
+                            image: controllerImage.text.trim(),
+                            date: controllerDate.text,
                           ).toJson();
 
-
-                          CollectionReference events = FirebaseFirestore.instance.collection('events');
+                          CollectionReference events =
+                              FirebaseFirestore.instance.collection('events');
 
                           events.add(_event);
                         }
@@ -165,35 +215,35 @@ class FormScreenState extends State<FormScreen> {
       ),
     );
   }
-
-  // Future createEvent(Event event) async {
-  //   DateTime now = new DateTime.now();
-  //   final docEvent = FirebaseFirestore.instance.collection('events').doc();
-  //   event.id = docEvent.id;
-  //
-  //   final json = event.toJson();
-  //   await event.set(json);
-  // }
 }
 
 class Event {
   String id;
-  final String name;
-  final DateTime date;
-  final String description = "abc";
-  final String image = "123.png";
-  final String platform = "gmeet";
-  final String venue = "L50";
+  String name;
+  String date;
+  String description = "abc";
+  String image = "123.png";
+  String platform = "";
+  String venue = "";
+  DateTime abc = DateTime.parse("2015-07-20 20:18:00");
 
   Event({
     this.id = '',
-    this.name,
-    this.date,
+    this.name = '',
+    this.date = "",
+    this.description = "",
+    this.image = "",
+    this.platform = "",
+    this.venue = "",
   });
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        // 'date': date,
+        'date': date.toString(),
+        'description': description,
+        'image': image,
+        'platform': platform,
+        'venue': venue,
       };
 }
