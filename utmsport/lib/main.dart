@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import 'package:utmsport/admin_post/view/create_post.dart';
-import 'package:utmsport/shared/bottom_layout.dart' as bottomBar;
+import 'package:utmsport/utils.dart';
+import 'package:utmsport/view/view_mainPage.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,36 +10,20 @@ Future main() async {
   runApp(MyApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: Utils.messengerKey,
+      navigatorKey: navigatorKey,
+      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: MainPage(),
+
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("UTMSports"),
-        ),
-        body: FormScreen(),
-        bottomNavigationBar: bottomBar.BottomBar(context),
-        floatingActionButton: bottomBar.BookingButton(context),
-        floatingActionButtonLocation: bottomBar.fabLocation);
   }
 }
