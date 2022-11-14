@@ -32,6 +32,7 @@ dependencies:
   firebase_auth: ^4.1.1
   email_validator: ^2.1.17
   syncfusion_flutter_calendar: ^20.3.56
+  syncfusion_flutter_datagrid: ^20.3.56
 
 dev_dependencies:
   flutter_test:
