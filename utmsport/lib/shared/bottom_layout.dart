@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import '../crud/add_appointment.dart';
+import '../view/view_calendarPage.dart';
 
 Widget BottomBar(BuildContext context) {
+
   const _iconSize = 28.0;
   const _iconColor = Colors.white;
 
@@ -29,7 +32,13 @@ Widget BottomBar(BuildContext context) {
           tooltip: "Requests",
           icon: const Icon(Icons.list, size: _iconSize),
           color: _iconColor,
-          onPressed: () => {print(2)},
+          //onPressed: () => {print(2)},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Calendar()),
+            );
+          },
         ),
         IconButton(
           tooltip: "Profile",
@@ -44,7 +53,12 @@ Widget BottomBar(BuildContext context) {
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
-    onPressed: () => {print("book")},
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddAppointmentPage()),
+      );
+    },
     child: Icon(Icons.add, size: 32),
   ));
 }
