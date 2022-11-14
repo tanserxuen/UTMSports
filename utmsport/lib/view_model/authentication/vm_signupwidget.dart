@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,9 +22,11 @@ class SignUpWidget extends StatefulWidget {
 
 class _SignUpWidgetState extends State<SignUpWidget> {
   final formKey = GlobalKey<FormState>();
+  final fullnameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  
   @override
   void dispose(){
     emailController.dispose();
@@ -41,6 +44,18 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 40),
+          TextFormField(
+            controller: fullnameController,
+            cursorColor: Colors.white,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(labelText: 'Full Name'),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (fullname) =>
+            fullname != null && !fullname.isNotEmpty
+                ? 'Enter your name'
+                : null,
+          ),
+          SizedBox(height: 4),
           TextFormField(
             controller: emailController,
             cursorColor: Colors.white,
@@ -116,6 +131,17 @@ class _SignUpWidgetState extends State<SignUpWidget> {
           email: emailController.text.trim(),
           password: passwordController.text.trim()
       );
+
+      var data = {
+        'name': fullnameController.text.trim(),
+        'roles': 'student',
+        'userId': FirebaseAuth.instance.currentUser!.uid
+      };
+
+      db.collection("users").add(data)
+          .then((value) => 'The data inserted successfully')
+          .onError((error, _) => "Somethings Error on inserting");
+
     } on FirebaseAuthException catch (e) {
       print(e);
 
