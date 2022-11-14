@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
 
+import '../../eo_meetingbook/view/vm_MeetingBookForm .dart';
+
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
     tooltip: "Booking",
@@ -50,4 +52,5 @@ Widget homeScreen(user, FA) => Padding(
 navScreen(user, FA) => <Widget>[
       homeScreen(user, FA),
       FormScreen(),
+      MeetingForm(),
     ];
