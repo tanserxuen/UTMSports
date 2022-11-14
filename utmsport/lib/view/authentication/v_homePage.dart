@@ -14,7 +14,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
-    final screens=bottomBar.navScreen(user, FirebaseAuth);
+    final screens=bottomBar.navScreen(user);
     return Scaffold(
         appBar: AppBar(
           title: Text('UTM Sports'),
