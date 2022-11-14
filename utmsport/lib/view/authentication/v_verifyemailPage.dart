@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:utmsport/view/view_homePage.dart';
+import 'package:utmsport/view/authentication/v_homePage.dart';
 
-import '../utils.dart';
+import '../../utils.dart';
+
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({Key? key}) : super(key: key);

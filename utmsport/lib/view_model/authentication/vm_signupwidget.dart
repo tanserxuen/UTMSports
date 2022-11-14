@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../utils.dart';
+import '../../main.dart';
+import '../../utils.dart';
 
 class SignUpWidget extends StatefulWidget {
   final Function() onClickedSignIn;
