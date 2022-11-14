@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/profile/profilePage.dart';
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
@@ -20,7 +22,7 @@ const destinations = [
   NavigationDestination(icon: Icon(Icons.person), label: 'Profile')
 ];
 
-Widget homeScreen(user, FA) => Padding(
+Widget homeScreen(user) => Padding(
     padding: EdgeInsets.all(32),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +36,7 @@ Widget homeScreen(user, FA) => Padding(
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         SizedBox(height: 40),
         ElevatedButton.icon(
-          onPressed: () => FA.instance.signOut(),
+          onPressed: () => FirebaseAuth.instance.signOut(),
           style: ElevatedButton.styleFrom(
             minimumSize: Size.fromHeight(50),
           ),
@@ -47,7 +49,10 @@ Widget homeScreen(user, FA) => Padding(
       ],
     ));
 
-navScreen(user, FA) => <Widget>[
-      homeScreen(user, FA),
-      FormScreen(),
+navScreen(user) => <Widget>[
+      homeScreen(user),
+      FormScreen(),   // JOAN TAN
+      // TODO: Add new page below here
+      FormScreen(),   // AIDAH WONG
+      ProfilePage()    // CM TAN
     ];
