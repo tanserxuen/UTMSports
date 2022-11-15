@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:utmsport/view_model/viewmodel_loginwidget.dart';
+import 'package:utmsport/view_model/authentication/vm_loginwidget.dart';
 
-import '../view_model/viewmodel_signupwidget.dart';
+import '../../view_model/authentication/vm_signupwidget.dart';
 
 class AuthPage extends StatefulWidget {
 

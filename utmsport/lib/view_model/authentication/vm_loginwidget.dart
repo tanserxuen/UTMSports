@@ -6,8 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../utils.dart';
-import '../view/view_forgetPassword.dart';
+import '../../utils.dart';
+import '../../view/authentication/v_forgetPassword.dart';
 
 class LoginWidget extends StatefulWidget {
   final Function() onClickedSignUp;

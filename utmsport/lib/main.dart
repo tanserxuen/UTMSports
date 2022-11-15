@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
-import 'package:utmsport/view/view_mainPage.dart';
+import 'package:utmsport/view/authentication/v_mainPage.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
 
 Future main() async {
