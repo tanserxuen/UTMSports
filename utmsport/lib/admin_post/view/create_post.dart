@@ -184,6 +184,7 @@ class FormScreenState extends State<FormScreen> {
                           style: TextStyle(color: Colors.white, fontSize: 16)),
                       onPressed: () {
                         if (!_formKey.currentState!.validate()) {
+
                         } else {
                           _formKey.currentState!.save();
                           final _event = Event(
