@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
@@ -27,10 +29,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
-        onGenerateRoute: (settings) {
-          print("initialize");
-          return MaterialPageRoute(builder: (_) => FormScreen());
+      onGenerateRoute: (settings) {
+        print("initialize");
+        return MaterialPageRoute(builder: (_) => FormScreen());
+      },
+      scrollBehavior: MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown
         },
+      ),
     );
   }
 }

@@ -1,39 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Employee {
-  int id = 0;
-  String name = "";
-  String designation = "";
-  int salary = 0;
+import 'package:utmsport/view_model/vm_eventDatatableWidget.dart';
+import 'package:utmsport/model/m_Event.dart';
 
-  Employee(id, name, posi, sal) {
-    this.id = id;
-    this.name = name;
-    this.designation = posi;
-    this.salary = sal;
-  }
-}
+FirebaseFirestore db = FirebaseFirestore.instance;
 
-List<Employee> getEmployeeData() {
-  return [
-    Employee(2, "Joan", "Manager", 20000),
-    Employee(3, "Michelle", "Student", 20000),
-    Employee(4, "Emma", "Manager", 20000),
-  ];
-}
-
-class EmployeeDataSource extends DataGridSource {
-  EmployeeDataSource({required List<Employee> employees}) {
-    dataGridRows = employees
+class EventDataSource extends DataGridSource {
+  EventDataSource({required List<Event> events}) {
+    dataGridRows = events
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-      DataGridCell<int>(columnName: 'id', value: dataGridRow.id),
-      DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
-      DataGridCell<String>(
-          columnName: 'designation', value: dataGridRow.designation),
-      DataGridCell<int>(
-          columnName: 'salary', value: dataGridRow.salary),
-    ]))
+              DataGridCell<int>(columnName: 'id', value: dataGridRow.id),
+              DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
+              DataGridCell<String>(
+                  columnName: 'description', value: dataGridRow.description),
+              DataGridCell<String>(columnName: 'date', value: dataGridRow.date),
+              DataGridCell<String>(
+                  columnName: 'image', value: dataGridRow.description),
+              DataGridCell<String>(
+                  columnName: 'venue', value: dataGridRow.venue),
+              DataGridCell<String>(
+                  columnName: 'platform', value: dataGridRow.platform),
+            ]))
         .toList();
   }
 
@@ -46,16 +35,79 @@ class EmployeeDataSource extends DataGridSource {
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
         cells: row.getCells().map<Widget>((dataGridCell) {
-          return Container(
-              alignment: (dataGridCell.columnName == 'id' ||
-                  dataGridCell.columnName == 'salary')
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                dataGridCell.value.toString(),
-                overflow: TextOverflow.ellipsis,
-              ));
-        }).toList());
+      return Container(
+          alignment: (dataGridCell.columnName == 'id' ||
+                  dataGridCell.columnName == 'date')
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            dataGridCell.value.toString(),
+            overflow: TextOverflow.ellipsis,
+          ));
+    }).toList());
+  }
+}
+
+class GridDataTable extends StatefulWidget {
+  @override
+  State<GridDataTable> createState() => _GridDataTableState();
+}
+
+class _GridDataTableState extends State<GridDataTable> {
+  late EventDataSource _eventDataSource;
+
+  List<Event> _eventsList = <Event>[];
+
+  @override
+  void initState() {
+    // _events = getEmployeeData();
+    fetchEventRecords();
+    super.initState();
+    _eventDataSource = EventDataSource(events: _eventsList);
+  }
+
+  void fetchEventRecords() async {
+    final records = await db.collection("events").get();
+
+    // return records.docs
+        var _result = records.docs
+        .map((event) => Event(
+              id: event['id'],
+              name: event['name'],
+              description: event['description'],
+              date: event['date'],
+              image: event['image'],
+              venue: event['venue'],
+              platform: event['platform'],
+            ))
+        .toList();
+
+    setState(() {
+    _eventsList = _result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _eventDataSource,
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          List<Widget> children;
+          if (snapshot.hasData) {
+            children = [EventDatatableWidget(_eventDataSource)];
+          } else if (snapshot.hasError) {
+            children = [
+              Text("Something went wrong"),
+            ];
+          } else
+            return CircularProgressIndicator();
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: children,
+            ),
+          );
+        });
   }
 }

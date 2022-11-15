@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
-Widget EventDatatableWidget(_employeeDataSource) => SfDataGridTheme(
+Widget EventDatatableWidget(_eventDataSource) => SfDataGridTheme(
   data: SfDataGridThemeData(
     headerColor: const Color(0xff009889),
     rowHoverColor: Colors.yellow,
   ),
   child: SfDataGrid(
       columnWidthMode: ColumnWidthMode.auto,
-      source: _employeeDataSource,
+      source: _eventDataSource,
       isScrollbarAlwaysShown: true,
       columns: [
         GridColumn(
