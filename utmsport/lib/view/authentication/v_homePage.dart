@@ -10,7 +10,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 2;
+  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButton: bottomBar.BookingButton(context),
-        floatingActionButtonLocation: bottomBar.fabLocation);
+        floatingActionButtonLocation: bottomBar.fabLocation,
+    );
   }
 }

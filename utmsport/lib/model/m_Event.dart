@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Event {
-  int id = 0;
+  String id = "";
   String name = "";
   String description = "";
   String date = "";
@@ -47,7 +47,7 @@ class Event {
 List<Event> getEmployeeData() {
   return [
     Event(
-      id: 1,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",
@@ -56,7 +56,7 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
     Event(
-      id: 2,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",
@@ -65,7 +65,7 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
     Event(
-      id: 3,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",
@@ -74,7 +74,7 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
     Event(
-      id: 4,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",
@@ -83,7 +83,7 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
     Event(
-      id: 1,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",
@@ -92,25 +92,7 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
     Event(
-      id: 2,
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: 3,
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: 4,
+      id: '0001',
       name: "Joan",
       description: "simple event",
       date: "2022-11-12",

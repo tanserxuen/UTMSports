@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:utmsport/model/m_Event.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -217,33 +218,3 @@ class FormScreenState extends State<FormScreen> {
   }
 }
 
-class Event {
-  String id;
-  String name;
-  String date;
-  String description = "abc";
-  String image = "123.png";
-  String platform = "";
-  String venue = "";
-  DateTime abc = DateTime.parse("2015-07-20 20:18:00");
-
-  Event({
-    this.id = '',
-    this.name = '',
-    this.date = "",
-    this.description = "",
-    this.image = "",
-    this.platform = "",
-    this.venue = "",
-  });
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'date': date.toString(),
-        'description': description,
-        'image': image,
-        'platform': platform,
-        'venue': venue,
-      };
-}

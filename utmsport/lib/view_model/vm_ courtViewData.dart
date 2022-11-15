@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:utmsport/view_model/vm_eventDatatableWidget.dart';
 import 'package:utmsport/model/m_Event.dart';
+import 'package:utmsport/view/adminPost/v_eventList.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -11,7 +10,7 @@ class EventDataSource extends DataGridSource {
   EventDataSource({required List<Event> events}) {
     dataGridRows = events
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-              DataGridCell<int>(columnName: 'id', value: dataGridRow.id),
+              DataGridCell<String>(columnName: 'id', value: dataGridRow.id),
               DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
               DataGridCell<String>(
                   columnName: 'description', value: dataGridRow.description),
@@ -61,8 +60,8 @@ class _GridDataTableState extends State<GridDataTable> {
 
   @override
   void initState() {
-    // _events = getEmployeeData();
-    fetchEventRecords();
+    _eventsList = getEmployeeData();
+    // fetchEventRecords();
     super.initState();
     _eventDataSource = EventDataSource(events: _eventsList);
   }
@@ -90,24 +89,25 @@ class _GridDataTableState extends State<GridDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _eventDataSource,
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          List<Widget> children;
-          if (snapshot.hasData) {
-            children = [EventDatatableWidget(_eventDataSource)];
-          } else if (snapshot.hasError) {
-            children = [
-              Text("Something went wrong"),
-            ];
-          } else
-            return CircularProgressIndicator();
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: children,
-            ),
-          );
-        });
+    return EventDatatableWidget(_eventDataSource);
+    // return FutureBuilder(
+    //     future: _eventDataSource,
+    //     builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+    //       List<Widget> children;
+    //       if (snapshot.hasData) {
+    //         children = [EventDatatableWidget(_eventDataSource)];
+    //       } else if (snapshot.hasError) {
+    //         children = [
+    //           Text("Something went wrong"),
+    //         ];
+    //       } else
+    //         return CircularProgressIndicator();
+    //       return Center(
+    //         child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: children,
+    //         ),
+    //       );
+    //     });
   }
 }

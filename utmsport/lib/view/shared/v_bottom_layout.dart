@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
 import 'package:utmsport/view/profile/profilePage.dart';
 import 'package:utmsport/view_model/vm_ courtViewData.dart';
+import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
@@ -51,6 +52,7 @@ Widget homeScreen(user) => Padding(
 
 navScreen(user) => <Widget>[
       homeScreen(user),
+      BookingCalendar(),
       FormScreen(),
       GridDataTable(), // JOAN TAN
       // TODO: Add new page below here

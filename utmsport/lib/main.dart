@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
-import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
