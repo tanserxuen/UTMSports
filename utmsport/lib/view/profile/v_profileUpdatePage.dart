@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,9 +21,32 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   Reference storageRef = FirebaseStorage.instance.ref();
   String imageUrl = '';
+  Timer? timer;
+
+  updateProfile() {
+    if (formKey.currentState!.validate()) {
+      var data = {
+        'name': fullnameController.text.trim(),
+        'roles': 'student',
+        'userId': FirebaseAuth.instance.currentUser!.uid,
+        'image': imageUrl
+      };
+
+      db
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update(data)
+          .then((value) => print("User Updated"))
+          .catchError((error) =>
+          print("Failed to update user: $error"));
+
+      Navigator.pop(context);
+    }
+  }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      Scaffold(
         appBar: AppBar(
           title: Text('Update Profile'),
         ),
@@ -40,9 +64,9 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   decoration: InputDecoration(labelText: 'Full Name'),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (fullname) =>
-                      fullname != null && !fullname.isNotEmpty
-                          ? 'Enter your name'
-                          : null,
+                  fullname != null && !fullname.isNotEmpty
+                      ? 'Enter your name'
+                      : null,
                 ),
                 SizedBox(
                   height: 16,
@@ -58,14 +82,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
 
                     //Import Dart:core
                     String uniqueFileName =
-                        DateTime.now().millisecondsSinceEpoch.toString();
+                    DateTime
+                        .now()
+                        .millisecondsSinceEpoch
+                        .toString();
 
                     //Get a reference to storage root
                     Reference ref_DirImages = storageRef.child("images");
 
                     //Create a reference for the image to be stored.
                     Reference ref_ImageToUpLoad =
-                        ref_DirImages.child(uniqueFileName);
+                    ref_DirImages.child(uniqueFileName);
 
                     try {
                       //Store the file
@@ -90,24 +117,11 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     icon: Icon(Icons.arrow_forward, size: 22),
                     label: Text('Confirm'),
                     onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        var data = {
-                          'name': fullnameController.text.trim(),
-                          'roles': 'student',
-                          'userId': FirebaseAuth.instance.currentUser!.uid,
-                          'image': imageUrl
-                        };
+                      timer = Timer.periodic(
+                          Duration(seconds: 2),
+                              (_) => updateProfile()
+                      );
 
-                        db
-                            .collection("users")
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .update(data)
-                            .then((value) => print("User Updated"))
-                            .catchError((error) =>
-                                print("Failed to update user: $error"));
-
-                        Navigator.pop(context);
-                      }
                     }),
               ],
             ),
