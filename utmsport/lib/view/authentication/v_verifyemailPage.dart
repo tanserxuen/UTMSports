@@ -115,6 +115,7 @@ Widget authorization() => FutureBuilder(
     if(snapshot.hasError) return Text("Something went wrong");
     if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
     if(snapshot.connectionState == ConnectionState.done){
+      if(snapshot.data!.data() == null) return MyHomePage();
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
       if(data['roles'] == "admin") {
         return AdminPage();

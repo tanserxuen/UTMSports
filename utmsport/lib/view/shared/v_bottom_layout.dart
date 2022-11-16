@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
-import 'package:utmsport/view/profile/profilePage.dart';
+import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view_model/vm_ courtViewData.dart';
 import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
 
