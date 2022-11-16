@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
+import 'package:utmsport/view/studentBooking/v_createBooking.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       routes: <String, WidgetBuilder>{
-        '/student-booking': (context) => FormScreen(),
+        '/student-booking': (context) => CreateBooking(),
       },
       scaffoldMessengerKey: Utils.messengerKey,
       navigatorKey: navigatorKey,

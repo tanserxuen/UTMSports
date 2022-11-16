@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:utmsport/globalVariable.dart' as global;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -117,6 +118,7 @@ Widget authorization() => FutureBuilder(
     if(snapshot.connectionState == ConnectionState.done){
       if(snapshot.data!.data() == null) return MyHomePage();
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      global.setUserRole(data);
       if(data['roles'] == "admin") {
         return AdminPage();
       }

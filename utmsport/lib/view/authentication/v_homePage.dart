@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart' as bottomBar;
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -20,7 +20,9 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text('UTM Sports'),
         ),
-        body: screens[_currentIndex],
+        body: LazyLoadScrollView(
+        onEndOfPage: () {},
+        child: screens[_currentIndex],),
         // body: screens[]
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(

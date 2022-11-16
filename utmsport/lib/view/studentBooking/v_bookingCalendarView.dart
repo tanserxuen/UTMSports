@@ -39,6 +39,7 @@ class DataSource extends CalendarDataSource {
 DataSource _getCalendarDataSource() {
   List<Appointment> appointments = <Appointment>[];
   List<CalendarResource> resources = <CalendarResource>[];
+
   appointments.add(
     Appointment(
       startTime: DateTime.now(),

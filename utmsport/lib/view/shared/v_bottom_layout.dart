@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
-import 'package:utmsport/view_model/vm_ courtViewData.dart';
+import 'package:utmsport/view/studentBooking/v_createBooking.dart';
+import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
+import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
@@ -33,9 +35,10 @@ Widget homeScreen(user) => Padding(
 
 navScreen(user) => <Widget>[
       homeScreen(user),
+  LatestEventWall(),
       BookingCalendar(),
       FormScreen(),
-      GridDataTable(), // JOAN TAN
+      EventList(), // JOAN TAN
       // TODO: Add new page below here
       FormScreen(), // AIDAH WONG
       ProfilePage() // CM TAN
