@@ -124,19 +124,8 @@ Widget authorization() => FutureBuilder(
         return MyHomePage();
       }
     }
-
     return Text("loading NOTHING");
   },
-
-
 );
 
-Future isLogged(roles) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('roles', roles);
-  String? role = prefs.getString('roles');
-  if(role == 'admin'){ return Text("Push ${roles}to Admin Page"); }
-  if(role == 'student'){ return Text("Push ${roles}to Student Page"); }
-  
-}
 
