@@ -31,6 +31,9 @@ dependencies:
   cloud_firestore: ^4.0.4
   firebase_auth: ^4.1.1
   email_validator: ^2.1.17
+  firebase_storage: ^11.0.5
+  image_picker: ^0.8.6
+  shared_preferences: ^2.0.15
   syncfusion_flutter_calendar: ^20.3.56
   syncfusion_flutter_datagrid: ^20.3.56
 

@@ -10,12 +10,14 @@ class UserDb {
     required this.name,
     required this.roles,
     required this.userId,
+    required this.image,
   });
 
   String id;
   String name;
   String roles;
   String userId;
+  String image;
 
   factory UserDb.fromRawJson(String str) => UserDb.fromJson(json.decode(str));
 
@@ -26,6 +28,7 @@ class UserDb {
     name: json["name"],
     roles: json["roles"],
     userId: json["userId"],
+    image: json["image"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -33,6 +36,7 @@ class UserDb {
     "name": name,
     "roles": roles,
     "userId": userId,
+    "image": image,
   };
 
   displayName(){
