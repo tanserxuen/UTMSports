@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:utmsport/view/authentication/v_adminPage.dart';
 import 'package:utmsport/view/authentication/v_homePage.dart';
 
 import '../../utils.dart';
@@ -71,7 +74,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) => isEmailVerified
-      ? MyHomePage()
+      // ? MyHomePage()
+      ? authorization()
       : Scaffold(
         appBar: AppBar(
           title: Text('Verify Email')
@@ -104,3 +108,35 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         ),
   );
 }
+
+Widget authorization() => FutureBuilder(
+  future: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get(),
+  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    if(snapshot.hasError) return Text("Something went wrong");
+    if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+    if(snapshot.connectionState == ConnectionState.done){
+      Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      if(data['roles'] == "admin") {
+        return AdminPage();
+      }
+      if(data['roles'] == "student") {
+        // return Text('Push ${data['roles']} to Student Page');
+        return MyHomePage();
+      }
+    }
+
+    return Text("loading NOTHING");
+  },
+
+
+);
+
+Future isLogged(roles) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('roles', roles);
+  String? role = prefs.getString('roles');
+  if(role == 'admin'){ return Text("Push ${roles}to Admin Page"); }
+  if(role == 'student'){ return Text("Push ${roles}to Student Page"); }
+  
+}
+
