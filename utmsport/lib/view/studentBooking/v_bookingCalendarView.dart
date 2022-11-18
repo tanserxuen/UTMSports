@@ -14,7 +14,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     return Container(
       child: SfCalendar(
         view: CalendarView.timelineDay,
-        dataSource: _getCalendarDataSource(),
+        dataSource: _getCalendarBookingData(),
         resourceViewSettings: ResourceViewSettings(
           showAvatar: false,
           visibleResourceCount: 4,
@@ -36,7 +36,7 @@ class DataSource extends CalendarDataSource {
   }
 }
 
-DataSource _getCalendarDataSource() {
+DataSource _getCalendarBookingData() {
   List<Appointment> appointments = <Appointment>[];
   List<CalendarResource> resources = <CalendarResource>[];
 

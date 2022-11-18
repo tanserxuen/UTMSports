@@ -1,5 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+
+//views
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
+import 'package:utmsport/view/profile/v_profilePage.dart';
+import 'package:utmsport/view/adminPost/v_eventList.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
+import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
 
 // usage:
 // import this file in files that you need these variables and add gloabl.
@@ -16,8 +36,9 @@ setUserRole(data) => _userRole = data['roles'];
 getUserRole()=>_userRole;
 
 //==================Routes
-const ADMIN_ROUTES = [];
-const STUDENT_ROUTES = [];
-const ATHLETE_ROUTES = [];
-const MANAGER_ROUTES = [];
-const CLUB_ROUTES = [];
+ADMIN_ROUTES(user) => [homeScreen(user), EventList(), FormScreen(), ProfilePage()];
+STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), homeScreen(user), ProfilePage()];
+ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
+MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
+CLUB_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
+

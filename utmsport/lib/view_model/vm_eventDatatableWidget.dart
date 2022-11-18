@@ -2,78 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
+List<String> colNames = [
+  'id',
+  'name',
+  'description',
+  'date',
+  'image',
+  'venue',
+  'platform',
+];
+
+List<GridColumn> getColumns() => colNames
+    .map(
+      (name) => GridColumn(
+          columnName: name,
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerRight,
+              child: Text(
+                name,
+                overflow: TextOverflow.ellipsis,
+
+                softWrap: true,
+              ))),
+    )
+    .toList();
+
 Widget EventDatatableWidget(_eventDataSource) => SfDataGridTheme(
-  data: SfDataGridThemeData(
-    headerColor: const Color(0xff009889),
-    rowHoverColor: Colors.yellow,
-  ),
-  child: SfDataGrid(
-      columnWidthMode: ColumnWidthMode.auto,
-      source: _eventDataSource,
-      isScrollbarAlwaysShown: true,
-      columns: [
-        GridColumn(
-            columnName: 'id',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'ID',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'name',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Name',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'description',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Description',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'date',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Date',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'image',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Image',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'venue',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Venue',
-                  overflow: TextOverflow.ellipsis,
-                ))),
-        GridColumn(
-            columnName: 'platform',
-            label: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Platform',
-                  overflow: TextOverflow.ellipsis,
-                )))
-      ]),
-);
+      data: SfDataGridThemeData(
+        headerColor: const Color(0xff009889),
+        rowHoverColor: Colors.yellow,
+      ),
+      child: SfDataGrid(
+        // columnWidthMode: ColumnWidthMode.auto,
+        source: _eventDataSource,
+        isScrollbarAlwaysShown: true,
+        columns: getColumns(),
+      ),
+    );

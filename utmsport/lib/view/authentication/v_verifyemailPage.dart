@@ -118,9 +118,11 @@ Widget authorization() => FutureBuilder(
     if(snapshot.connectionState == ConnectionState.done){
       if(snapshot.data!.data() == null) return MyHomePage();
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      //set user role upon open app
       global.setUserRole(data);
       if(data['roles'] == "admin") {
-        return AdminPage();
+        // return AdminPage();
+        return MyHomePage();
       }
       if(data['roles'] == "student") {
         // return Text('Push ${data['roles']} to Student Page');
