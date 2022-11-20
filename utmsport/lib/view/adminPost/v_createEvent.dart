@@ -37,42 +37,39 @@ class FormScreenState extends State<FormScreen> {
 
   Widget _buildEventNameField() {
     return TextFormField(
-      controller: controllerEventName,
-      decoration: InputDecoration(labelText: "Event Name"),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Name is required";
-        }
-      },
-      // onSaved: (value) {
-      //   _eventName = value;
-      // }
-    );
+        controller: controllerEventName,
+        decoration: InputDecoration(labelText: "Event Name"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Name is required";
+          }
+        },
+        onSaved: (value) {
+          _eventName = value!;
+        });
   }
 
   Widget _buildDescriptionField() {
     return TextFormField(
-      controller: controllerDescription,
-      decoration: InputDecoration(labelText: "Description"),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Description is required";
-        }
-      },
-      // onSaved: (value) {
-      //   _description = value;
-      // }
-    );
+        controller: controllerDescription,
+        decoration: InputDecoration(labelText: "Description"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Description is required";
+          }
+        },
+        onSaved: (value) {
+          _description = value!;
+        });
   }
 
   Widget _buildVenueField() {
     return TextFormField(
-      controller: controllerVenue,
-      decoration: InputDecoration(labelText: "Venue"),
-      // onSaved: (value) {
-      //   _venue = value;
-      // }
-    );
+        controller: controllerVenue,
+        decoration: InputDecoration(labelText: "Venue"),
+        onSaved: (value) {
+          _venue = value!;
+        });
   }
 
   Widget _buildDateField() {
@@ -91,21 +88,18 @@ class FormScreenState extends State<FormScreen> {
           setState(() => {
                 _date = DateFormat('yyyy-MM-dd').format(value),
                 controllerDate.text = _date,
-                print(_date),
               });
         });
   }
 
   Widget _buildPlatformField() {
     return TextFormField(
-      controller: controllerPlatform,
-      decoration: InputDecoration(labelText: "Platform"),
-      // onSaved: (val) {
-      //   _platform = val;
-      // }
-    );
+        controller: controllerPlatform,
+        decoration: InputDecoration(labelText: "Platform"),
+        onSaved: (value) {
+          _platform = value!;
+        });
   }
-
 
   //TODO: test if workable
   Widget _buildImageField() {
@@ -182,12 +176,15 @@ class FormScreenState extends State<FormScreen> {
                       _buildVenueField(),
                       _buildDateField(),
                       _buildPlatformField(),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       _buildImageField(),
                       SizedBox(height: 50),
                       ElevatedButton(
                         child: Text("Submit",
-                            style: TextStyle(color: Colors.white, fontSize: 16)),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16)),
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) {
                           } else {

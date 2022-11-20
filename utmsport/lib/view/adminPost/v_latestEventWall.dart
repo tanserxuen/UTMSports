@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:utmsport/view_model/vm_eventCard.dart';
+import 'package:utmsport/view_model/adminPost/vm_eventCard.dart';
 
 
 class LatestEventWall extends StatefulWidget {

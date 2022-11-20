@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:utmsport/model/m_Event.dart';
+// import 'package:time_picker_widget/time_picker_widget.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -18,8 +16,6 @@ class CreateBookingState extends State<CreateBooking> {
 
   String _startTime = "";
   String _endTime = "";
-
-  // String subject = "";
   String _name1 = "";
   String _matric1 = "";
   String _name2 = "";
@@ -31,8 +27,6 @@ class CreateBookingState extends State<CreateBooking> {
 
   final controllerStartTime = TextEditingController();
   final controllerEndTime = TextEditingController();
-
-  // final controllerSubject = TextEditingController();
   final controllerName1 = TextEditingController();
   final controllerMatric1 = TextEditingController();
   final controllerName2 = TextEditingController();
@@ -86,50 +80,90 @@ class CreateBookingState extends State<CreateBooking> {
 
   Widget _buildName1Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Name1"),
-    );
+        controller: controllerName1,
+        decoration: InputDecoration(labelText: "Name 1"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Name 1 is required";
+          }
+        }, onSaved: (value)=> _name1 = value!);
   }
 
   Widget _buildMatric1Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Matric1"),
-    );
+        controller: controllerMatric1,
+        decoration: InputDecoration(labelText: "Matric 1"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Matric 1 is required";
+          }
+        }, onSaved: (value)=> _matric1 = value!);
   }
 
   Widget _buildName2Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Name2"),
-    );
+        controller: controllerName2,
+        decoration: InputDecoration(labelText: "Name 2"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Name 2 is required";
+          }
+        }, onSaved: (value)=> _name2 = value!);
   }
 
   Widget _buildMatric2Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Matric2"),
-    );
+        controller: controllerMatric2,
+        decoration: InputDecoration(labelText: "Matric 2"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Matric 2 is required";
+          }
+        }, onSaved: (value)=> _matric2 = value!);
   }
 
   Widget _buildName3Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Name3"),
-    );
+        controller: controllerName3,
+        decoration: InputDecoration(labelText: "Name 3"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Name 3 is required";
+          }
+        }, onSaved: (value)=> _name3 = value!);
   }
 
   Widget _buildMatric3Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Matric3"),
-    );
+        controller: controllerMatric3,
+        decoration: InputDecoration(labelText: "Matric 3"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Matric 3 is required";
+          }
+        }, onSaved: (value)=> _matric3 = value!);
   }
 
   Widget _buildName4Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Name4"),
-    );
+        controller: controllerName4,
+        decoration: InputDecoration(labelText: "Name 4"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Name 4 is required";
+          }
+        }, onSaved: (value)=> _name4 = value!);
   }
 
   Widget _buildMatric4Field() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Matric4"),
-    );
+        controller: controllerMatric4,
+        decoration: InputDecoration(labelText: "Matric 4"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Matric 4 is required";
+          }
+        }, onSaved: (value)=> _matric4 = value!);
   }
 
   @override

@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         print("initialize");
         return MaterialPageRoute(builder: (_) => FormScreen());
       },
+
       scrollBehavior: MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,
