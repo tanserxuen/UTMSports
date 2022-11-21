@@ -48,11 +48,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    late dynamic appointment;
-    late DateTime date;
-    late CalendarElement element;
-    late bool canBook = false;
-    late Color bookBtnColor = canBook ? Colors.blue : Colors.grey;
+    // late dynamic appointment;
+    // late DateTime date;
+    // late CalendarElement element;
+    // late bool canBook = false;
+    // late Color bookBtnColor = canBook ? Colors.blue : Colors.grey;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
 
     return
         // Column(
@@ -66,6 +70,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
         //     child:
         SfCalendar(
       controller: _calendarController,
+
+      // minDate: today,
+      // maxDate: today,
       // onTap: (CalendarTapDetails details) {
       //   appointment = details.appointments;
       //   date = details.date!;
@@ -80,7 +87,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
       //   print("date ${date}");
       //   print("element ${element}");
       // },
-      view: CalendarView.timelineWorkWeek,
+      view: CalendarView.timelineDay,
+      minDate: today,
+      maxDate: tomorrow,
       dataSource: getCalendarBookingData(this.appData),
       showDatePickerButton: true,
       allowViewNavigation: true,

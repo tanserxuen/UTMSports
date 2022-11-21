@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'package:utmsport/model/m_StuAppointment.dart';
 // import 'package:time_picker_widget/time_picker_widget.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -14,8 +16,8 @@ class CreateBooking extends StatefulWidget {
 class CreateBookingState extends State<CreateBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _startTime = "";
-  String _endTime = "";
+  late TimeOfDay _startTime;
+  late TimeOfDay _endTime;
   String _name1 = "";
   String _matric1 = "";
   String _name2 = "";
@@ -25,8 +27,19 @@ class CreateBookingState extends State<CreateBooking> {
   String _name4 = "";
   String _matric4 = "";
 
+  List _resourceIds = [];
+  bool _isAllDay = false;
+  String _color = "0xffb74093";
+  String _sportType = "Badminton";
+
+  List<int> selectedCourts = [];
+
   final controllerStartTime = TextEditingController();
   final controllerEndTime = TextEditingController();
+  final controllerResourceIds = TextEditingController();
+  final controllerIsAllDay = TextEditingController();
+
+  // final controllerColor = TextEditingController();
   final controllerName1 = TextEditingController();
   final controllerMatric1 = TextEditingController();
   final controllerName2 = TextEditingController();
@@ -47,11 +60,9 @@ class CreateBookingState extends State<CreateBooking> {
           context: context,
           initialTime: TimeOfDay.now(),
         );
-        if (startTime == null) return null;
         setState(() => {
-              _startTime = "${startTime.hour}: ${startTime.minute}",
-              controllerStartTime.text = _startTime,
-              print(_startTime),
+              _startTime = startTime!,
+              controllerStartTime.text = startTime.format(context),
             });
       },
     );
@@ -63,16 +74,19 @@ class CreateBookingState extends State<CreateBooking> {
       decoration: InputDecoration(
           labelText: "End Time", suffixIcon: Icon(Icons.access_time)),
       readOnly: true,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Name 1 is required";
+        }
+      },
       onTap: () async {
         TimeOfDay? endTime = await showTimePicker(
           context: context,
-          initialTime: TimeOfDay.now(),
+          initialTime: _startTime,
         );
-        if (endTime == null) return null;
         setState(() => {
-              _endTime = "${endTime.hour}: ${endTime.minute}",
-              controllerEndTime.text = _endTime,
-              print(_endTime),
+              _endTime = endTime!,
+              controllerEndTime.text = endTime.format(context),
             });
       },
     );
@@ -86,7 +100,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Name 1 is required";
           }
-        }, onSaved: (value)=> _name1 = value!);
+        },
+        onSaved: (value) => _name1 = value!);
   }
 
   Widget _buildMatric1Field() {
@@ -97,7 +112,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Matric 1 is required";
           }
-        }, onSaved: (value)=> _matric1 = value!);
+        },
+        onSaved: (value) => _matric1 = value!);
   }
 
   Widget _buildName2Field() {
@@ -108,7 +124,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Name 2 is required";
           }
-        }, onSaved: (value)=> _name2 = value!);
+        },
+        onSaved: (value) => _name2 = value!);
   }
 
   Widget _buildMatric2Field() {
@@ -119,7 +136,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Matric 2 is required";
           }
-        }, onSaved: (value)=> _matric2 = value!);
+        },
+        onSaved: (value) => _matric2 = value!);
   }
 
   Widget _buildName3Field() {
@@ -130,7 +148,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Name 3 is required";
           }
-        }, onSaved: (value)=> _name3 = value!);
+        },
+        onSaved: (value) => _name3 = value!);
   }
 
   Widget _buildMatric3Field() {
@@ -141,7 +160,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Matric 3 is required";
           }
-        }, onSaved: (value)=> _matric3 = value!);
+        },
+        onSaved: (value) => _matric3 = value!);
   }
 
   Widget _buildName4Field() {
@@ -152,7 +172,8 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Name 4 is required";
           }
-        }, onSaved: (value)=> _name4 = value!);
+        },
+        onSaved: (value) => _name4 = value!);
   }
 
   Widget _buildMatric4Field() {
@@ -163,7 +184,125 @@ class CreateBookingState extends State<CreateBooking> {
           if (value == null || value.isEmpty) {
             return "Matric 4 is required";
           }
-        }, onSaved: (value)=> _matric4 = value!);
+        },
+        onSaved: (value) => _matric4 = value!);
+  }
+
+  Widget _buildSportsTypeColorField() {
+    return DropdownButton(
+      hint: Text("Sports Type"),
+      isExpanded: true,
+      items: ['Badminton', 'Squash', 'VolleyBall'].map((option) {
+        return DropdownMenuItem(
+          value: option,
+          child: Text("$option"),
+        );
+      }).toList(),
+      value: _sportType,
+      onChanged: (value) {
+        print(value);
+        setState(() {
+          switch(value){
+            case 'Badminton':
+              _color = Colors.redAccent.value.toRadixString(16);
+              break;
+            case 'Squash':
+              _color = Colors.yellowAccent.value.toRadixString(16);
+              break;
+            case 'VolleyBall':
+              _color = Colors.greenAccent.value.toRadixString(16);
+              break;
+          }
+          _sportType = value.toString();
+        });
+      },
+    );
+  }
+
+  Widget _buildIsAllDayField() {
+    return CheckboxListTile(
+        title: Text("All Day"),
+        checkColor: Colors.white,
+        value: _isAllDay,
+        onChanged: (bool? value) {
+          setState(() {
+            _isAllDay = value!;
+          });
+        });
+  }
+
+  Widget _badmintonResourceIdField() {
+    final int _badmintonCourts = 8;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Courts",
+          style: TextStyle(fontSize: 15),
+        ),
+        GridView.builder(
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 80,
+            childAspectRatio: 16 / 8,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+          ),
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: _badmintonCourts,
+          itemBuilder: (BuildContext context, int index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedCourts.contains(index)
+                    ? selectedCourts.remove(index)
+                    : selectedCourts.add(index);
+                print(this.selectedCourts);
+              });
+            },
+            child: Card(
+              color: selectedCourts.contains(index) ? Colors.red : Colors.white,
+              child: Column(
+                children: <Widget>[Text("Court ${index + 1}")],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void insertStuBooking() {
+// TODO: form validation
+    List<String> selectedCourtIds =
+        selectedCourts.map((index) => "${(index+1).toString().padLeft(4, "0")}").toList();
+    final now = new DateTime.now();
+
+    final _stuBooking = StuAppointment(
+      id: FirebaseFirestore.instance.collection('student_appointment').doc().id,
+      subject: "Student Booking",
+      startTime: Timestamp.fromDate(DateTime(
+          now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
+      endTime: Timestamp.fromDate(DateTime(
+          now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
+      resourceIds: selectedCourtIds,
+      isAllDay: false,
+      color: this._color,
+      name1: controllerName1.text.trim(),
+      matric1: controllerMatric1.text.trim(),
+      name2: controllerName2.text.trim(),
+      matric2: controllerMatric2.text.trim(),
+      name3: controllerName3.text.trim(),
+      matric3: controllerMatric3.text.trim(),
+      name4: controllerName4.text.trim(),
+      matric4: controllerMatric4.text.trim(),
+    ).toJson();
+    CollectionReference stuAppointments =
+        FirebaseFirestore.instance.collection('student_appointments');
+
+
+    print(_stuBooking);
+    stuAppointments.add(_stuBooking);
   }
 
   @override
@@ -180,6 +319,7 @@ class CreateBookingState extends State<CreateBooking> {
               ),
               Text("Book Court",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 15),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -188,6 +328,10 @@ class CreateBookingState extends State<CreateBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        // SizedBox(height: 15),
+                        _buildSportsTypeColorField(),
+                        SizedBox(height: 15),
+                        _badmintonResourceIdField(),
                         SizedBox(height: 15),
                         Row(
                           children: [
@@ -246,6 +390,7 @@ class CreateBookingState extends State<CreateBooking> {
                             )
                           ],
                         ),
+                        // _buildIsAllDayField(),
                         SizedBox(height: 50),
                         ElevatedButton(
                           child: Text("Submit",
@@ -255,25 +400,7 @@ class CreateBookingState extends State<CreateBooking> {
                             if (!_formKey.currentState!.validate()) {
                             } else {
                               _formKey.currentState!.save();
-                              //TODO: form validation
-                              // final _event = Event(
-                              //   id: FirebaseFirestore.instance
-                              //       .collection('events')
-                              //       .doc()
-                              //       .id,
-                              //   name: controllerEventName.text.trim(),
-                              //   description: controllerDescription.text.trim(),
-                              //   venue: controllerVenue.text.trim(),
-                              //   platform: controllerPlatform.text.trim(),
-                              //   image: controllerImage.text.trim(),
-                              //   date: controllerDate.text,
-                              // ).toJson();
-
-                              CollectionReference events = FirebaseFirestore
-                                  .instance
-                                  .collection('events');
-
-                              // events.add(_event);
+                              insertStuBooking();
                             }
                           },
                         )
