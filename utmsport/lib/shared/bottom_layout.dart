@@ -54,10 +54,10 @@ Widget BottomBar(BuildContext context) {
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
     onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AddAppointmentPage()),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => AddAppointmentPage()),
+      // );
     },
     child: Icon(Icons.add, size: 32),
   ));
