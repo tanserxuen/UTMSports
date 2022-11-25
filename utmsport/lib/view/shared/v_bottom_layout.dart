@@ -1,12 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
-import '../../crud/crud_appointment.dart';
-import '../../crud/listView_appointment.dart';
-import '../../crud/timeslot.dart';
-import '../view_calendarPage.dart';
-import 'calendar.dart';
+import 'package:utmsport/view/profile/v_profilePage.dart';
 
+import '../view_calendarPage.dart';
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
@@ -29,35 +25,15 @@ const destinations = [
 
 Widget homeScreen(user) => Padding(
     padding: EdgeInsets.all(32),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Signed In as',
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 8),
-        Text(user.email!,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        SizedBox(height: 40),
-        ElevatedButton.icon(
-          onPressed: () => FirebaseAuth.instance.signOut(),
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size.fromHeight(50),
-          ),
-          icon: Icon(Icons.arrow_back, size: 32),
-          label: Text(
-            'Sign Out',
-            style: TextStyle(fontSize: 24),
-          ),
-        ),
-      ],
-    ));
+    child: Scaffold(
+      body: Text('HomePage'),
+    ),
+);
 
 navScreen(user) => <Widget>[
       homeScreen(user),
-      FormScreen (),   // JOAN TAN
+      FormScreen(),   // JOAN TAN
       // TODO: Add new page below here
       Calendar(),   // AIDAH WONG
-      listViewAppointment(),    // CM TAN
+      ProfilePage()    // CM TAN
     ];

@@ -292,7 +292,6 @@ class _listViewAppointmentState extends State<listViewAppointment> {
         content: Text('You have successfully deleted an appointment')));
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

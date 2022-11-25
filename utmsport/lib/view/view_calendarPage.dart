@@ -19,154 +19,155 @@ class _CalendarState extends State<Calendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
-  // final TextEditingController _eventTitleController = TextEditingController();
-  // final TextEditingController _TimeController = TextEditingController();
-  // final TextEditingController _DateController = TextEditingController();
-  // final TextEditingController _PicController = TextEditingController();
-  // final TextEditingController _matricNoController = TextEditingController();
-  // final TextEditingController _phoneNoController = TextEditingController();
-  // final TextEditingController _descriptionController = TextEditingController();
-  //
-  // final CollectionReference _appointments =
-  // FirebaseFirestore.instance.collection('appointments');
+  final TextEditingController _eventTitleController = TextEditingController();
+  final TextEditingController _TimeController = TextEditingController();
+  final TextEditingController _DateController = TextEditingController();
+  final TextEditingController _PicController = TextEditingController();
+  final TextEditingController _matricNoController = TextEditingController();
+  final TextEditingController _phoneNoController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
-  // Future<void> _create([DocumentSnapshot? documentSnapshot]) async {
-  //
-  //   await showModalBottomSheet(
-  //       isScrollControlled: true,
-  //       context: context,
-  //       builder: (BuildContext ctx) {
-  //         return Padding(
-  //           padding: EdgeInsets.only(
-  //               top: 20,
-  //               left: 20,
-  //               right: 20,
-  //               bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               TextField(
-  //                 controller: _eventTitleController,
-  //                 decoration: const InputDecoration(labelText: 'Event Title'),
-  //               ),
-  //               TextField(
-  //                 controller: _TimeController,
-  //                 decoration: const InputDecoration(labelText: 'Time'),
-  //               ),
-  //               TextField(
-  //                   controller: _DateController,
-  //                   decoration: InputDecoration(
-  //                       labelText: "Date",
-  //                       suffixIcon: Icon(Icons.calendar_today)),
-  //                   readOnly: true,
-  //                   onTap: () async {
-  //
-  //                     DateTime? value = await showDatePicker(
-  //                         context: context,
-  //                         initialDate: DateTime.now(),
-  //                         firstDate: DateTime(1900),
-  //                         lastDate: DateTime(2100));
-  //
-  //                     if (value == null) return null;
-  //                     String date;
-  //                     setState(() => {
-  //                       date = DateFormat('yyyy-MM-dd').format(value),
-  //                       _DateController.text = date,
-  //                       print(date),
-  //                     });
-  //                   }
-  //               ),
-  //               TextField(
-  //                 controller: _PicController,
-  //                 decoration: const InputDecoration(labelText: 'Person in charge'),
-  //               ),
-  //               TextField(
-  //                 controller: _matricNoController,
-  //                 decoration: const InputDecoration(labelText: 'Matric Number'),
-  //               ),
-  //               TextField(
-  //                 controller: _phoneNoController,
-  //                 decoration: const InputDecoration(labelText: 'Phone Number'),
-  //               ),
-  //               TextField(
-  //                 controller: _descriptionController,
-  //                 decoration: const InputDecoration(labelText: 'Description'),
-  //               ),
-  //               const SizedBox(
-  //                 height: 20,
-  //               ),
-  //               ElevatedButton(
-  //                 child: const Text('Create'),
-  //                 onPressed: () async {
-  //                   // final String name = _nameController.text;
-  //                   final String eventtitle = _eventTitleController.text;
-  //                   final String time = _TimeController.text;
-  //                   final String date = _DateController.text;
-  //                   final String pic = _PicController.text;
-  //                   final String matricno = _matricNoController.text;
-  //                   final String phoneno = _phoneNoController.text;
-  //                   final String description = _descriptionController.text;
-  //
-  //                   if (eventtitle != null) {
-  //                     await _appointments.add({
-  //                       "eventtitle": eventtitle,
-  //                       "time": time,
-  //                       "date": date,
-  //                       "pic": pic,
-  //                       "matricno": matricno,
-  //                       "phoneno": phoneno,
-  //                       "description": description
-  //
-  //                     });
-  //
-  //                     _eventTitleController.text = '';
-  //                     _TimeController.text = '';
-  //                     _DateController.text = '';
-  //                     _PicController.text = '';
-  //                     _matricNoController.text = '';
-  //                     _phoneNoController.text = '';
-  //                     _descriptionController.text = '';
-  //                     Navigator.of(context).pop();
-  //                     showDialog(context: context, builder: (BuildContext context){
-  //                       return AlertDialog(
-  //                           title: Text("Success"),
-  //                           titleTextStyle:
-  //                           TextStyle(
-  //                               fontWeight: FontWeight.bold,
-  //                               color: Colors.black,fontSize: 20),
-  //                           actionsOverflowButtonSpacing: 20,
-  //                           actions: [
-  //                             // ElevatedButton(
-  //                             //  child: const Text("Back"),
-  //                             //     onPressed:(){
-  //                             //       Navigator.push(context,
-  //                             //           MaterialPageRoute(builder: (context) => MeetingForm(),)
-  //                             //       );},
-  //                             //   ),
-  //                             ElevatedButton(
-  //                               child: const Text("ok"),
-  //                               onPressed: (){
-  //                                 // _navigateToNextScreen(context);
-  //                                 Navigator.push(
-  //                                   context,
-  //                                   MaterialPageRoute(builder: (context) => listViewAppointment()),
-  //                                 );
-  //                                 //Navigator.of(context).pop();
-  //                               },
-  //                             ),
-  //                           ],
-  //                           content: Text("Booked successfully"));
-  //                     });
-  //                   }
-  //                 },
-  //               )
-  //             ],
-  //           ),
-  //         );
-  //
-  //       });
-  // }
+  final CollectionReference _appointments =
+  FirebaseFirestore.instance.collection('appointments');
+
+  Future<void> _create([DocumentSnapshot? documentSnapshot]) async {
+
+    await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: _eventTitleController,
+                  decoration: const InputDecoration(labelText: 'Event Title'),
+                ),
+                TextField(
+                  controller: _TimeController,
+                  decoration: const InputDecoration(labelText: 'Time'),
+                ),
+                TextField(
+                    controller: _DateController,
+                    decoration: InputDecoration(
+                        labelText: "Date",
+                        suffixIcon: Icon(Icons.calendar_today)),
+                    readOnly: true,
+                    onTap: () async {
+
+                      DateTime? value = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(2100));
+
+                      if (value == null) return null;
+                      String date;
+                      setState(() => {
+                        date = DateFormat('yyyy-MM-dd').format(value),
+                        _DateController.text = date,
+                        print(date),
+                      });
+                    }
+                ),
+                TextField(
+                  controller: _PicController,
+                  decoration: const InputDecoration(labelText: 'Person in charge'),
+                ),
+                TextField(
+                  controller: _matricNoController,
+                  decoration: const InputDecoration(labelText: 'Matric Number'),
+                ),
+                TextField(
+                  controller: _phoneNoController,
+                  decoration: const InputDecoration(labelText: 'Phone Number'),
+                ),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  child: const Text('Create'),
+                  onPressed: () async {
+                    // final String name = _nameController.text;
+                    final String eventtitle = _eventTitleController.text;
+                    final String time = _TimeController.text;
+                    final String date = _DateController.text;
+                    final String pic = _PicController.text;
+                    final String matricno = _matricNoController.text;
+                    final String phoneno = _phoneNoController.text;
+                    final String description = _descriptionController.text;
+
+                    if (eventtitle != null) {
+                      await _appointments.add({
+                        "eventtitle": eventtitle,
+                        "time": time,
+                        "date": date,
+                        "pic": pic,
+                        "matricno": matricno,
+                        "phoneno": phoneno,
+                        "description": description
+
+                      });
+
+                      _eventTitleController.text = '';
+                      _TimeController.text = '';
+                      _DateController.text = '';
+                      _PicController.text = '';
+                      _matricNoController.text = '';
+                      _phoneNoController.text = '';
+                      _descriptionController.text = '';
+                      Navigator.of(context).pop();
+                      showDialog(context: context, builder: (BuildContext context){
+                        return AlertDialog(
+                            title: Text("Success"),
+                            titleTextStyle:
+                            TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,fontSize: 20),
+                            actionsOverflowButtonSpacing: 20,
+                            actions: [
+                              // ElevatedButton(
+                              //  child: const Text("Back"),
+                              //     onPressed:(){
+                              //       Navigator.push(context,
+                              //           MaterialPageRoute(builder: (context) => MeetingForm(),)
+                              //       );},
+                              //   ),
+                              ElevatedButton(
+                                child: const Text("ok"),
+                                onPressed: (){
+                                  // _navigateToNextScreen(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => listViewAppointment()),
+                                  );
+                                  //Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                            content: Text("Booked successfully"));
+                      });
+                    }
+                  },
+                )
+              ],
+            ),
+          );
+
+        });
+  }
+
   // Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
   //
   //   if (documentSnapshot != null) {
@@ -419,36 +420,36 @@ class _CalendarState extends State<Calendar> {
                 ),
               ),
 
-              Center(
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(50, 35),
-                        ),
-                        onPressed:(){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => listViewAppointment()),
-                          );
-                        },
-                        child: Text("Make Advance Booking"),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(80, 35),
-                        ),
-                          onPressed:(){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => listViewAppointment()),
-                            );
-                          },
-                          child: Text("Set Slot Meeting"),
-                      ),
-                    ],
-                  ),
-              ),
+              // Center(
+              //     child: Column(
+              //       children: [
+              //         ElevatedButton(
+              //           style: ElevatedButton.styleFrom(
+              //             minimumSize: Size(50, 35),
+              //           ),
+              //           onPressed:(){
+              //             Navigator.push(
+              //               context,
+              //               MaterialPageRoute(builder: (context) => listViewAppointment()),
+              //             );
+              //           },
+              //           child: Text("Make Advance Booking"),
+              //         ),
+              //         ElevatedButton(
+              //           style: ElevatedButton.styleFrom(
+              //             minimumSize: Size(80, 35),
+              //           ),
+              //             onPressed:(){
+              //               Navigator.push(
+              //                 context,
+              //                 MaterialPageRoute(builder: (context) => listViewAppointment()),
+              //               );
+              //             },
+              //             child: Text("Set Slot Meeting"),
+              //         ),
+              //       ],
+              //     ),
+              // ),
 
               // SizedBox(
               //   width: 500,
@@ -498,11 +499,12 @@ class _CalendarState extends State<Calendar> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => _create(),
-      //   child: const Icon(Icons.add),
-      //
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _create(),
+        child: const Icon(Icons.add),
+
+      ),
+
 
 
       // floatingActionButton: FloatingActionButton(
