@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/view_calendarPage.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         '/student-booking': (context) => FormScreen(),
       },
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
-        onGenerateRoute: (settings) {
+      onGenerateRoute: (settings) {
           print("initialize");
           return MaterialPageRoute(builder: (_) => FormScreen());
         },

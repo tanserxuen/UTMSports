@@ -132,8 +132,8 @@ class _SignUpWidgetState extends State<SignUpWidget> {
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .set(data)
-        ..then((value) => 'The data inserted successfully')
-            .onError((error, _) => "Somethings Error on inserting");
+          .then((value) => 'The data inserted successfully')
+          .onError((error, _) => "Somethings Error on inserting");
 
       // db
       //     .collection("users")

@@ -16,9 +16,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final user = FirebaseAuth.instance.currentUser!;
     final screens=bottomBar.navScreen(user);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('UTM Sports'),
-        ),
+        // appBar: AppBar(
+        //   title: Text('UTM Sports'),
+        // ),
         body: screens[_currentIndex],
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/appointment/listView_appointment.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 
 import '../view_calendarPage.dart';
@@ -34,6 +35,7 @@ navScreen(user) => <Widget>[
       homeScreen(user),
       FormScreen(),   // JOAN TAN
       // TODO: Add new page below here
-      Calendar(),   // AIDAH WONG
+      // Calendar(),   // AIDAH WONG
+      listViewAppointment(),
       ProfilePage()    // CM TAN
     ];
