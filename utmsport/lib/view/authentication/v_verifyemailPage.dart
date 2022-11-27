@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:utmsport/globalVariable.dart' as global;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -115,9 +116,13 @@ Widget authorization() => FutureBuilder(
     if(snapshot.hasError) return Text("Something went wrong");
     if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
     if(snapshot.connectionState == ConnectionState.done){
+      if(snapshot.data!.data() == null) return MyHomePage();
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      //set user role upon open app
+      global.setUserRole(data);
       if(data['roles'] == "admin") {
-        return AdminPage();
+        // return AdminPage();
+        return MyHomePage();
       }
       if(data['roles'] == "student") {
         // return Text('Push ${data['roles']} to Student Page');

@@ -281,7 +281,7 @@ packages:
     source: hosted
     version: "2.6.2"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
@@ -296,6 +296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.5"
+  lazy_load_scrollview:
+    dependency: "direct main"
+    description:
+      name: lazy_load_scrollview
+      sha256: "230c827d6f7ec5e461f0674ef332daae2f78190bf1e4cd84977e51de04b231e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   matcher:
     dependency: transitive
     description:
@@ -485,6 +493,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  syncfusion_flutter_calendar:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_calendar
+      sha256: fc3ed212dc8af46382d3b14c421f09e49c3b1d58db3fd21a839e434871686890
+      url: "https://pub.dev"
+    source: hosted
+    version: "20.3.58"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "123b79b4855c00c120a1fce972a3b5442077cab54ce4adb59942bf093259de2d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "20.3.58"
+  syncfusion_flutter_datagrid:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datagrid
+      sha256: "9c6f6cb06d268c6eb938dc8d3308b32a7b06d445306144b9666532c346b9db0f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "20.3.58"
+  syncfusion_flutter_datepicker:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_datepicker
+      sha256: "105bd525fac23b6366390c6f70a799a4cdfdcb633693c5a480f9460ad91f45b0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "20.3.58"
   table_calendar:
     dependency: "direct main"
     description:
@@ -509,6 +549,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.15"
+  time_picker_widget:
+    dependency: "direct main"
+    description:
+      name: time_picker_widget
+      sha256: "2cae415159ff9ac4cb58bf118864c3131ae0155272e30ccd884a6bda1bac5032"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+10"
+  timezone:
+    dependency: transitive
+    description:
+      name: timezone
+      sha256: "2e59efc48e9f684c327c0498ac0b81411aee18b10c82f2db2c08f7f052493569"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.0"
   typed_data:
     dependency: transitive
     description:
