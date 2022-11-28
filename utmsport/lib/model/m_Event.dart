@@ -1,22 +1,25 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import "package:utmsport/globalVariable.dart" as global;
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
 
 class Event {
-  String id = "";
-  String name = "";
-  String description = "";
-  String date = "";
-  String image = "";
-  String venue = "";
-  String platform = "";
+  String id;
+  String name;
+  String description;
+  String date;
+  String image;
+  String venue;
+  String platform;
 
   Event({
     required this.id,
     required this.name,
     required this.description,
     required this.date,
-    required this.image,
-    required this.venue,
-    required this.platform,
+    this.image = "https://www.freeiconspng.com/img/23485",
+    this.venue = "",
+    this.platform = "",
   });
 
   factory Event.fromRawJson(String str) => Event.fromJson(json.decode(str));
@@ -101,4 +104,24 @@ List<Event> getEmployeeData() {
       platform: "https://meet.google.com/yww-kpsv-zhr",
     ),
   ];
+}
+
+void deleteEvents(id) async {
+  var eventColl = global.FFdb.collection('events');
+  eventColl.where("id", isEqualTo: id).get().then((value) {
+    value.docs.forEach((element) {
+      eventColl.doc(element.id).delete().then((value) {
+        print("Success!");
+      });
+    });
+  });
+}
+
+void editEvents(context, event) async {
+  // print(event);
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+        builder: (context) => FormScreen(eventModel: event, formType: "edit")),
+  );
 }

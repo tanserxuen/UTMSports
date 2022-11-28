@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:utmsport/model/m_Event.dart';
 
 Widget EventCard(BuildContext context, int index, events) {
+  String getId(index) => events[index]?["id"];
   String getName(index) => events[index]?["name"];
-  String getDate(index) => events[index]?["name"];
+  String getDate(index) => events[index]?["date"];
   String getImage(index) =>
       events[index]?["image"] ??
-      'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg';
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
   String getPlatform(index) => events[index]?["platform"];
   String getVenue(index) => events[index]?["venue"];
 
@@ -14,9 +16,31 @@ Widget EventCard(BuildContext context, int index, events) {
     elevation: 4.0,
     child: Column(
       children: [
-        ListTile(
-          title: Text(getName(index)),
-          subtitle: Text(getDate(index)),
+        Row(
+          children: [
+            Expanded(
+              child: ListTile(
+                title: Text(getName(index)),
+                subtitle: Text(getDate(index)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => editEvents(context, events[index]),
+              child: Text(
+                "Edit",
+                style: TextStyle(color: Colors.black87),
+              ),
+              style: TextButton.styleFrom(backgroundColor: Colors.yellow),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            ElevatedButton(
+              onPressed: () => deleteEvents(getId(index)),
+              child: Text("Delete"),
+              style: TextButton.styleFrom(backgroundColor: Colors.red),
+            ),
+          ],
         ),
         Row(
           children: <Widget>[

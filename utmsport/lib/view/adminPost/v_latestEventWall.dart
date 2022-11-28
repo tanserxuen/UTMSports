@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:utmsport/view_model/adminPost/vm_eventCard.dart';
 
-
 class LatestEventWall extends StatefulWidget {
   const LatestEventWall({Key? key}) : super(key: key);
 
@@ -13,7 +12,7 @@ class LatestEventWall extends StatefulWidget {
 
 class _LatestEventWallState extends State<LatestEventWall> {
   final CollectionReference productList =
-      FirebaseFirestore.instance.collection("events");
+  FirebaseFirestore.instance.collection("events");
   List events = [];
 
   Future<List?> getEvents() async {
@@ -47,8 +46,15 @@ class _LatestEventWallState extends State<LatestEventWall> {
   @override
   Widget build(BuildContext context) {
     getEvents();
-    if (this.events == []) {
-      return CircularProgressIndicator();
+    //TODO: loading vs no events added
+    if (this.events.length == 0) {
+      return Center(child:CircularProgressIndicator());
+    }
+    if (this.events.length == 0) {
+      return Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Text("No events added"),
+      );
     }
     return ListView.builder(
       padding: const EdgeInsets.all(5.5),
@@ -56,5 +62,4 @@ class _LatestEventWallState extends State<LatestEventWall> {
       itemBuilder: (ctxt, index) => EventCard(ctxt, index, this.events),
     );
   }
-
 }
