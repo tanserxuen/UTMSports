@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
+
 import 'package:utmsport/model/m_Event.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 Widget EventCard(BuildContext context, int index, event) {
   String getId() => event?["id"];
-  String getName() => event?["name"]??"";
-  String getDate() => event?["date"]??"";
+  String getName() => event?["name"] ?? "";
+  String getDate() => event?["date"] ?? "";
   String getImage() =>
       event?["image"] ??
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
-  String getPlatform() => event?["platform"]??"";
-  String getVenue() => event?["venue"]??"";
+  String getPlatform() => event?["platform"] ?? "";
+  String getVenue() => event?["venue"] ?? "";
+  List<Widget> actionButtons = global.getUserRole() == 'admin'
+      ? [
+          IconButton(
+            onPressed: () => editEvents(context, event.data()),
+            icon: Icon(
+              Icons.edit,
+              color: Colors.orange[200],
+            ),
+          ),
+          IconButton(
+            onPressed: () => deleteEvents(context, getId()),
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red[200],
+            ),
+          ),
+        ]
+      : [];
 
   return InkWell(
       child: Card(
@@ -24,23 +44,24 @@ Widget EventCard(BuildContext context, int index, event) {
                 subtitle: Text(getDate()),
               ),
             ),
-            ElevatedButton(
-              onPressed: () => editEvents(context, event.data()),
-              child: Text(
-                "Edit",
-                style: TextStyle(color: Colors.black87),
+            IconButton(
+              onPressed: () => print("View details"),
+              icon: Icon(
+                Icons.info,
+                color: Colors.blue[200],
               ),
-              style: TextButton.styleFrom(backgroundColor: Colors.yellow),
             ),
-            SizedBox(
-              width: 10,
-            ),
-            ElevatedButton(
-              onPressed: () => deleteEvents(getId()),
-              child: Text("Delete"),
-              style: TextButton.styleFrom(backgroundColor: Colors.red),
-            ),
+            ...actionButtons,
           ],
+        ),
+        Container(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            event?["description"],
+            overflow: TextOverflow.ellipsis,
+            maxLines: 4,
+          ),
         ),
         Row(
           children: <Widget>[
@@ -61,27 +82,6 @@ Widget EventCard(BuildContext context, int index, event) {
             )),
           ],
         ),
-        Container(
-          padding: EdgeInsets.all(16.0),
-          alignment: Alignment.centerLeft,
-          child: Expanded(
-            child: new Text(
-              event?["description"],
-              overflow: TextOverflow.ellipsis,
-              maxLines: 4,
-            ),
-          ),
-        ),
-        ButtonBar(
-          children: [
-            TextButton(
-              child: const Text('View Details'),
-              onPressed: () {
-                /* ... */
-              },
-            )
-          ],
-        )
       ],
     ),
   )

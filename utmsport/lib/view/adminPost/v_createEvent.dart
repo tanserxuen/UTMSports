@@ -189,7 +189,6 @@ class FormScreenState extends State<FormScreen> {
       image: _imageUrl,
       date: controllerDate.text,
     ).toJson();
-    print("abc $_imageUrl");
 
     CollectionReference events =
         FirebaseFirestore.instance.collection('events');
@@ -218,57 +217,66 @@ class FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
+      body:  Container(
           margin: EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Text("Create Events",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        _buildEventNameField(),
-                        _buildDescriptionField(),
-                        _buildVenueField(),
-                        _buildDateField(),
-                        _buildPlatformField(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        _buildImageField(),
-                        SizedBox(height: 50),
-                        ElevatedButton(
-                          child: Text("Submit",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                          onPressed: () {
-                            // timer = Timer.periodic(
-                            //     Duration(seconds: 2),
-                            //     (_) => {
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
-                              _formKey.currentState!.save();
-                              insertEventDetails();
-                            }
-                            // });
-                          },
-                        )
-                      ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                SizedBox(
+                  height: 50,
+                ),
+                Text("Create Events",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          _buildEventNameField(),
+                          _buildDescriptionField(),
+                          _buildVenueField(),
+                          _buildDateField(),
+                          _buildPlatformField(),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _buildImageField(),
+                          SizedBox(height: 50),
+                          ElevatedButton(
+                            child: Text("Submit",
+                                style:
+                                    TextStyle(color: Colors.white, fontSize: 16)),
+                            onPressed: () {
+                              // timer = Timer.periodic(
+                              //     Duration(seconds: 2),
+                              //     (_) => {
+                              if (!_formKey.currentState!.validate()) {
+                              } else {
+                                _formKey.currentState!.save();
+                                insertEventDetails();
+                              }
+                              // });
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pop(context),
+        child: Icon(Icons.arrow_back_rounded, size: 25),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 }

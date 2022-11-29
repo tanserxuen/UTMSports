@@ -43,7 +43,7 @@ Widget homeScreen(user) => Padding(
 
 navScreen(user) {
   List routes = [];
-  print('btm layout ${global.getUserRole()}');
+  // print('btm layout ${global.getUserRole()}');
   switch (global.getUserRole()) {
     case 'admin':
       routes = global.ADMIN_ROUTES(user);
