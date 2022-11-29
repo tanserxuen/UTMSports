@@ -189,7 +189,6 @@ class FormScreenState extends State<FormScreen> {
       image: _imageUrl,
       date: controllerDate.text,
     ).toJson();
-    print("abc $_imageUrl");
 
     CollectionReference events =
         FirebaseFirestore.instance.collection('events');

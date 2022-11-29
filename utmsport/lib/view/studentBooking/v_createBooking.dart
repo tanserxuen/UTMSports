@@ -200,7 +200,7 @@ class CreateBookingState extends State<CreateBooking> {
       }).toList(),
       value: _sportType,
       onChanged: (value) {
-        print(value);
+        // print(value);
         setState(() {
           switch (value) {
             case 'Badminton':

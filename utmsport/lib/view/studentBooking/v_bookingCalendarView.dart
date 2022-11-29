@@ -62,7 +62,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
     return Column(
       children: [
-        Text("$courtsToBook"),
+        // Text("$courtsToBook"),
         Expanded(
           child: SfCalendar(
             controller: _calendarController,
@@ -79,9 +79,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
               // } else
               //   canBook = false;
               // canBook = appointment ?? true;
-              print("appointment ${appointment}");
-              print("date ${date}");
-              print("element ${element.index}");
+              // print("appointment ${appointment}");
+              // print("date ${date}");
+              // print("element ${element.index}");
             },
             view: CalendarView.timelineDay,
             minDate: today,
