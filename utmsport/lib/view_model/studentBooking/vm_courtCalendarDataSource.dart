@@ -25,7 +25,7 @@ List<CalendarResource> getCourts(resources) {
       CalendarResource(
         // displayName: "Court $index",
         id: "${index.toString().padLeft(4, '0')}",
-        displayName: "${index.toString().padLeft(4, '0')}",
+        displayName: "Court $index",
         color: (index) % 2 == 1 ? Colors.amber : Colors.orangeAccent,
       ),
     );

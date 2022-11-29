@@ -40,7 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.hasData) {
               var output = snapshot.data!.data();
               var name = output!['name'];
-              print('$output');
               return Padding(
                 padding: EdgeInsets.all(60),
                 child: Column(

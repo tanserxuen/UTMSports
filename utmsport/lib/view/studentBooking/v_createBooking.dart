@@ -202,7 +202,7 @@ class CreateBookingState extends State<CreateBooking> {
       onChanged: (value) {
         print(value);
         setState(() {
-          switch(value){
+          switch (value) {
             case 'Badminton':
               _color = Colors.redAccent.value.toRadixString(16);
               break;
@@ -274,10 +274,12 @@ class CreateBookingState extends State<CreateBooking> {
 
   void insertStuBooking() {
 // TODO: form validation
-    List<String> selectedCourtIds =
-        selectedCourts.map((index) => "${(index+1).toString().padLeft(4, "0")}").toList();
+    List<String> selectedCourtIds = selectedCourts
+        .map((index) => "${(index + 1).toString().padLeft(4, "0")}")
+        .toList();
     final now = new DateTime.now();
 
+    //TODO: convert to timestamp wrong
     final _stuBooking = StuAppointment(
       id: FirebaseFirestore.instance.collection('student_appointment').doc().id,
       subject: "Student Booking",
@@ -297,12 +299,17 @@ class CreateBookingState extends State<CreateBooking> {
       name4: controllerName4.text.trim(),
       matric4: controllerMatric4.text.trim(),
     ).toJson();
+
     CollectionReference stuAppointments =
         FirebaseFirestore.instance.collection('student_appointments');
 
-
     print(_stuBooking);
-    stuAppointments.add(_stuBooking);
+    try {
+      stuAppointments.add(_stuBooking);
+      Navigator.pushNamed(context, '/');
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override

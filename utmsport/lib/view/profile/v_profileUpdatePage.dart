@@ -96,7 +96,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
 
                     try {
                       //Store the file
-                      String filePath = '${file!.path}';
+                      String filePath = '${file.path}';
                       await ref_ImageToUpLoad.putFile(File(filePath));
 
                       //Success: get the download URL

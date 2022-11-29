@@ -31,10 +31,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
-      onGenerateRoute: (settings) {
-        print("initialize");
-        return MaterialPageRoute(builder: (_) => FormScreen());
-      },
+      // onGenerateRoute: (settings) {
+      //   print("initialize");
+      //   return MaterialPageRoute(builder: (_) => FormScreen());
+      // },
 
       scrollBehavior: MaterialScrollBehavior().copyWith(
         dragDevices: {

@@ -48,62 +48,57 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    // late dynamic appointment;
-    // late DateTime date;
-    // late CalendarElement element;
-    // late bool canBook = false;
-    // late Color bookBtnColor = canBook ? Colors.blue : Colors.grey;
+    late dynamic appointment;
+    late DateTime date;
+    late CalendarElement element;
+    late bool canBook = false;
+    late Color bookBtnColor = canBook ? Colors.blue : Colors.grey;
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
 
-    return
-        // Column(
-        // children: [
-        //   ElevatedButton(
-        //       onPressed: () {
-        //       },
-        //       style: ElevatedButton.styleFrom(primary: bookBtnColor),
-        //       child: Text("Add appointment")),
-        //   Expanded(
-        //     child:
-        SfCalendar(
-      controller: _calendarController,
+    var courtsToBook;
 
-      // minDate: today,
-      // maxDate: today,
-      // onTap: (CalendarTapDetails details) {
-      //   appointment = details.appointments;
-      //   date = details.date!;
-      //   element = details.targetElement;
-      //   if (appointment == null) {
-      //     canBook = true;
-      //     print('can book ${canBook}');
-      //   } else
-      //     canBook = false;
-      //   // canBook = appointment ?? true;
-      //   print("appointment ${appointment}");
-      //   print("date ${date}");
-      //   print("element ${element}");
-      // },
-      view: CalendarView.timelineDay,
-      minDate: today,
-      maxDate: tomorrow,
-      dataSource: getCalendarBookingData(this.appData),
-      showDatePickerButton: true,
-      allowViewNavigation: true,
-      allowedViews: <CalendarView>[
-        CalendarView.schedule,
-        CalendarView.timelineDay
+    return Column(
+      children: [
+        Text("$courtsToBook"),
+        Expanded(
+          child: SfCalendar(
+            controller: _calendarController,
+            onViewChanged: (ViewChangedDetails details) {
+              List<DateTime> dates = details.visibleDates;
+              print(dates);
+            },
+            onLongPress: (CalendarLongPressDetails  details) {
+              appointment = details.appointments;
+              date = details.date!;
+              element = details.targetElement;
+              // if (appointment == null && ) {
+              //   courtsToBook
+              // } else
+              //   canBook = false;
+              // canBook = appointment ?? true;
+              print("appointment ${appointment}");
+              print("date ${date}");
+              print("element ${element.index}");
+            },
+            view: CalendarView.timelineDay,
+            minDate: today,
+            maxDate: tomorrow,
+            dataSource: getCalendarBookingData(this.appData),
+            // showDatePickerButton: true,
+            allowViewNavigation: true,
+            allowedViews: <CalendarView>[
+              CalendarView.schedule,
+              CalendarView.timelineDay
+            ],
+            timeSlotViewSettings: timeSlotViewSettings,
+            specialRegions: getBreakTime(),
+            resourceViewSettings: resourceViewSettings,
+          ),
+        ),
       ],
-      timeSlotViewSettings: timeSlotViewSettings,
-      specialRegions: getBreakTime(),
-      resourceViewSettings: resourceViewSettings,
     );
-    // ,
-    //     ),
-    // ],
-    // );
   }
 }

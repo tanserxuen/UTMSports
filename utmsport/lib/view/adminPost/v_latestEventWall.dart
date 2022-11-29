@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:utmsport/view_model/adminPost/vm_eventCard.dart';
 
-
 class LatestEventWall extends StatefulWidget {
   const LatestEventWall({Key? key}) : super(key: key);
 
@@ -47,14 +46,37 @@ class _LatestEventWallState extends State<LatestEventWall> {
   @override
   Widget build(BuildContext context) {
     getEvents();
-    if (this.events == []) {
-      return CircularProgressIndicator();
+    //TODO: loading vs no events added
+    if (this.events.length == 0) {
+      return Center(child: CircularProgressIndicator());
     }
-    return ListView.builder(
-      padding: const EdgeInsets.all(5.5),
-      itemCount: this.events.length,
-      itemBuilder: (ctxt, index) => EventCard(ctxt, index, this.events),
+    if (this.events.length == 0) {
+      return Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Text("No events added"),
+      );
+    }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('events')
+          // .where("date", isGreaterThanOrEqualTo: new DateTime.now())
+          .snapshots(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot doc = snapshot.data!.docs[index];
+                // if(index == 0){
+                //   return Text("${snapshot.data!.docs.length}");
+                // }else
+                return EventCard(context, index, doc);
+              });
+        }
+        if(snapshot.connectionState == ConnectionState.waiting)
+          return Center(child: CircularProgressIndicator());
+        return Text('Somethings Error');
+      },
     );
   }
-
 }
