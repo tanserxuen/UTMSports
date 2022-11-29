@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -35,8 +36,11 @@ List<CalendarResource> getCourts(resources) {
 
 void getAppointments(appointments, appData) {
   appData.forEach((appDetails) => {
+    if(appDetails['id']=='cuktubE2pvNRJbtLlSxD')
         appointments.add(Appointment(
           startTime: _parseDateFormat(appDetails['startTime']),
+          // startTime: DateTime.now(),
+          // endTime: DateTime.now().add(Duration(hours: 2)),
           endTime: _parseDateFormat(appDetails['endTime']),
           subject: appDetails['subject'],
           color: Color(int.parse(appDetails['color'])),
@@ -45,8 +49,12 @@ void getAppointments(appointments, appData) {
       });
 }
 
-DateTime _parseDateFormat(timestamp) =>
-    DateFormat("yyyy-MM-dd hh:mm:ss").parse(timestamp.toDate().toString());
+DateTime _parseDateFormat(timestamp) {
+  var t = (timestamp as Timestamp).toDate();
+  print(t);
+  print(DateTime.now());
+  return t;
+}
 
 final colorCollection = [
   Colors.redAccent,
@@ -76,31 +84,6 @@ final resourceViewSettings = ResourceViewSettings(
   displayNameTextStyle: TextStyle(
       fontStyle: FontStyle.italic, fontSize: 15, fontWeight: FontWeight.w700),
 );
-
-final appointmentDetails = [
-  Appointment(
-    startTime: DateTime(2022, 11, 20, 10, 0, 0),
-    endTime: DateTime(2022, 11, 20, 11, 0, 0).add(Duration(hours: 2)),
-    isAllDay: true,
-    subject: 'Meeting',
-    color: Colors.blue,
-    resourceIds: ['0001'],
-  ),
-  Appointment(
-    startTime: DateTime(2022, 11, 21, 14, 0, 0),
-    endTime: DateTime(2022, 11, 21, 16, 0, 0),
-    subject: 'Demo App',
-    color: Colors.redAccent,
-    resourceIds: ['0004', '0007'],
-  ),
-  Appointment(
-    startTime: DateTime(2022, 11, 20, 10, 0, 0),
-    endTime: DateTime(2022, 11, 20, 12, 0, 0),
-    subject: 'Rest',
-    color: Colors.yellow,
-    resourceIds: ['0002', '0003'],
-  )
-];
 
 List<TimeRegion> getBreakTime() {
   final List<TimeRegion> regions = <TimeRegion>[];

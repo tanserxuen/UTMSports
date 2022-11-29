@@ -47,12 +47,13 @@ class Event {
       };
 }
 
-void deleteEvents(id) async {
+void deleteEvents(context, id) async {
   var eventColl = global.FFdb.collection('events');
   eventColl.where("id", isEqualTo: id).get().then((value) {
     value.docs.forEach((element) {
       eventColl.doc(element.id).delete().then((value) {
-        print("Success!");
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('You have successfully deleted an event')));
       });
     });
   });

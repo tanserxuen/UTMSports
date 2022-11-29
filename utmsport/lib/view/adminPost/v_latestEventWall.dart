@@ -21,7 +21,7 @@ class _LatestEventWallState extends State<LatestEventWall> {
     try {
       await productList.get().then((querySnapshot) {
         querySnapshot.docs.forEach((element) {
-          print(element.data());
+          // print(element.data());
           _events.add(element.data());
         });
       });
