@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:utmsport/model/m_Event.dart';
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
 import 'package:utmsport/view_model/adminPost/vm_eventDatatableWidget.dart';
 import 'package:utmsport/view_model/adminPost/vm_eventDataSource.dart';
 
@@ -49,6 +50,25 @@ class _EventListState extends State<EventList> {
 
   @override
   Widget build(BuildContext context) {
-    return EventDatatableWidget(_eventDataSource);
+    return Column(
+      children: [
+        Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8,16,8,16),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("List of Events",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w700)),
+                    ElevatedButton(
+                      child: Text("Add Event"),
+                      onPressed: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => FormScreen())),
+                    ),
+                  ]),
+            )),
+        Expanded(flex: 6, child: EventDatatableWidget(_eventDataSource)),
+      ],
+    );
   }
 }
