@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -38,6 +39,8 @@ class FormScreenState extends State<FormScreen> {
   String _imgPlaceholder =
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
+  Timer? timer;
+
   Reference storageRef = FirebaseStorage.instance.ref();
 
   final controllerEventName = TextEditingController();
@@ -52,13 +55,12 @@ class FormScreenState extends State<FormScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.eventModel['imageUrl']);
-    controllerEventName.text = widget.eventModel['name'] ?? "";
-    controllerDescription.text = widget.eventModel['description'] ?? "";
-    controllerVenue.text = widget.eventModel['venue'] ?? "";
-    controllerDate.text = widget.eventModel['date'] ?? "";
-    controllerPlatform.text = widget.eventModel['platform'] ?? "";
-    _imageUrl = widget.eventModel['imageUrl'] ?? _imgPlaceholder;
+    controllerEventName.text = widget.eventModel?['name'] ?? "";
+    controllerDescription.text = widget.eventModel?['description'] ?? "";
+    controllerVenue.text = widget.eventModel?['venue'] ?? "";
+    controllerDate.text = widget.eventModel?['date'] ?? "";
+    controllerPlatform.text = widget.eventModel?['platform'] ?? "";
+    _imageUrl = widget.eventModel?['imageUrl'] ?? _imgPlaceholder;
   }
 
   Widget _buildEventNameField() {
@@ -79,7 +81,6 @@ class FormScreenState extends State<FormScreen> {
     return TextFormField(
         controller: controllerDescription,
         decoration: InputDecoration(labelText: "Description"),
-        // initialValue: widget.eventModel.description,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Description is required";
@@ -94,7 +95,6 @@ class FormScreenState extends State<FormScreen> {
     return TextFormField(
         controller: controllerVenue,
         decoration: InputDecoration(labelText: "Venue"),
-        // initialValue: widget.eventModel.venue,
         onSaved: (value) {
           _venue = value!;
         });
@@ -124,7 +124,6 @@ class FormScreenState extends State<FormScreen> {
     return TextFormField(
         controller: controllerPlatform,
         decoration: InputDecoration(labelText: "Platform"),
-        // initialValue: widget.eventModel.platform,
         onSaved: (value) {
           _platform = value!;
         });
@@ -134,21 +133,15 @@ class FormScreenState extends State<FormScreen> {
   Widget _buildImageField() {
     const double _imgHeight = 150;
     const double _imgWidth = 150;
-    // _imageUrl = widget.eventModel.image;
+    _imageUrl = widget.eventModel?['image'] ?? _imgPlaceholder;
     return Column(
       children: [
         //TODO: Image not updated when upload image
-        _imageUrl == ""
-            ? Image.network(
-                _imgPlaceholder,
-                height: _imgHeight,
-                width: _imgWidth,
-              )
-            : Image.network(
-                _imageUrl,
-                height: _imgHeight,
-                width: _imgWidth,
-              ),
+        // Image.network(
+        //   _imageUrl,
+        //   height: _imgHeight,
+        //   width: _imgWidth,
+        // ),
         ElevatedButton.icon(
           onPressed: () async {
             ImagePicker imagePicker = ImagePicker();
@@ -173,11 +166,9 @@ class FormScreenState extends State<FormScreen> {
               await ref_ImageToUpLoad.putFile(File(filePath));
 
               //Success: get the download URL
-              setState(() async {
-                //TODO: cannot update but remain old picture
-                _imageUrl = await ref_ImageToUpLoad.getDownloadURL();
-                print("Updated");
-              });
+              //TODO: cannot update but remain old picture
+              _imageUrl = await ref_ImageToUpLoad.getDownloadURL();
+              print("Updated");
             } catch (error) {}
           },
           icon: Icon(Icons.camera_alt, size: 22),
@@ -190,7 +181,7 @@ class FormScreenState extends State<FormScreen> {
 
   void insertEventDetails({id: null}) {
     final _event = Event(
-      id: FirebaseFirestore.instance.collection('events').doc().id,
+      id: id ?? FirebaseFirestore.instance.collection('events').doc().id,
       name: controllerEventName.text.trim(),
       description: controllerDescription.text.trim(),
       venue: controllerVenue.text.trim(),
@@ -198,6 +189,7 @@ class FormScreenState extends State<FormScreen> {
       image: _imageUrl,
       date: controllerDate.text,
     ).toJson();
+    print("abc $_imageUrl");
 
     CollectionReference events =
         FirebaseFirestore.instance.collection('events');
@@ -207,7 +199,7 @@ class FormScreenState extends State<FormScreen> {
         events.add(_event);
       else
         events
-            .where("id", isEqualTo: widget.eventModel['id'])
+            .where("id", isEqualTo: widget.eventModel?['id'])
             .get()
             .then((value) {
           value.docs.forEach((element) {
@@ -216,7 +208,8 @@ class FormScreenState extends State<FormScreen> {
             });
           });
         });
-      Navigator.pushNamed(context, '/');
+
+      Navigator.pop(context);
     } on Exception catch (e) {
       print(e);
     }
@@ -256,11 +249,15 @@ class FormScreenState extends State<FormScreen> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {
+                            // timer = Timer.periodic(
+                            //     Duration(seconds: 2),
+                            //     (_) => {
                             if (!_formKey.currentState!.validate()) {
                             } else {
                               _formKey.currentState!.save();
                               insertEventDetails();
                             }
+                            // });
                           },
                         )
                       ],

@@ -47,65 +47,6 @@ class Event {
       };
 }
 
-List<Event> getEmployeeData() {
-  return [
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-    Event(
-      id: '0001',
-      name: "Joan",
-      description: "simple event",
-      date: "2022-11-12",
-      image: "abc.png",
-      venue: "L50 BK1",
-      platform: "https://meet.google.com/yww-kpsv-zhr",
-    ),
-  ];
-}
-
 void deleteEvents(id) async {
   var eventColl = global.FFdb.collection('events');
   eventColl.where("id", isEqualTo: id).get().then((value) {

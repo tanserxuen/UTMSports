@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:utmsport/model/m_Event.dart';
 
-Widget EventCard(BuildContext context, int index, events) {
-  String getId(index) => events[index]?["id"];
-  String getName(index) => events[index]?["name"];
-  String getDate(index) => events[index]?["date"];
-  String getImage(index) =>
-      events[index]?["image"] ??
+Widget EventCard(BuildContext context, int index, event) {
+  String getId() => event?["id"];
+  String getName() => event?["name"]??"";
+  String getDate() => event?["date"]??"";
+  String getImage() =>
+      event?["image"] ??
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
-  String getPlatform(index) => events[index]?["platform"];
-  String getVenue(index) => events[index]?["venue"];
+  String getPlatform() => event?["platform"]??"";
+  String getVenue() => event?["venue"]??"";
 
   return InkWell(
       child: Card(
@@ -20,12 +20,12 @@ Widget EventCard(BuildContext context, int index, events) {
           children: [
             Expanded(
               child: ListTile(
-                title: Text(getName(index)),
-                subtitle: Text(getDate(index)),
+                title: Text(getName()),
+                subtitle: Text(getDate()),
               ),
             ),
             ElevatedButton(
-              onPressed: () => editEvents(context, events[index]),
+              onPressed: () => editEvents(context, event.data()),
               child: Text(
                 "Edit",
                 style: TextStyle(color: Colors.black87),
@@ -36,7 +36,7 @@ Widget EventCard(BuildContext context, int index, events) {
               width: 10,
             ),
             ElevatedButton(
-              onPressed: () => deleteEvents(getId(index)),
+              onPressed: () => deleteEvents(getId()),
               child: Text("Delete"),
               style: TextButton.styleFrom(backgroundColor: Colors.red),
             ),
@@ -49,14 +49,14 @@ Widget EventCard(BuildContext context, int index, events) {
                 width: 150.0,
                 child: Padding(
                   padding: EdgeInsets.all(15.0),
-                  child: Image.network(getImage(index)),
+                  child: Image.network(getImage()),
                 )),
             Container(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Venue: ${getVenue(index)}"),
-                Text("Platform: ${getPlatform(index)}"),
+                Text("Venue: ${getVenue()}"),
+                Text("Platform: ${getPlatform()}"),
               ],
             )),
           ],
@@ -66,7 +66,7 @@ Widget EventCard(BuildContext context, int index, events) {
           alignment: Alignment.centerLeft,
           child: Expanded(
             child: new Text(
-              events[index]?["description"],
+              event?["description"],
               overflow: TextOverflow.ellipsis,
               maxLines: 4,
             ),
@@ -87,6 +87,6 @@ Widget EventCard(BuildContext context, int index, events) {
   )
       // onTap: () => MaterialPageRoute(
       //     builder: (context) =>
-      //         SecondRoute(id: events.getId(index), name: events.getName(index))),
+      //         SecondRoute(id: event.getId(), name: event.getName())),
       );
 }

@@ -12,7 +12,7 @@ class LatestEventWall extends StatefulWidget {
 
 class _LatestEventWallState extends State<LatestEventWall> {
   final CollectionReference productList =
-  FirebaseFirestore.instance.collection("events");
+      FirebaseFirestore.instance.collection("events");
   List events = [];
 
   Future<List?> getEvents() async {
@@ -48,7 +48,7 @@ class _LatestEventWallState extends State<LatestEventWall> {
     getEvents();
     //TODO: loading vs no events added
     if (this.events.length == 0) {
-      return Center(child:CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
     if (this.events.length == 0) {
       return Padding(
@@ -56,10 +56,26 @@ class _LatestEventWallState extends State<LatestEventWall> {
         child: Text("No events added"),
       );
     }
-    return ListView.builder(
-      padding: const EdgeInsets.all(5.5),
-      itemCount: this.events.length,
-      itemBuilder: (ctxt, index) => EventCard(ctxt, index, this.events),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('events')
+          // .where("date", isGreaterThanOrEqualTo: new DateTime.now())
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot doc = snapshot.data!.docs[index];
+                // if(index == 0){
+                //   return Text("${snapshot.data!.docs.length}");
+                // }else
+                return EventCard(context, index, doc);
+              });
+        } else {
+          return Text("No data");
+        }
+      },
     );
   }
 }
