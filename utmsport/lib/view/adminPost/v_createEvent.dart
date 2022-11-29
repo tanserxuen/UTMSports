@@ -209,7 +209,7 @@ class FormScreenState extends State<FormScreen> {
           });
         });
 
-      Navigator.pop(context);
+      Navigator.pushNamed(context, '/');
     } on Exception catch (e) {
       print(e);
     }
