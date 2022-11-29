@@ -36,6 +36,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   final TextEditingController _EOnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   String filename = '';
+  String timeslot = '';
   var fileBytes;
   Reference storageRef = FirebaseStorage.instance.ref();
   final formKey = GlobalKey<FormState>();
@@ -113,15 +114,74 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             });
                           }
                       ),
-                      TextFormField(
-                        controller: _TimeController,
-                        textInputAction: TextInputAction.next,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (time) => time != null && !time.isNotEmpty
-                          ? 'Select a time'
-                          : null,
-                        decoration: const InputDecoration(labelText: 'TimeSlot'),
+
+                      // Padding(
+                      //   padding: EdgeInsets.all(10),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.start,
+                      //     children: getList()
+                      //   ),
+                      // ),
+
+                      Container(
+                        child: Row(
+                            children: List.generate(timeslotRange.length, (index){
+                              return InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    timeslot = timeslotRange[index].time;
+                                  });
+                                } ,
+                                child: Container(
+                                  height: 50,
+                                  width: 100,
+                                  margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                  decoration: BoxDecoration(
+                                      color:
+                                        timeslot == timeslotRange[index].time
+                                          ? Colors.orange
+                                          : Colors.white
+                                      ,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.grey.shade600,
+                                            spreadRadius: 1,
+                                            blurRadius: 1,
+                                            offset: Offset(0, 2))
+                                      ]
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      timeslotRange[index].time + 'hr',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            })
+                        ),
                       ),
+
+                      // TextFormField(
+                      //   controller: _TimeController,
+                      //   textInputAction: TextInputAction.next,
+                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                      //   validator: (time) => time != null && !time.isNotEmpty
+                      //     ? 'Select a time'
+                      //     : null,
+                      //   decoration: const InputDecoration(labelText: 'TimeSlot'),
+                      // ),
+
+
+
+
+
                       TextFormField(
                         enabled: false,
                         controller: _EOnameController,
@@ -206,7 +266,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                           : null,
                         decoration: const InputDecoration(labelText: 'Description'),
                         maxLines: 5,
-
                         keyboardType: TextInputType.multiline,
                       ),
                       SizedBox(height: 20),
@@ -255,6 +314,8 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                         onPressed: () async {
                           final isValid = formKey.currentState!.validate();
                           if(!isValid) return ;
+                          if(filename.isEmpty || filename == '') return ;
+                          if(timeslot.isEmpty || timeslot == '') return ;
 
                           showDialog(
                             context: context,
@@ -299,9 +360,12 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
                           //TODO: Validator
                           try{
+                            int timestamp = DateTime.now().millisecondsSinceEpoch;
+
                             await _appointments.add({
+                              'created_at': timestamp,
                               "date": _DateController.text,
-                              "time": _TimeController.text,
+                              "time": timeslot,
                               "name": _EOnameController.text,
                               "pic": _PicController.text,
                               "matricno": _matricNoController.text,
@@ -341,3 +405,60 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
     );
   }
 }
+
+List<Widget> getList() {
+  List<Widget> childs = [];
+  for (var i = 0; i < timeslotRange.length; i++) {
+    childs.add(
+        InkWell(
+          onTap: (){ print(timeslotRange[i].time); } ,
+          child: Container(
+            height: 30,
+            width: 70,
+            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+            decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(5)
+            ),
+            child: Center(
+              child: Text(
+                timeslotRange[i].time,
+                style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ),
+        )
+    );
+  }
+  return childs;
+}
+
+class TimeSlot{
+  final String time;
+
+  TimeSlot({
+    required this.time
+  });
+}
+
+List <TimeSlot> timeslotRange = [age1, age2, age3];
+
+TimeSlot age1 = TimeSlot(
+    time : "0800"
+);
+
+TimeSlot age2 = TimeSlot(
+    time : "1000"
+);
+
+TimeSlot age3 = TimeSlot(
+    time : "1200"
+);
+
+TimeSlot age4 = TimeSlot(
+    time : "40+"
+);

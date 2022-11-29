@@ -38,7 +38,6 @@ Widget homeScreen(user) => Padding(
 //       BookingCalendar(),
 //       EventList(), // JOAN TAN
 //       FormScreen(),
-//       // TODO: Add new page below here
 //       FormScreen(), // AIDAH WONG
 //     ];
 
@@ -68,7 +67,6 @@ navScreen(user) {
 // navScreen(user) => <Widget>[
 //       homeScreen(user),
 //       FormScreen(),   // JOAN TAN
-//       // TODO: Add new page below here
 //       // Calendar(),   // AIDAH WONG
 //       listViewAppointment(),
 //       ProfilePage()    // CM TAN

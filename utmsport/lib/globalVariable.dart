@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 
 //views
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
+import 'package:utmsport/view/appointment/listView_appointment.dart';
+import 'package:utmsport/view/appointment/v_requestList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart';
@@ -37,8 +39,8 @@ setUserRole(data) => _userRole = data['roles'];
 getUserRole()=>_userRole;
 
 //==================Routes
-ADMIN_ROUTES(user) => [homeScreen(user), EventList(), FormScreen(), ProfilePage()];
-STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), Calendar(), ProfilePage()];
+ADMIN_ROUTES(user) => [homeScreen(user), EventList(), RequestListPage(), ProfilePage()];
+STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
 ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
 MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
 CLUB_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];

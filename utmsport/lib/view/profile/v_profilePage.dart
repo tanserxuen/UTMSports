@@ -46,7 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    //  TODO: Add Picture button here
                     Container(
                       width: 200,
                       height: 200,

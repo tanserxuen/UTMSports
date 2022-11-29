@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
 import 'package:utmsport/view/view_calendarPage.dart';
 
 class listViewAppointment extends StatefulWidget {
@@ -290,165 +291,186 @@ class _listViewAppointmentState extends State<listViewAppointment> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-        child: SingleChildScrollView(
-          child:
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-            GestureDetector(
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Calendar())),
-              child: Container(
-                width: 500,
-                height: 150,
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.red,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Meeting Appointment',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text('Click to Book Now')
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 120,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.blue,
-                      ),
-                      transform: Matrix4.rotationZ(-0.05),
-                    )
-                  ],
-                ),
-              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+        GestureDetector(
+          onTap: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Calendar())),
+          child: Container(
+            width: 500,
+            height: 150,
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.red,
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Text(
-                'Your Request List',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Meeting Appointment',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text('Click to Book Now')
+                    ],
+                  ),
                 ),
-              ),
+                Container(
+                  height: 120,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  transform: Matrix4.rotationZ(-0.05),
+                )
+              ],
             ),
-            Container(
-              color: Colors.green,
-              width: 500,
-              height: 500,
-              child: StreamBuilder(
-                stream: _appointments
-                    .where('uid',
-                        isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                  if (streamSnapshot.connectionState == ConnectionState.waiting)
-                    return Center(child: CircularProgressIndicator());
-                  if (streamSnapshot.hasData) {
-                    //TODO: filter the users data
-                    return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: streamSnapshot.data!.docs.length,
-                        //Here you can see that I will get the count of my data
-                        itemBuilder: (context, int) {
-                          //perform the task you want to do here
-                          final DocumentSnapshot documentSnapshot =
-                              streamSnapshot.data!.docs[int];
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          child: Text(
+            'Your Request List',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+        ),
+        Container(
+          // color: Colors.green,
+          width: 500,
+          height: 360,
+          child: StreamBuilder(
+            stream: _appointments
+                .where('uid',
+                    isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+            .orderBy('created_at', descending: true)
+                .snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+              if (streamSnapshot.connectionState == ConnectionState.waiting)
+                return Center(child: CircularProgressIndicator());
+              if (streamSnapshot.hasData) {
+                //TODO: filter the users data
+                return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: streamSnapshot.data!.docs.length,
+                    //Here you can see that I will get the count of my data
+                    itemBuilder: (context, int) {
+                      //perform the task you want to do here
+                      final DocumentSnapshot documentSnapshot =
+                          streamSnapshot.data!.docs[int];
 
-                          return Card(
-                            margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                            child: ListTile(
-                              title: Text(documentSnapshot['eventtitle']),
-                              // subtitle: Text(documentSnapshot['time']),
-                              subtitle: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(documentSnapshot['time']),
-                                        Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.horizontal(
-                                                      left: Radius.circular(10),
-                                                      right:
-                                                          Radius.circular(10)),
-                                              color:
-                                                  documentSnapshot['status'] ==
-                                                          'rejected'
-                                                      ? Colors.red
-                                                      : documentSnapshot[
-                                                                  'status'] ==
-                                                              'approved'
-                                                          ? Colors.green
-                                                          : Colors.yellow,
-                                            ),
-                                            width: 100,
-                                            margin: EdgeInsets.fromLTRB(
-                                                10, 0, 0, 0),
-                                            padding: EdgeInsets.fromLTRB(
-                                                10, 2, 10, 2),
-                                            child: Text(
-                                              documentSnapshot['status'],
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w900),
-                                            )),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                              trailing: SizedBox(
-                                width: 100,
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                        icon: const Icon(Icons.edit,
-                                            color: Colors.green),
-                                        onPressed: () =>
-                                            _update(documentSnapshot)),
-                                    IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () =>
-                                            _delete(documentSnapshot.id)),
-                                  ],
-                                ),
+                      return Card(
+                        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                        child: GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RequestMeetingDetail(
+                                        document: documentSnapshot)));
+                          },
+                          child: ListTile(
+                            title: Text(documentSnapshot['eventtitle']),
+                            // subtitle: Text(documentSnapshot['time']),
+                            subtitle: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(documentSnapshot['time']),
+                                      Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.horizontal(
+                                                    left: Radius.circular(10),
+                                                    right:
+                                                        Radius.circular(10)),
+                                            color:
+                                                documentSnapshot['status'] ==
+                                                        'rejected'
+                                                    ? Colors.red
+                                                    : documentSnapshot[
+                                                                'status'] ==
+                                                            'approved'
+                                                        ? Colors.green
+                                                        : Colors.yellow,
+                                          ),
+                                          width: 100,
+                                          margin: EdgeInsets.fromLTRB(
+                                              10, 0, 0, 0),
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 2, 10, 2),
+                                          child: Text(
+                                            documentSnapshot['status'],
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w900),
+                                          )),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
-                          );
-                        });
-                  }
-                  if (streamSnapshot.hasError)
-                    return Text('Something went wrong');
-                  return Text('No Recorded founded');
-                },
-              ),
-            )
+                            trailing: SizedBox(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      icon: Icon(Icons.edit,
+                                          color:
+                                            documentSnapshot['status'] == 'pending'
+                                            ? Colors.green
+                                            : Colors.grey
+                                      ),
+                                      onPressed:
+                                          documentSnapshot['status'] == 'pending'
+                                            ? () => _update(documentSnapshot)
+                                            : null
+                                  ),
+                                  IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color:
+                                            documentSnapshot['status'] == 'pending'
+                                          ? Colors.red
+                                          : Colors.grey
+                                      ),
+                                      onPressed:
+                                        documentSnapshot['status'] == 'pending'
+                                          ? ()=>  _delete(documentSnapshot.id)
+                                          : null
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+              }
+              if (streamSnapshot.hasError)
+                return Text('Something went wrong');
+              return Text('No Recorded founded');
+            },
+          ),
+        )
           ]),
-        ),
       ),
     );
   }
