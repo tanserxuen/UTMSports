@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import "package:utmsport/globalVariable.dart" as global;
+import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
 
 class Event {
@@ -52,8 +53,7 @@ void deleteEvents(context, id) async {
   eventColl.where("id", isEqualTo: id).get().then((value) {
     value.docs.forEach((element) {
       eventColl.doc(element.id).delete().then((value) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('You have successfully deleted an event')));
+        Utils.showSnackBar('deleted an event');
       });
     });
   });

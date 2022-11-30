@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:utmsport/model/m_Event.dart';
+import 'package:utmsport/utils.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -195,15 +196,17 @@ class FormScreenState extends State<FormScreen> {
 
     try {
       if (widget.formType == 'create')
-        events.add(_event);
+        events.add(_event).then((_){
+          Utils.showSnackBar("${widget.formType} an event");
+        });
       else
         events
             .where("id", isEqualTo: widget.eventModel?['id'])
             .get()
             .then((value) {
           value.docs.forEach((element) {
-            events.doc(element.id).update(_event).then((value) {
-              print("Success!");
+            events.doc(element.id).update(_event).then((_) {
+              Utils.showSnackBar("${widget.formType} an event");
             });
           });
         });
