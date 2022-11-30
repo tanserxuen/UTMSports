@@ -10,7 +10,7 @@ class EventDataSource extends DataGridSource {
       DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
       DataGridCell<String>(
           columnName: 'description', value: dataGridRow.description),
-      DataGridCell<String>(columnName: 'date', value: dataGridRow.date),
+      DataGridCell<DateTime>(columnName: 'date', value: dataGridRow.date),
       DataGridCell<String>(
           columnName: 'image', value: dataGridRow.description),
       DataGridCell<String>(

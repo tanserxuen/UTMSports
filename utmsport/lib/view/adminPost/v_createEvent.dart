@@ -34,7 +34,7 @@ class FormScreenState extends State<FormScreen> {
   String _eventName = "";
   String _description = "";
   String _venue = "";
-  String _date = "";
+  DateTime _date = DateTime.now();
   String _platform = "";
   String _imageUrl = "";
   String _imgPlaceholder =
@@ -59,7 +59,11 @@ class FormScreenState extends State<FormScreen> {
     controllerEventName.text = widget.eventModel?['name'] ?? "";
     controllerDescription.text = widget.eventModel?['description'] ?? "";
     controllerVenue.text = widget.eventModel?['venue'] ?? "";
-    controllerDate.text = widget.eventModel?['date'] ?? "";
+    var _setDate = widget.eventModel?['date'] ?? "";
+    controllerDate.text = _setDate != ""
+        ? Utils.parsetoStringDateOnly(widget.eventModel?['date'],
+            format: 'yyyy-MM-dd')
+        : _setDate;
     controllerPlatform.text = widget.eventModel?['platform'] ?? "";
     _imageUrl = widget.eventModel?['imageUrl'] ?? _imgPlaceholder;
   }
@@ -115,8 +119,8 @@ class FormScreenState extends State<FormScreen> {
               lastDate: DateTime(2100));
           if (value == null) return null;
           setState(() => {
-                _date = DateFormat('yyyy-MM-dd').format(value),
-                controllerDate.text = _date,
+                _date = value,
+                controllerDate.text = DateFormat('yyyy-MM-dd').format(value),
               });
         });
   }
@@ -188,7 +192,7 @@ class FormScreenState extends State<FormScreen> {
       venue: controllerVenue.text.trim(),
       platform: controllerPlatform.text.trim(),
       image: _imageUrl,
-      date: controllerDate.text,
+      date: _date,
     ).toJson();
 
     CollectionReference events =
@@ -196,7 +200,7 @@ class FormScreenState extends State<FormScreen> {
 
     try {
       if (widget.formType == 'create')
-        events.add(_event).then((_){
+        events.add(_event).then((_) {
           Utils.showSnackBar("${widget.formType} an event");
         });
       else
@@ -220,61 +224,60 @@ class FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Container(
-          margin: EdgeInsets.all(12),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                SizedBox(
-                  height: 50,
-                ),
-                Text("Create Events",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          _buildEventNameField(),
-                          _buildDescriptionField(),
-                          _buildVenueField(),
-                          _buildDateField(),
-                          _buildPlatformField(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _buildImageField(),
-                          SizedBox(height: 50),
-                          ElevatedButton(
-                            child: Text("Submit",
-                                style:
-                                    TextStyle(color: Colors.white, fontSize: 16)),
-                            onPressed: () {
-                              // timer = Timer.periodic(
-                              //     Duration(seconds: 2),
-                              //     (_) => {
-                              if (!_formKey.currentState!.validate()) {
-                              } else {
-                                _formKey.currentState!.save();
-                                insertEventDetails();
-                              }
-                              // });
-                            },
-                          )
-                        ],
-                      ),
+      body: Container(
+        margin: EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Text("Create Events",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildEventNameField(),
+                        _buildDescriptionField(),
+                        _buildVenueField(),
+                        _buildDateField(),
+                        _buildPlatformField(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        _buildImageField(),
+                        SizedBox(height: 50),
+                        ElevatedButton(
+                          child: Text("Submit",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          onPressed: () {
+                            // timer = Timer.periodic(
+                            //     Duration(seconds: 2),
+                            //     (_) => {
+                            if (!_formKey.currentState!.validate()) {
+                            } else {
+                              _formKey.currentState!.save();
+                              insertEventDetails();
+                            }
+                            // });
+                          },
+                        )
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pop(context),
         child: Icon(Icons.arrow_back_rounded, size: 25),

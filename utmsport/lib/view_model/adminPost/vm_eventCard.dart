@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'package:utmsport/model/m_Event.dart';
 import 'package:utmsport/globalVariable.dart' as global;
+import 'package:utmsport/utils.dart';
 
 Widget EventCard(BuildContext context, int index, event) {
   String getId() => event?["id"];
   String getName() => event?["name"] ?? "";
-  String getDate() => event?["date"] ?? "";
+  String getDate() => Utils.parsetoStringDateOnly(event?["date"]) ?? "";
   String getImage() =>
       event?["image"] ??
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
   String getPlatform() => event?["platform"] ?? "";
   String getVenue() => event?["venue"] ?? "";
-  List<Widget> actionButtons = global.getUserRole() == 'admin'
-      ? [
+  List<Widget> actionButtons =
+  // global.getUserRole() == 'admin'
+  //     ?
+  [
           IconButton(
             onPressed: () => editEvents(context, event.data()),
             icon: Icon(
@@ -28,8 +31,8 @@ Widget EventCard(BuildContext context, int index, event) {
               color: Colors.red[200],
             ),
           ),
-        ]
-      : [];
+        ];
+      // : [];
 
   return InkWell(
       child: Card(

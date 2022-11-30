@@ -8,7 +8,7 @@ class Event {
   String id;
   String name;
   String description;
-  String date;
+  DateTime date = DateTime.now();
   String image;
   String venue;
   String platform;
