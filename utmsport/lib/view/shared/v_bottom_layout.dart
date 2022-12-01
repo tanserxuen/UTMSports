@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
@@ -26,17 +25,6 @@ Widget homeScreen(user) => Padding(
         body: Text('HomePage'),
       ),
     );
-
-// navScreen(user) => <Widget>[
-//       // homeScreen(user),
-//       LatestEventWall(),
-//       ProfilePage(), // CM TAN
-//       BookingCalendar(),
-//       EventList(), // JOAN TAN
-//       FormScreen(),
-//       // TODO: Add new page below here
-//       FormScreen(), // AIDAH WONG
-//     ];
 
 navScreen(user) {
   List routes = [];

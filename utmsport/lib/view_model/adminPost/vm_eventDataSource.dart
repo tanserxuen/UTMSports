@@ -6,18 +6,18 @@ class EventDataSource extends DataGridSource {
   EventDataSource({required List<Event> events}) {
     dataGridRows = events
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'id', value: dataGridRow.id),
-      DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
-      DataGridCell<String>(
-          columnName: 'description', value: dataGridRow.description),
-      DataGridCell<DateTime>(columnName: 'date', value: dataGridRow.date),
-      DataGridCell<String>(
-          columnName: 'image', value: dataGridRow.description),
-      DataGridCell<String>(
-          columnName: 'venue', value: dataGridRow.venue),
-      DataGridCell<String>(
-          columnName: 'platform', value: dataGridRow.platform),
-    ]))
+              DataGridCell<String>(columnName: 'id', value: dataGridRow.id),
+              DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
+              DataGridCell<String>(
+                  columnName: 'description', value: dataGridRow.description),
+              DataGridCell<DateTime>(columnName: 'date', value: dataGridRow.date),
+              DataGridCell<String>(
+                  columnName: 'image', value: dataGridRow.description),
+              DataGridCell<String>(
+                  columnName: 'venue', value: dataGridRow.venue),
+              DataGridCell<String>(
+                  columnName: 'platform', value: dataGridRow.platform),
+            ]))
         .toList();
   }
 
@@ -30,16 +30,16 @@ class EventDataSource extends DataGridSource {
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
         cells: row.getCells().map<Widget>((dataGridCell) {
-          return Container(
-              alignment: (dataGridCell.columnName == 'id' ||
+      return Container(
+          alignment: (dataGridCell.columnName == 'id' ||
                   dataGridCell.columnName == 'date')
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                dataGridCell.value.toString(),
-                overflow: TextOverflow.ellipsis,
-              ));
-        }).toList());
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            dataGridCell.value.toString(),
+            overflow: TextOverflow.ellipsis,
+          ));
+    }).toList());
   }
 }

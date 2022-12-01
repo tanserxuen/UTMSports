@@ -28,7 +28,7 @@ class _EventListState extends State<EventList> {
                     id: event['id'] ?? '',
                     name: event['name'] ?? '',
                     description: event['description'] ?? '',
-                    date: event['date'] ?? '',
+                    date: event['date'].toDate() ?? '',
                     image: event['image'] ?? '',
                     venue: event['venue'] ?? '',
                     platform: event['platform'] ?? '',
