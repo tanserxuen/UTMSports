@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:utmsport/main.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 
 import '../../view/appointment/listView_appointment.dart';
@@ -40,9 +41,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   var fileBytes;
   Reference storageRef = FirebaseStorage.instance.ref();
   final formKey = GlobalKey<FormState>();
-
-  final CollectionReference _appointments =
-  FirebaseFirestore.instance.collection('appointments');
+  final CollectionReference _appointments = global.FFdb.collection('appointments');
 
   @override
   void dispose() {
@@ -68,24 +67,21 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
         child: Form(
           key: formKey,
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+            stream: global.FFdb.collection('users').doc(global.FA.currentUser!.uid).snapshots(),
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return Center(child: CircularProgressIndicator());
               if (snapshot.hasData){
-                // var name = snapshot.data?.data()!['name'];
                 _EOnameController.text = snapshot.data?.data()!['name'];
                 _matricNoController.text = snapshot.data?.data()!['matric'];
                 _phoneNoController.text = snapshot.data?.data()!['phoneno'];
                 _emailController.text = FirebaseAuth.instance.currentUser!.email!;
-
 
                 return SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       TextFormField(
                           controller: _DateController,
                           textInputAction: TextInputAction.next,
@@ -114,15 +110,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             });
                           }
                       ),
-
-                      // Padding(
-                      //   padding: EdgeInsets.all(10),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.start,
-                      //     children: getList()
-                      //   ),
-                      // ),
-
                       Container(
                         child: Row(
                             children: List.generate(timeslotRange.length, (index){
@@ -135,7 +122,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                                 child: Container(
                                   height: 50,
                                   width: 100,
-                                  margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
                                   padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                                   decoration: BoxDecoration(
                                       color:
@@ -167,21 +154,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             })
                         ),
                       ),
-
-                      // TextFormField(
-                      //   controller: _TimeController,
-                      //   textInputAction: TextInputAction.next,
-                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
-                      //   validator: (time) => time != null && !time.isNotEmpty
-                      //     ? 'Select a time'
-                      //     : null,
-                      //   decoration: const InputDecoration(labelText: 'TimeSlot'),
-                      // ),
-
-
-
-
-
                       TextFormField(
                         enabled: false,
                         controller: _EOnameController,
@@ -256,7 +228,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                           : null,
                         decoration: const InputDecoration(labelText: 'Event Title'),
                       ),
-
                       TextFormField(
                         controller: _descriptionController,
                         textInputAction: TextInputAction.next,
@@ -272,12 +243,18 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                       Text(
                         'Attachment:',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold
                         ),
                       ),
                       Text(
-                          '$filename'
+                        'in .pdf or .doc format',
+                        style: TextStyle(
+                          fontSize: 12
+                        ),
+                      ),
+                      Text(
+                          '$filename',
                       ),
                       OutlinedButton.icon(
                           onPressed: () async {
@@ -286,7 +263,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             FilePickerResult? result = await FilePicker.platform.pickFiles(
                               type: FileType.custom,
                               withData: true,
-                              allowedExtensions: ['pdf', 'doc', 'jpg'],
+                              allowedExtensions: ['pdf', 'doc'],
                             );
                             if(result != null && result.files.single.path != null){
                               PlatformFile file = result.files.first;
@@ -314,51 +291,20 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                         onPressed: () async {
                           final isValid = formKey.currentState!.validate();
                           if(!isValid) return ;
-                          if(filename.isEmpty || filename == '') return ;
-                          if(timeslot.isEmpty || timeslot == '') return ;
+                          if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file');
+                          if(timeslot.isEmpty || timeslot == '') return Utils.showSnackBar('Please Select Timeslot');
 
                           showDialog(
-                            context: context,
-                            builder: (BuildContext context){
-                              return Center(child: CircularProgressIndicator());
-                              return AlertDialog(
-                                  title: Text("Success"),
-                                  titleTextStyle:
-                                  TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,fontSize: 20),
-                                  actionsOverflowButtonSpacing: 20,
-                                  actions: [
-                                    // ElevatedButton(
-                                    //  child: const Text("Back"),
-                                    //     onPressed:(){
-                                    //       Navigator.push(context,
-                                    //           MaterialPageRoute(builder: (context) => MeetingForm(),)
-                                    //       );},
-                                    //   ),
-                                    ElevatedButton(
-                                      child: const Text("ok"),
-                                      onPressed: (){
-                                        // _navigateToNextScreen(context);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => listViewAppointment()),
-                                        );
-                                        //Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                  content: Text("Booked successfully"));
-                            }
+                              context: context,
+                              builder: (BuildContext context){
+                                return Center(child: CircularProgressIndicator());
+                              }
                           );
 
-
-                          //TODO: Upload file to firebaseFireStore
                           Reference refDirfiles = storageRef.child("files");
                           Reference refFiletoupload = refDirfiles.child(filename);
                           await refFiletoupload.putData(fileBytes);
 
-                          //TODO: Validator
                           try{
                             int timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -386,11 +332,29 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             Utils.showSnackBar(e.message);
                           }
 
-                          //TODO: redirect to listviewAppointment
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => listViewAppointment()),);
-
-                          navigatorKey.currentState!.popUntil((route) => route.isFirst);
-                          },
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context){
+                                return AlertDialog(
+                                    title: Text("Success"),
+                                    titleTextStyle:
+                                    TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,fontSize: 20),
+                                    actionsOverflowButtonSpacing: 20,
+                                    actions: [
+                                      ElevatedButton(
+                                        child: const Text("ok"),
+                                        onPressed: (){
+                                          // _navigateToNextScreen(context);
+                                          navigatorKey.currentState!.popUntil((route) => route.isFirst);
+                                        },
+                                      ),
+                                    ],
+                                    content: Text("Booked successfully"));
+                              }
+                          );
+                        },
                       )
                     ],
                   ),
@@ -404,37 +368,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
       ),
     );
   }
-}
-
-List<Widget> getList() {
-  List<Widget> childs = [];
-  for (var i = 0; i < timeslotRange.length; i++) {
-    childs.add(
-        InkWell(
-          onTap: (){ print(timeslotRange[i].time); } ,
-          child: Container(
-            height: 30,
-            width: 70,
-            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-            decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(5)
-            ),
-            child: Center(
-              child: Text(
-                timeslotRange[i].time,
-                style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-          ),
-        )
-    );
-  }
-  return childs;
 }
 
 class TimeSlot{

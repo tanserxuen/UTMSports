@@ -5,8 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
 import 'package:utmsport/view/view_calendarPage.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
-class listViewAppointment extends StatefulWidget {
+import '../../utils.dart';
+
+class   listViewAppointment extends StatefulWidget {
   @override
   State<listViewAppointment> createState() => _listViewAppointmentState();
 }
@@ -20,146 +23,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  final CollectionReference _appointments =
-      FirebaseFirestore.instance.collection('appointments');
-
-  Future<void> _create([DocumentSnapshot? documentSnapshot]) async {
-    await showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (BuildContext ctx) {
-          return Padding(
-            padding: EdgeInsets.only(
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: _eventTitleController,
-                  decoration: const InputDecoration(labelText: 'Event Title'),
-                ),
-                TextField(
-                  controller: _TimeController,
-                  decoration: const InputDecoration(labelText: 'Time'),
-                ),
-                TextField(
-                    controller: _DateController,
-                    decoration: InputDecoration(
-                        labelText: "Date",
-                        suffixIcon: Icon(Icons.calendar_today)),
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? value = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100));
-
-                      if (value == null) return null;
-                      String date;
-                      setState(() => {
-                            date = DateFormat('yyyy-MM-dd').format(value),
-                            _DateController.text = date,
-                            print(date),
-                          });
-                    }),
-                TextField(
-                  controller: _PicController,
-                  decoration:
-                      const InputDecoration(labelText: 'Person in charge'),
-                ),
-                TextField(
-                  controller: _matricNoController,
-                  decoration: const InputDecoration(labelText: 'Matric Number'),
-                ),
-                TextField(
-                  controller: _phoneNoController,
-                  decoration: const InputDecoration(labelText: 'Phone Number'),
-                ),
-                TextField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  child: const Text('Create'),
-                  onPressed: () async {
-                    // final String name = _nameController.text;
-                    final String eventtitle = _eventTitleController.text;
-                    final String time = _TimeController.text;
-                    final String date = _DateController.text;
-                    final String pic = _PicController.text;
-                    final String matricno = _matricNoController.text;
-                    final String phoneno = _phoneNoController.text;
-                    final String description = _descriptionController.text;
-
-                    await _appointments.add({
-                      "eventtitle": eventtitle,
-                      "time": time,
-                      "date": date,
-                      "pic": pic,
-                      "matricno": matricno,
-                      "phoneno": phoneno,
-                      "description": description
-                    });
-
-                    _eventTitleController.text = '';
-                    _TimeController.text = '';
-                    _DateController.text = '';
-                    _PicController.text = '';
-                    _matricNoController.text = '';
-                    _phoneNoController.text = '';
-                    _descriptionController.text = '';
-                    Navigator.of(context).pop();
-                    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    //     content: Text('You have successfully added an appointment')));
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              title: Text("Success"),
-                              titleTextStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontSize: 20),
-                              actionsOverflowButtonSpacing: 20,
-                              actions: [
-                                // ElevatedButton(
-                                //  child: const Text("Back"),
-                                //     onPressed:(){
-                                //       Navigator.push(context,
-                                //           MaterialPageRoute(builder: (context) => MeetingForm(),)
-                                //       );},
-                                //   ),
-                                ElevatedButton(
-                                  child: const Text("ok"),
-                                  onPressed: () {
-                                    // _navigateToNextScreen(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              listViewAppointment()),
-                                    );
-                                    //Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                              content: Text("Booked successfully"));
-                        });
-                  },
-                )
-              ],
-            ),
-          );
-        });
-  }
+  final CollectionReference _appointments = global.FFdb.collection('appointments');
 
   Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
     if (documentSnapshot != null) {
@@ -281,9 +145,9 @@ class _listViewAppointmentState extends State<listViewAppointment> {
 
   Future<void> _delete(String appointmentId) async {
     await _appointments.doc(appointmentId).delete();
-
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('You have successfully deleted an appointment')));
+    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //     content: Text('You have successfully deleted an appointment')));
+    Utils.showSnackBar('You have successfully deleted an appointment');
   }
 
   @override
@@ -354,7 +218,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
           child: StreamBuilder(
             stream: _appointments
                 .where('uid',
-                    isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                    isEqualTo: global.FA.currentUser!.uid)
             .orderBy('created_at', descending: true)
                 .snapshots(),
             builder: (BuildContext context,

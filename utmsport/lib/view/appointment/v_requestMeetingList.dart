@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,13 +25,12 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
           width: 500,
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
-                .collection('appointments').orderBy('created_at', descending: true)
+                .collection('appointments')
+                .orderBy('created_at', descending: true)
                 .snapshots(),
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+                return Center(child: CircularProgressIndicator());
               if (snapshot.hasData) {
                 return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
@@ -162,22 +160,39 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                                         width: 100,
                                         child: ElevatedButton(
                                             onPressed:
-                                                documentSnapshot['status'] == 'pending'
-                                                ? () => showDialog<String>(
-                                                context: context,
-                                                builder: (BuildContext context) => AlertDialog(
-                                                  title: const Text('Confirmation'),
-                                                  content: const Text('Are u sure to approve?'),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                        onPressed: () => Navigator.pop(context, 'Cancel'), child: const Text('Cancel'),),
-                                                    TextButton(
-                                                        onPressed: () => _approve(documentSnapshot).then((value) => Navigator.pop(context, 'OK')), child: const Text('Ok'),)
-                                                  ],
-                                                )
-                                              )
-                                                : null
-                                            ,
+                                                documentSnapshot['status'] ==
+                                                        'pending'
+                                                    ? () => showDialog<String>(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            AlertDialog(
+                                                              title: const Text(
+                                                                  'Confirmation'),
+                                                              content: const Text(
+                                                                  'Do you want to approve?'),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          'Cancel'),
+                                                                  child: const Text(
+                                                                      'Cancel'),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () => _approve(
+                                                                          documentSnapshot)
+                                                                      .then((value) => Navigator.pop(
+                                                                          context,
+                                                                          'OK')),
+                                                                  child:
+                                                                      const Text(
+                                                                          'Ok'),
+                                                                )
+                                                              ],
+                                                            ))
+                                                    : null,
                                             style: ElevatedButton.styleFrom(
                                               primary: Colors.green,
                                             ),
@@ -186,24 +201,40 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                                       Container(
                                         width: 100,
                                         child: ElevatedButton(
-
                                             onPressed:
-                                                documentSnapshot['status'] == 'pending'
-                                                ? () => showDialog<String>(
-                                                context: context,
-                                                builder: (BuildContext context) => AlertDialog(
-                                                  title: const Text('Confirmation'),
-                                                  content: const Text('Are u sure to approve?'),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () => Navigator.pop(context, 'Cancel'), child: const Text('Cancel'),),
-                                                    TextButton(
-                                                      onPressed: () => _reject(documentSnapshot).then((value) => Navigator.pop(context, 'OK')), child: const Text('Ok'),)
-                                                  ],
-                                                )
-                                            )
-                                                : null
-                                            ,
+                                                documentSnapshot['status'] ==
+                                                        'pending'
+                                                    ? () => showDialog<String>(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            AlertDialog(
+                                                              title: const Text(
+                                                                  'Confirmation'),
+                                                              content: const Text(
+                                                                  'Do you want to reject?'),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          'Cancel'),
+                                                                  child: const Text(
+                                                                      'Cancel'),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () => _reject(
+                                                                          documentSnapshot)
+                                                                      .then((value) => Navigator.pop(
+                                                                          context,
+                                                                          'OK')),
+                                                                  child:
+                                                                      const Text(
+                                                                          'Ok'),
+                                                                )
+                                                              ],
+                                                            ))
+                                                    : null,
                                             style: ElevatedButton.styleFrom(
                                               primary: Colors.red,
                                             ),
@@ -227,21 +258,26 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
 }
 
 Future<void> _reject(DocumentSnapshot? documentSnapshot) async {
-  if(documentSnapshot != null){
+  if (documentSnapshot != null) {
     //Todo: Send Notification upon rejected
-    return update(documentSnapshot, 'rejected').then((_)=> print('rejected Successfully'));
+    return update(documentSnapshot, 'rejected')
+        .then((_) => print('rejected Successfully'));
   }
 }
 
 Future<void> _approve([DocumentSnapshot? documentSnapshot]) async {
-  if(documentSnapshot != null){
+  if (documentSnapshot != null) {
     //Todo: Send Notification upon accepted
-    return update(documentSnapshot, 'approved').then((_)=> print ('approved successfully'));
+    return update(documentSnapshot, 'approved')
+        .then((_) => print('approved successfully'));
   }
 }
 
 update(DocumentSnapshot? documentSnapshot, String status) async {
-  return await FirebaseFirestore.instance.collection('appointments').doc(documentSnapshot!.id).update({
+  return await FirebaseFirestore.instance
+      .collection('appointments')
+      .doc(documentSnapshot!.id)
+      .update({
     'date': documentSnapshot['date'],
     'description': documentSnapshot['description'],
     'email': documentSnapshot['email'],
@@ -255,5 +291,4 @@ update(DocumentSnapshot? documentSnapshot, String status) async {
     'time': documentSnapshot['time'],
     'uid': documentSnapshot['uid']
   });
-
 }

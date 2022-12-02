@@ -15,23 +15,34 @@ class RequestMeetingDetail extends StatelessWidget {
           title: Text(
         document["eventtitle"],
       )),
-      body: Center(
-        child: Container(
-          child: Column(
-              children: [
-                Text(document['date']),
-                Text(document['time']),
-                Text(document['name']),
-                Text(document['pic']),
-                Text(document['matricno']),
-                Text(document['phoneno']),
-                Text(document['email']),
-                Text(document['description']),
-                Text(document['file']),
-                Text(document['uid']),
-                Text(document['status']),
-              ]),
-        ),
+      body: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Date: ' + document['date']),
+              SizedBox(height: 20,),
+              Text('Timeslot: ' + document['time']),
+              SizedBox(height: 20,),
+              Text('Name Event Organizer: ' + document['name']),
+              SizedBox(height: 20,),
+              Text('Matric No: ' + document['matricno']),
+              SizedBox(height: 20,),
+              Text('Person In Charged: ' + document['pic']),
+              SizedBox(height: 20,),
+              Text('Phone Number: ' + document['phoneno']),
+              SizedBox(height: 20,),
+
+              Text('Email: ' + document['email']),
+              SizedBox(height: 20,),
+
+              Text('Description: ' + document['description']),
+              SizedBox(height: 20,),
+
+              Text(document['file']),
+              SizedBox(height: 20,),
+
+              Text('Status: ' + document['status']),
+            ]),
       ),
     );
   }

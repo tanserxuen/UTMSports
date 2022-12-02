@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:utmsport/shared/bottom_layout.dart' as bottomBar;
+import 'package:utmsport/globalVariable.dart' as global;
 import 'package:flutter/material.dart';
 
 
@@ -13,7 +14,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = global.FA.currentUser!;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 40),
             ElevatedButton.icon(
-                onPressed: ( ) => FirebaseAuth.instance.signOut(),
+                onPressed: ( ) => global.FA.signOut(),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size.fromHeight(50),
                 ),
