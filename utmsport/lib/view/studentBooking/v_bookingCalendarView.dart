@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
 
 class BookingCalendar extends StatefulWidget {
@@ -60,9 +61,16 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
     var courtsToBook;
 
+    bool stuView = false;
+    final isAdmin = global.getUserRole() == 'student';
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Text("$courtsToBook"),
+        Visibility(
+            visible: isAdmin,
+            child: ElevatedButton(
+                onPressed: () => stuView = true, child: Text("Student View"))),
         Expanded(
           child: SfCalendar(
             controller: _calendarController,
@@ -70,7 +78,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
               List<DateTime> dates = details.visibleDates;
               print(dates);
             },
-            onLongPress: (CalendarLongPressDetails  details) {
+            onLongPress: (CalendarLongPressDetails details) {
               appointment = details.appointments;
               date = details.date!;
               element = details.targetElement;
@@ -83,7 +91,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
               // print("date ${date}");
               // print("element ${element.index}");
             },
-            view: CalendarView.timelineDay,
+            view: isAdmin || stuView
+                ? CalendarView.month
+                : CalendarView.timelineDay,
             minDate: today,
             maxDate: tomorrow,
             dataSource: getCalendarBookingData(this.appData),
@@ -94,7 +104,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
               CalendarView.timelineDay
             ],
             timeSlotViewSettings: timeSlotViewSettings,
-            specialRegions: getBreakTime(),
+            specialRegions: isAdmin || stuView ? null : getBreakTime(),
             resourceViewSettings: resourceViewSettings,
           ),
         ),

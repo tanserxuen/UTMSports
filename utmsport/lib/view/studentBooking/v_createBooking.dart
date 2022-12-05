@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:utmsport/model/m_StuAppointment.dart';
-// import 'package:time_picker_widget/time_picker_widget.dart';
+import 'package:utmsport/model/m_CourtBooking.dart';
 
-FirebaseFirestore db = FirebaseFirestore.instance;
+import 'package:utmsport/globalVariable.dart' as global;
 
 class CreateBooking extends StatefulWidget {
   @override
@@ -272,7 +271,7 @@ class CreateBookingState extends State<CreateBooking> {
     );
   }
 
-  void insertStuBooking() {
+  void insertCourtBooking() {
 // TODO: form validation
     List<String> selectedCourtIds = selectedCourts
         .map((index) => "${(index + 1).toString().padLeft(4, "0")}")
@@ -280,13 +279,16 @@ class CreateBookingState extends State<CreateBooking> {
     final now = new DateTime.now();
 
     //TODO: convert to timestamp wrong
-    final _stuBooking = StuAppointment(
-      id: FirebaseFirestore.instance.collection('student_appointment').doc().id,
+    final _courtBooking = CourtBooking(
+      id: global.FFdb.collection('student_appointment').doc().id,
+      userId: global.USERID,
       subject: "Student Booking",
       startTime: Timestamp.fromDate(DateTime(
           now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
       endTime: Timestamp.fromDate(DateTime(
           now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
+      status: "approved",
+      created_at: Timestamp.fromDate(DateTime.now()),
       resourceIds: selectedCourtIds,
       isAllDay: false,
       color: this._color,
@@ -300,12 +302,12 @@ class CreateBookingState extends State<CreateBooking> {
       matric4: controllerMatric4.text.trim(),
     ).toJson();
 
-    CollectionReference stuAppointments =
+    CollectionReference courtBooking =
         FirebaseFirestore.instance.collection('student_appointments');
 
-    print(_stuBooking);
+    // print(_courtBooking);
     try {
-      stuAppointments.add(_stuBooking);
+      courtBooking.add(_courtBooking);
       Navigator.pushNamed(context, '/');
     } catch (e) {
       print(e);
@@ -407,7 +409,7 @@ class CreateBookingState extends State<CreateBooking> {
                             if (!_formKey.currentState!.validate()) {
                             } else {
                               _formKey.currentState!.save();
-                              insertStuBooking();
+                              insertCourtBooking();
                             }
                           },
                         )
