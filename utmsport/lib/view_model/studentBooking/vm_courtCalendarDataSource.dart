@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class DataSource extends CalendarDataSource {
   DataSource(List<Appointment> source, List<CalendarResource> resourceColl) {
@@ -36,16 +36,25 @@ List<CalendarResource> getCourts(resources) {
 
 void getAppointments(appointments, appData) {
   appData.forEach((appDetails) => {
-    if(appDetails['id']=='cuktubE2pvNRJbtLlSxD')
-        appointments.add(Appointment(
-          startTime: _parseDateFormat(appDetails['startTime']),
-          // startTime: DateTime.now(),
-          // endTime: DateTime.now().add(Duration(hours: 2)),
-          endTime: _parseDateFormat(appDetails['endTime']),
-          subject: appDetails['subject'],
-          color: Color(int.parse(appDetails['color'])),
-          resourceIds: List.from(appDetails['resourceIds']),
-        ))
+        // if (appDetails['id'] == 'cuktubE2pvNRJbtLlSxD')
+        if (appDetails['id'] == global.FA.currentUser!.uid)
+          appointments.add(Appointment(
+            startTime: _parseDateFormat(appDetails['startTime']),
+            // startTime: DateTime.now(),
+            // endTime: DateTime.now().add(Duration(hours: 2)),
+            endTime: _parseDateFormat(appDetails['endTime']),
+            subject: 'Your Booking',
+            color: Color(int.parse(appDetails['color'])),
+            resourceIds: List.from(appDetails['resourceIds']),
+          ))
+        else
+          appointments.add(Appointment(
+            startTime: _parseDateFormat(appDetails['startTime']),
+            endTime: _parseDateFormat(appDetails['endTime']),
+            subject: 'Anonymous Booked',
+            color: Colors.grey,
+            resourceIds: List.from(appDetails['resourceIds']),
+          ))
       });
 }
 
@@ -68,15 +77,6 @@ final colorCollection = [
   Colors.white54,
 ];
 
-final timeSlotViewSettings = TimeSlotViewSettings(
-  // timeIntervalHeight: 50,
-  minimumAppointmentDuration: Duration(minutes: 30),
-  timelineAppointmentHeight: 100,
-  startHour: 10,
-  endHour: 20,
-  nonWorkingDays: <int>[DateTime.friday, DateTime.saturday],
-);
-
 final resourceViewSettings = ResourceViewSettings(
   showAvatar: false,
   visibleResourceCount: 8,
@@ -94,9 +94,9 @@ List<TimeRegion> getBreakTime() {
       enablePointerInteraction: false,
       color: Colors.grey.withOpacity(0.2),
       recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-      iconData: Icons.restaurant,
+      // iconData: Icons.restaurant,
       textStyle: TextStyle(color: Colors.black45, fontSize: 25),
-      text: 'Break',
+      // text: 'Break',
     ),
   );
   return regions;

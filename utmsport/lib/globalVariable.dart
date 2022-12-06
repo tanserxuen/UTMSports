@@ -28,7 +28,7 @@ getUserRole()=>_userRole;
 
 //==================Routes
 ADMIN_ROUTES(user) => [LatestEventWall(), EventList(), RequestListPage(), ProfilePage()];
-STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
+STUDENT_ROUTES(user) => [BookingCalendar(), homeScreen(user), listViewAppointment(), ProfilePage()];
 ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
 MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
 CLUB_ROUTES(user) => [LatestEventWall(), homeScreen(user), listViewAppointment(), ProfilePage()];

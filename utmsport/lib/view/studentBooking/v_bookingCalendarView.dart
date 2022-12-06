@@ -77,11 +77,19 @@ class _BookingCalendarState extends State<BookingCalendar> {
               // if (appointment == null && ) {
               //   courtsToBook
               // } else
-              //   canBook = false;
-              // canBook = appointment ?? true;
+                //   canBook = false;
+                // canBook = appointment ?? true;
               // print("appointment ${appointment}");
               // print("date ${date}");
               // print("element ${element.index}");
+              print('Booking Appointment');
+              print(_calendarController.displayDate!);
+              print(_calendarController.displayDate!.add(const Duration(minutes: 30)));
+
+
+
+
+
             },
             view: CalendarView.timelineDay,
             minDate: today,
@@ -93,7 +101,17 @@ class _BookingCalendarState extends State<BookingCalendar> {
               CalendarView.schedule,
               CalendarView.timelineDay
             ],
-            timeSlotViewSettings: timeSlotViewSettings,
+            timeSlotViewSettings: TimeSlotViewSettings(
+              timeFormat: 'hh:mm a',
+              timeInterval: Duration(minutes: 30),
+              timeIntervalWidth: 100,
+              minimumAppointmentDuration: Duration(minutes: 30),
+              // timelineAppointmentHeight: 25,
+              startHour: 10,
+              endHour: 20,
+              nonWorkingDays: <int>[DateTime.friday, DateTime.saturday],
+            ),
+
             specialRegions: getBreakTime(),
             resourceViewSettings: resourceViewSettings,
           ),
