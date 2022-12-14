@@ -21,13 +21,14 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late DateTime _date;
-  List<DateTime> _dates =[];
+  List<String> _dates = [];
+  List<List<String>> _dateList = [];
   String _pic = "";
   String _subject = "";
   // late Map<String, String> _booked_courtTimeslot;
 
-  int selectedDays = 3;
-  //TODO: cm-dynamic show accordian according to number of date selected
+  int selectedDays = 99;
+  //TODO: (DONE) cm-dynamic show accordian according to number of date selected
 
   // int _noOfTimeslot = MasterBooking.timeslot.length;
   // int _noOfCourt = MasterBooking.badmintonCourt;
@@ -41,13 +42,20 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final phoneController = TextEditingController();
   final subjectController = TextEditingController();
 
+  // Todo: How to add the courttime inside their specfic date.
   void setSelectedCourtArray(val, index, action) {
+    /*
+    * var indicate value corutTime
+    * index indicate position of accordian
+    * */
     setState(() {
+      print(action);
+      /*List<String> tempData = [];
+      tempData.add(val)*/;
       action == 'add'
-          ? selectedCourtTimeslot[index].add(val)
-          : selectedCourtTimeslot[index].remove(val);
+          ? _dateList[index].add(val)
+          : _dateList[index].remove(val);
       selectedCourtTimeslot.toSet().toList();
-      print(selectedCourtTimeslot);
     });
   }
 
@@ -63,18 +71,48 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   }
 
   void selectionDateChanged(DateRangePickerSelectionChangedArgs args) {
-    // setState(() {
-      selectedDays = args.value.length;
-      _dates = args.value;
-      print(args.value);
-    // });
+    setState(() {
+      //  To add each date inside _dateList
+      for(int a=0; a < args.value.length; a++){
+        List<String> dateArray = [];
+        dateArray.add(DateFormat('yyyy-MM-dd').format(args.value[a]));
+        _dateList.add(dateArray);
+      }
+
+      //  Make Lists of Object Unique by String property Value
+      {
+        var seen = Set<String>();
+        List<List<String>> uniqueList = _dateList.where((element) => seen.add(element.toString())).toList();
+        _dateList = uniqueList;
+        print(_dateList);
+      }
+
+      //  To Re-add dates inside _dateList
+      if(args.value.length < _dateList.length){
+        _dateList = [];
+        for(int a=0; a < args.value.length; a++){
+          List<String> dateArray = [];
+          dateArray.add(DateFormat('yyyy-MM-dd').format(args.value[a]));
+          _dateList.add(dateArray);
+        }
+        var seen = Set<String>();
+        List<List<String>> uniqueList = _dateList.where((element) => seen.add(element.toString())).toList();
+        _dateList = uniqueList;
+      }
+
+      //  Sort Ascending Date
+      _dateList.sort((a, b) {
+        return DateTime.parse(a[0]).compareTo(DateTime.parse(b[0]));
+      });
+      // selectedCourtTimeslot = _dateList;
+    });
   }
 
   List<Widget> _buildAccordianCourtTimeslot() {
     List<Widget> accordianList = [];
     for (int i = 0; i < selectedDays; i++) {
       accordianList.add(ExpansionTile(
-        title: Text("Day ${i + 1} ${_date.add(Duration(days: i))}"),
+        title: Text("Day ${i + 1} "),
         subtitle: Row(
           children: [
             Flexible(
@@ -99,32 +137,33 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     return accordianList;
   }
 
-  //TODO: cm- display selected timeslot and court: "T2C8" in the badge
   List<Widget> generateSelectedCourtBadge(int index) {
     List<Widget> badgeList = [];
-    for (int i = 1; i <= selectedCourtTimeslot[index].length; i++) {
+    for (int i = 1; i <= _dateList[index].length; i++) {
       badgeList.add(
-        ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size(30, 20),
-            shape: StadiumBorder(),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("$i"),
-              SizedBox(width: 5),
-              Icon(
-                Icons.highlight_remove_rounded,
-                size: 18,
-              ),
-            ],
+        Container(
+          margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(30, 20),
+              shape: StadiumBorder(),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                // Text("$i"),
+                Text(_dateList[index][i-1]),
+                SizedBox(width: 5),
+                Icon(
+                  Icons.highlight_remove_rounded,
+                  size: 18,
+                ),
+              ],
+            ),
           ),
         ),
       );
-
-      badgeList.add(SizedBox(width: 5));
     }
 
     return badgeList;
@@ -249,9 +288,43 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("${selectedCourtTimeslot.toString()}"),
+                        Text("$_dateList"),
                         _buildDatePicker(),
-                        ..._buildAccordianCourtTimeslot(),
+
+                        //  Generate Date Accordian
+                        Container(
+                          child: Column(
+                            children: List.generate(_dateList.length, (index) {
+                              return ExpansionTile(
+                                title: Text("${_dateList[index][0]}"),
+                                subtitle: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Wrap(
+                                        direction: Axis.horizontal,
+                                        children:
+                                            generateSelectedCourtBadge(index),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                children: [
+                                  TimeslotCourtTable(
+                                    noOfTimeslot: _noOfTimeslot,
+                                    noOfCourt: _noOfCourt,
+                                    date: _date,
+                                    index: index,
+                                    callback: setSelectedCourtArray,
+                                  ),
+                                ],
+                              );
+
+
+
+
+                            }),
+                          ),
+                        ),
                         _buildSubjectField(),
                         _buildPICField(),
                         _buildPhoneNoField(),

@@ -103,7 +103,7 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         return TextButton(
             onPressed: () {
               setState(() {
-                widget.callback("$x $y", index, "add");
+                widget.callback("T${x}C$y", index, "add");
                 courtTimeslot[x][y] = "Check";
                 // selectedCourtTimeslot.add(courtTimeslot[x][y]);
                 // selectedCourtTimeslot.toSet().toList();
@@ -115,12 +115,12 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         return TextButton(
             onPressed: () {
               setState(() {
-                widget.callback(courtTimeslot[x][y], index, "remove");
+                widget.callback("T${x}C$y", index, "remove");
                 courtTimeslot[x][y] = "";
                 print("uncheck ${courtTimeslot[x][y]}");
               });
             },
-            child: Text("$x $y"));
+            child: Text("T${x}C$y"));
       default:
         return Text(
           courtTimeslot[x][y].toString(),
