@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 //views
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
-import 'package:utmsport/view/advBooking/v_createAdvanced.dart';
+import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart';
@@ -25,7 +25,7 @@ setUserRole(data) => _userRole = data['roles'];
 getUserRole()=>_userRole;
 
 //==================Routes
-ADMIN_ROUTES(user) => [EventList(), homeScreen(user), CreateAdvBooking(), ProfilePage()];
+ADMIN_ROUTES(user) => [EventList(), homeScreen(user), CreateAdvBookingCalendar(), ProfilePage()];
 STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), FormScreen(), ProfilePage()];
 ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
 MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
