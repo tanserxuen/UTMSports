@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/athlete/qr_scan.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 
+import '../../athlete/scanQR.dart';
+import '../../cm_booking/qr_generator.dart';
+import '../../eo_appointment/listView_appointment.dart';
 import '../view_calendarPage.dart';
 
 Widget BookingButton(BuildContext context) {
@@ -32,8 +36,9 @@ Widget homeScreen(user) => Padding(
 
 navScreen(user) => <Widget>[
       homeScreen(user),
-      FormScreen(),   // JOAN TAN
+      QRGenerate (),   // JOAN TAN
       // TODO: Add new page below here
-      Calendar(),   // AIDAH WONG
+      //scanQR(),   // AIDAH WONG
+      QRScan(),
       ProfilePage()    // CM TAN
     ];

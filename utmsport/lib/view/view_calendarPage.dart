@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/cupertino.dart';
-import '../crud/add_appointment.dart';
-import '../crud/listView_appointment.dart';
+import '../eo_appointment/listView_appointment.dart';
 
 
 class Calendar extends StatefulWidget {
