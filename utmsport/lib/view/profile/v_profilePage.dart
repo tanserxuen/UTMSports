@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/model/m_User.dart';
 import 'package:utmsport/view/profile/v_profileUpdatePage.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -15,20 +16,19 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Reference storageRef = FirebaseStorage.instance.ref();
-  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
   }
 
-  var uid = FirebaseAuth.instance.currentUser!.uid;
+  var uid = global.FA.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-          stream: FirebaseFirestore.instance
+          stream: global.FFdb
               .collection("users")
               .doc(uid)
               .snapshots(),
@@ -40,13 +40,11 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.hasData) {
               var output = snapshot.data!.data();
               var name = output!['name'];
-              print('$output');
               return Padding(
                 padding: EdgeInsets.all(60),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    //  TODO: Add Picture button here
                     Container(
                       width: 200,
                       height: 200,
@@ -57,7 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ? NetworkImage(output['image'])
                                 : NetworkImage(
                                     'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'),
-                            // image: NetworkImage(output['image']),
                             fit: BoxFit.fitHeight),
                       ),
                     ),
@@ -87,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => FirebaseAuth.instance.signOut(),
+                      onPressed: () => global.FA.signOut(),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size.fromHeight(35),
                       ),

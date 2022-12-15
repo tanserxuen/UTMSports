@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/cupertino.dart';
-import '../eo_appointment/listView_appointment.dart';
+import 'package:utmsport/view_model/appointment/vm_appmntwidget.dart';
+import '../eo_appointment/add_appointment.dart';
+import 'appointment/listView_appointment.dart';
 
 
 class Calendar extends StatefulWidget {
@@ -330,17 +332,17 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text ("CALENDAR"),
-      //   centerTitle: true,
-      //   /*actions: <Widget>[
-      //     IconButton(
-      //       icon: Icon(Icon.person),
-      //       onPressed: () => Navigator.pushNamed(context,
-      //         AppRoutes.profile),
-      //     )
-      //   ],*/
-      // ),
+      appBar: AppBar(
+        title: Text ("CALENDAR"),
+        centerTitle: true,
+        /*actions: <Widget>[
+          IconButton(
+            icon: Icon(Icon.person),
+            onPressed: () => Navigator.pushNamed(context,
+              AppRoutes.profile),
+          )
+        ],*/
+      ),
       body: SingleChildScrollView(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +501,13 @@ class _CalendarState extends State<Calendar> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _create(),
+        heroTag: null,
+        onPressed: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AppointmentWidget()));
+        },
         child: const Icon(Icons.add),
 
       ),
