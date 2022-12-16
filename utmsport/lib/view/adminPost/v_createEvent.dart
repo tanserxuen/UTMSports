@@ -50,9 +50,6 @@ class FormScreenState extends State<FormScreen> {
   final controllerDate = TextEditingController();
   final controllerPlatform = TextEditingController();
 
-  // final controllerImage = TextEditingController();
-  final eventController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -141,7 +138,7 @@ class FormScreenState extends State<FormScreen> {
     _imageUrl = widget.eventModel?['image'] ?? _imgPlaceholder;
     return Column(
       children: [
-        //TODO: Image not updated when upload image
+        //TODO:m Image not updated when upload image
         // Image.network(
         //   _imageUrl,
         //   height: _imgHeight,

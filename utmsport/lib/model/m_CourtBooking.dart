@@ -9,7 +9,7 @@ class CourtBooking {
   bool isAllDay;
   String color;
   String status;
-  dynamic created_at;
+  dynamic createdAt;
 
   dynamic startTime;
   dynamic endTime;
@@ -42,7 +42,9 @@ class CourtBooking {
     this.isAllDay: false,
     required this.color,
     required this.status,
-    required this.created_at,
+    required this.createdAt,
+    required this.startTime,
+    required this.endTime,
 
     //student booking
     this.resourceIds,
@@ -54,8 +56,6 @@ class CourtBooking {
     this.matric3: "",
     this.name4: "",
     this.matric4: "",
-    this.startTime,
-    this.endTime,
 
     //sports training
     this.remarks = "",
@@ -82,21 +82,37 @@ class CourtBooking {
     Colors.white54,
   ];
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> advToJson() => {
+        "id": id,
+        "userId": userId,
+        "subject": subject,
+        "color": color,
+        "status": status,
+        "createdAt": createdAt,
+        "personInCharge": personInCharge,
+        "attachment": attachment,
         "startTime": startTime,
         "endTime": endTime,
-        "resourceIds": resourceIds,
-        "subject": subject,
-        "isAllDay": isAllDay,
-        "color": color,
-        "id": id,
-        "name1": name1,
-        "matric1": matric1,
-        "name2": name2,
-        "matric2": matric2,
-        "name3": name3,
-        "matric3": matric3,
-        "name4": name4,
-        "matric4": matric4,
       };
+
+  Map<String, dynamic> stuToJson() => {
+    "id":id,
+    "userId":userId,
+    "startTime":startTime,
+    "endTime":endTime,
+    "subject":subject,
+    "status":status,
+    "createdAt":createdAt,
+    "resourceIds":resourceIds,
+    "isAllDay":isAllDay,
+    "color":color,
+    "name1":name1,
+    "matric1":matric1,
+    "name2":name2,
+    "matric2":matric2,
+    "name3":name3,
+    "matric3":matric3,
+    "name4":name4,
+    "matric4":matric4,
+  };
 }

@@ -5,13 +5,10 @@ import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 class TimeslotCourtTable extends StatefulWidget {
-  //TODO: cm-initialize got many error in console
-  // const TimeslotCourtTable({Key? key}) : super(key: key);
-
-  int noOfTimeslot = 9;
-  int noOfCourt = 4;
-  // int _noOfTimeslot = MasterBooking.timeslot.length;
-  // int _noOfCourt = MasterBooking.badmintonCourt;
+  // int noOfTimeslot = 9;
+  // int noOfCourt = 4;
+  int noOfTimeslot = MasterBooking.timeslot.length;
+  int noOfCourt = MasterBooking.badmintonCourt;
   final DateTime date;
   final int index;
   void Function(String, int, String) callback;
@@ -148,10 +145,8 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
 
   fetchAdvancedData() async {
     List<List<String>> _courtTimeslot = [];
-
     await global.FFdb.collection('master_booking')
-        .where('date',
-            isEqualTo: DateTime(2022, 12, 5).add(Duration(days: widget.index)))
+        .where('date', isEqualTo: this.date.add(Duration(days: widget.index)))
         .get()
         .then((val) {
       if (val.docs.length == 0) {
@@ -173,5 +168,9 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
             courtTimeslot = _courtTimeslot,
           });
     });
+  }
+
+  String updateTimeslotCourtArray(int row, int col) {
+    return "abc";
   }
 }

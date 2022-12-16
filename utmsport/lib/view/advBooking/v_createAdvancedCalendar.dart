@@ -61,6 +61,7 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
     List<Timestamp> formattedDates = [];
     // args.value.forEach((e)=>formattedDates.add(DateFormat('yyyy-MM-dd').format(e)));
     this._dateList = List.castFrom(args.value);
+    this._dateList.sort();
     print(this._dateList);
   }
 }

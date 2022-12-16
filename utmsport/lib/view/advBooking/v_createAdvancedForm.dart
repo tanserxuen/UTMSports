@@ -1,13 +1,16 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/model/m_CourtBooking.dart';
 import 'package:utmsport/model/m_MasterBooking.dart';
 
-import '../../view_model/advBooking/vm_timeslotCourt.dart';
+import 'package:utmsport/utils.dart';
+import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CreateAdvBooking extends StatefulWidget {
@@ -22,20 +25,10 @@ class CreateAdvBooking extends StatefulWidget {
 class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  late DateTime _date;
-  List<DateTime> _dates = [];
   String _pic = "";
-  String _subject = "";
-
-  // late Map<String, String> _booked_courtTimeslot;
-
+  String _attachment = "";
   int selectedDays = 0;
-
-  //TODO: cm-dynamic show accordian according to number of date selected
-
-  // int _noOfTimeslot = MasterBooking.timeslot.length;
-  // int _noOfCourt = MasterBooking.badmintonCourt;
-
+  Reference storageRef = FirebaseStorage.instance.ref();
   List<List<String>> selectedCourtTimeslot = [];
 
   final dateRangeController = DateRangePickerController();
@@ -81,7 +74,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     return accordianList;
   }
 
-  //TODO: cm- display selected timeslot and court: "T2C8" in the badge
   List<Widget> generateSelectedCourtBadge(int index) {
     List<Widget> badgeList = [];
     for (int i = 0; i < selectedCourtTimeslot[index].length; i++) {
@@ -89,27 +81,31 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         ElevatedButton(
           onPressed: () => setState(() => {
                 selectedCourtTimeslot[index].removeWhere(
-                    (element) => selectedCourtTimeslot[index][i] == element)
+                    (element) => selectedCourtTimeslot[index][i] == element),
               }),
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(30, 20),
+            minimumSize: Size(20, 10),
+            maximumSize: Size(90, 40),
             shape: StadiumBorder(),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("${selectedCourtTimeslot[index][i]}"),
-              SizedBox(width: 5),
-              Icon(
-                Icons.close,
-                size: 18,
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("${selectedCourtTimeslot[index][i]}", style:TextStyle(fontSize: 12)),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.close,
+                  size: 14,
+                ),
+              ],
+            ),
           ),
         ),
       );
 
-      badgeList.add(SizedBox(width: 5));
+      badgeList.add(SizedBox(width: 3));
     }
     return badgeList;
   }
@@ -138,65 +134,109 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         onSaved: (value) => _pic = value!);
   }
 
-  Widget _buildSubjectField() {
-    return TextFormField(
-        controller: subjectController,
-        decoration: InputDecoration(labelText: "Subject"),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Subject is required";
-          }
-        },
-        onSaved: (value) => _subject = value!);
+  Widget _buildAttachmentField() {
+    return Column(
+      children: [
+        OutlinedButton.icon(
+          onPressed: () async {
+            ImagePicker imagePicker = ImagePicker();
+            XFile? file =
+                await imagePicker.pickImage(source: ImageSource.gallery);
+
+            if (file == null) return;
+
+            String uniqueFileName =
+                DateTime.now().millisecondsSinceEpoch.toString();
+
+            //Get a reference to storage root
+            Reference ref_DirImages = storageRef.child("attachments");
+
+            //Create a reference for the image to be stored.
+            Reference ref_ImageToUpLoad = ref_DirImages.child(uniqueFileName);
+
+            try {
+              //Store the file
+              String filePath = '${file!.path}';
+              await ref_ImageToUpLoad.putFile(File(filePath));
+
+              //Success: get the download URL
+              //TODO: cannot update but remain old picture
+              _attachment = await ref_ImageToUpLoad.getDownloadURL();
+            } catch (error) {}
+          },
+          icon: Icon(Icons.attach_file_rounded, size: 22),
+          label: Text('Upload Files',
+              style:
+                  TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+          style: OutlinedButton.styleFrom(
+              minimumSize: Size.fromHeight(35),
+              side: BorderSide(width: 1.0, color: Colors.blue)),
+        )
+      ],
+    );
   }
 
   //TODO: cm-insert master and stu-appointment sekali gus
   //TODO: cm-add sports-type into master-booking db
   void insertAdvBooking() {
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
-    // final _bookingDetails = CourtBooking(
-    //   id: _bookingId,
-    //   userId: global.USERID,
-    //   subject: "Advanced Booking",
-    //   color: "${Colors.blueAccent.value.toRadixString(16)}",
-    //   status: "Pending",
-    //   created_at: DateTime.now(),
-    // ).toJson();
+    final _bookingDetails = CourtBooking(
+      id: _bookingId,
+      userId: global.USERID,
+      subject: "Advanced Booking",
+      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
+      status: "Pending",
+      createdAt: Timestamp.fromDate(DateTime.now()),
+      personInCharge: "Joan",
+      attachment: "insert file",
+      startTime: widget.dateList.first,
+      endTime: widget.dateList.last,
+    ).advToJson();
 
-    // final _masterDetails = MasterBooking(
-    //   booked_courtTimeslot:
-    //       MasterBooking.nestedArrayToObject(courtTimeslot, _noOfTimeslot),
-    //   date: _date,
-    //   userId: global.USERID,
-    //   bookingId: _bookingId,
-    // ).toJson();
-    //
-    // CollectionReference advCourtBooking =
-    //     global.FFdb.collection('student-appointments');
-    // CollectionReference masterBooking =
-    //     global.FFdb.collection('master_booking');
-    // advCourtBooking.add(_bookingDetails);
-    // try {
-    //   masterBooking.where("date", isEqualTo: _date).get().then((value) {
-    //     if (value.docs.length == 0) {
-    //       masterBooking.add(_masterDetails);
-    //     } else {
-    //       value.docs.forEach((element) {
-    //         masterBooking.doc(element.id).update(_masterDetails).then((_) {
-    //           Utils.showSnackBar("Updated an advanced booking");
-    //         });
-    //       });
-    //     }
-    //   });
-    //   Navigator.pushNamed(context, '/');
-    // } catch (e) {
-    //   print(e);
-    // }
+    var _masterDetails;
+
+    CollectionReference advCourtBooking =
+        global.FFdb.collection('student_appointments');
+    CollectionReference _masterBooking =
+        global.FFdb.collection('master_booking');
+    try {
+      advCourtBooking.add(_bookingDetails).then((_) {
+        Utils.showSnackBar("created an advanced booking");
+      });
+      widget.dateList.forEach((date) => {
+            _masterDetails = MasterBooking(
+              // booked_courtTimeslot: MasterBooking.nestedArrayToObject(
+              //     TimeslotCourtTable
+              //         .timetableCourtTableStateKey.currentState.courtTimeslot,
+              //     MasterBooking.timeslot.length),
+              booked_courtTimeslot:[],
+              date: date,
+              userId: global.USERID,
+              bookingId: _bookingId,
+            ).toJson(),
+            _masterBooking.where("date", isEqualTo: date).get().then((value) {
+              if (value.docs.length == 0) {
+                _masterBooking.add(_masterDetails);
+              } else {
+                value.docs.forEach((element) {
+                  _masterBooking
+                      .doc(element.id)
+                      .update(_masterDetails)
+                      .then((_) {
+                    Utils.showSnackBar("Updated an advanced booking");
+                  });
+                });
+              }
+            })
+          });
+      // Navigator.pushNamed(context, '/');
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
   void initState() {
-    // fetchObj();
     this.selectedDays = widget.dateList.length;
     print(widget.dateList);
 
@@ -205,7 +245,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     picController.text = "dfvx";
     phoneController.text = "erdvs";
     subjectController.text = "waeds";
-    _date = DateTime(2022, 12, 5);
 
     //set selected court nested array
     for (int i = 0; i < selectedDays; i++) selectedCourtTimeslot.add([]);
@@ -237,7 +276,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                       children: [
                         Text("${selectedCourtTimeslot.toString()}"),
                         ..._buildAccordianCourtTimeslot(),
-                        _buildSubjectField(),
+                        _buildAttachmentField(),
                         _buildPICField(),
                         _buildPhoneNoField(),
                         SizedBox(height: 50),

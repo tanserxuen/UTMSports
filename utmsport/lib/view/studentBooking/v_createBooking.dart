@@ -280,15 +280,14 @@ class CreateBookingState extends State<CreateBooking> {
 
     //TODO: convert to timestamp wrong
     final _courtBooking = CourtBooking(
-      id: global.FFdb.collection('student_appointment').doc().id,
       userId: global.USERID,
-      subject: "Student Booking",
       startTime: Timestamp.fromDate(DateTime(
           now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
       endTime: Timestamp.fromDate(DateTime(
           now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
+      subject: "Student Booking",
       status: "approved",
-      created_at: Timestamp.fromDate(DateTime.now()),
+      createdAt: Timestamp.fromDate(DateTime.now()),
       resourceIds: selectedCourtIds,
       isAllDay: false,
       color: this._color,
@@ -300,7 +299,8 @@ class CreateBookingState extends State<CreateBooking> {
       matric3: controllerMatric3.text.trim(),
       name4: controllerName4.text.trim(),
       matric4: controllerMatric4.text.trim(),
-    ).toJson();
+      id: global.FFdb.collection('student_appointment').doc().id,
+    ).stuToJson();
 
     CollectionReference courtBooking =
         FirebaseFirestore.instance.collection('student_appointments');
