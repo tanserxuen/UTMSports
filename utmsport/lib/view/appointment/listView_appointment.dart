@@ -147,7 +147,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
     await _appointments.doc(appointmentId).delete();
     // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
     //     content: Text('You have successfully deleted an appointment')));
-    Utils.showSnackBar('You have successfully deleted an appointment');
+    Utils.showSnackBar('You have successfully deleted an appointment', "red");
   }
 
   @override

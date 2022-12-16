@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingList.dart';
+import 'package:utmsport/view/appointment/v_timeAvailableMeet.dart';
 
 class RequestListPage extends StatefulWidget {
   const RequestListPage({Key? key}) : super(key: key);
@@ -108,6 +109,11 @@ class _RequestListPageState extends State<RequestListPage> {
               ),
             ),
           ),
+          Text("Update Meeting Timeslot"),
+          ElevatedButton.icon(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TimesAvailableMeet()));
+            },
+            icon: Icon(Icons.access_time), label: Text("Update Meet Available"),)
         ],
       ),
     );
