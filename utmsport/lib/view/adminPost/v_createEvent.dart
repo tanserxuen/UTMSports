@@ -21,8 +21,7 @@ class FormScreen extends StatefulWidget {
   FormScreen({this.formType: "create", this.eventModel: null});
 
   @override
-  State<StatefulWidget> createState() =>
-      FormScreenState(event: this.eventModel);
+  State<FormScreen> createState() => FormScreenState(event: this.eventModel);
 }
 
 class FormScreenState extends State<FormScreen> {
@@ -53,16 +52,16 @@ class FormScreenState extends State<FormScreen> {
   @override
   void initState() {
     super.initState();
-    controllerEventName.text = widget.eventModel?['name'] ?? "";
-    controllerDescription.text = widget.eventModel?['description'] ?? "";
-    controllerVenue.text = widget.eventModel?['venue'] ?? "";
-    var _setDate = widget.eventModel?['date'] ?? "";
+    controllerEventName.text = widget.eventModel?.name ?? "";
+    controllerDescription.text = widget.eventModel?.description ?? "";
+    controllerVenue.text = widget.eventModel?.venue ?? "";
+    var _setDate = widget.eventModel?.date ?? "";
     controllerDate.text = _setDate != ""
-        ? Utils.parsetoStringDateOnly(widget.eventModel?['date'],
+        ? Utils.parseDateTimeToFormatDate(widget.eventModel?.date,
             format: 'yyyy-MM-dd')
         : _setDate;
-    controllerPlatform.text = widget.eventModel?['platform'] ?? "";
-    _imageUrl = widget.eventModel?['imageUrl'] ?? _imgPlaceholder;
+    controllerPlatform.text = widget.eventModel?.platform ?? "";
+    _imageUrl = widget.eventModel?.image ?? _imgPlaceholder;
   }
 
   Widget _buildEventNameField() {
@@ -135,7 +134,7 @@ class FormScreenState extends State<FormScreen> {
   Widget _buildImageField() {
     const double _imgHeight = 150;
     const double _imgWidth = 150;
-    _imageUrl = widget.eventModel?['image'] ?? _imgPlaceholder;
+    // _imageUrl = widget.eventModel?.image ?? _imgPlaceholder;
     return Column(
       children: [
         //TODO:m Image not updated when upload image
@@ -202,7 +201,7 @@ class FormScreenState extends State<FormScreen> {
         });
       else
         events
-            .where("id", isEqualTo: widget.eventModel?['id'])
+            .where("id", isEqualTo: widget.eventModel?.id)
             .get()
             .then((value) {
           value.docs.forEach((element) {

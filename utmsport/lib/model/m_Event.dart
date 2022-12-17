@@ -34,6 +34,7 @@ class Event {
 }
 
 void deleteEvents(context, id) async {
+  //TODO: update table after delete
   var eventColl = global.FFdb.collection('events');
   eventColl.where("id", isEqualTo: id).get().then((value) {
     value.docs.forEach((element) {
@@ -45,7 +46,7 @@ void deleteEvents(context, id) async {
 }
 
 void editEvents(context, event) async {
-  // print(event);
+  print(event);
   Navigator.push(
     context,
     MaterialPageRoute(

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 import 'package:utmsport/view_model/adminPost/vm_eventCard.dart';
-
+import 'package:utmsport/model/m_Event.dart';
 import 'package:utmsport/view/authentication/v_homePage.dart';
+
+import 'package:utmsport/utils.dart';
 
 class LatestEventWall extends StatefulWidget {
   const LatestEventWall({Key? key}) : super(key: key);
@@ -26,15 +28,23 @@ class _LatestEventWallState extends State<LatestEventWall> {
           if (snapshot.hasError) return Text("Something went wrong");
           if (snapshot.connectionState == ConnectionState.waiting)
             return Center(child: CircularProgressIndicator());
-            if (!snapshot.hasData) return MyHomePage();
-            else return ListView.builder(
+          if (!snapshot.hasData)
+            return MyHomePage();
+          else
+            return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot doc = snapshot.data!.docs[index];
-                  // if(index == 0){
-                  //   return Text("${snapshot.data!.docs.length}");
-                  // }else
-                  return EventCard(context, index, doc);
+                  var eventObj = snapshot.data!.docs[index];
+                  Event event = Event(
+                    id: eventObj['id'],
+                    name: eventObj['name'],
+                    description: eventObj['description'],
+                    date: Utils.parseTimestampToDateTime(eventObj['date']),
+                    image: eventObj['image'],
+                    venue: eventObj['venue'],
+                    platform: eventObj['platform'],
+                  );
+                  return EventCard(context, index, event);
                 });
         });
   }

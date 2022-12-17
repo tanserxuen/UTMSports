@@ -3,26 +3,27 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 List<String> colNames = [
-  'id',
+  'action',
+  // 'id',
   'name',
-  'description',
+  // 'description',
   'date',
-  'image',
+  // 'image',
   'venue',
-  'platform',
+  // 'platform',
 ];
 
 List<GridColumn> getColumns() => colNames
     .map(
       (name) => GridColumn(
           columnName: name,
+          width: name == "action" ? 160 : 100,
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Text(
                 name,
                 overflow: TextOverflow.ellipsis,
-
                 softWrap: true,
               ))),
     )
@@ -30,11 +31,11 @@ List<GridColumn> getColumns() => colNames
 
 Widget EventDatatableWidget(_eventDataSource) => SfDataGridTheme(
       data: SfDataGridThemeData(
-        headerColor: const Color(0xff009889),
+        headerColor: const Color(0x5540C4FF),
         rowHoverColor: Colors.yellow,
       ),
       child: SfDataGrid(
-        // columnWidthMode: ColumnWidthMode.auto,
+        columnWidthMode: ColumnWidthMode.auto,
         source: _eventDataSource,
         isScrollbarAlwaysShown: true,
         columns: getColumns(),
