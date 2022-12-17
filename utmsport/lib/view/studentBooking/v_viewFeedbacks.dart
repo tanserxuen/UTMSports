@@ -34,7 +34,7 @@ class _ViewFeedbackState extends State<ViewFeedback> {
           if (!snapshot.hasData)
             return MyHomePage();
           else
-            return Row(children: [
+            return Column(children: [
               Text("List of Feedbacks",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700)),
               buildDatatable(snapshot)
