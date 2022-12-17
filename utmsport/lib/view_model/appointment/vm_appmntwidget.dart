@@ -323,6 +323,8 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                           if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file', "red");
                           if(timeslot.isEmpty || timeslot == '') return Utils.showSnackBar('Please Select Timeslot', "red");
 
+                          String concentenateDate = _DateController.text + " " + timeslot + ":00";
+                          DateTime date = DateTime.parse(concentenateDate);
                           showDialog(
                               context: context,
                               builder: (BuildContext context){
@@ -339,8 +341,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
                             await _appointments.add({
                               'created_at': timestamp,
-                              "date": _DateController.text,
-                              "time": timeslot,
+                              "date": date,
                               "name": _EOnameController.text,
                               "pic": _PicController.text,
                               "matricno": _matricNoController.text,

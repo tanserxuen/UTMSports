@@ -1,11 +1,15 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:utmsport/view_model/appointment/vm_appmntwidget.dart';
 import '../crud/add_appointment.dart';
 import 'appointment/listView_appointment.dart';
+import 'package:utmsport/globalVariable.dart' as globaldart;
 
 
 class Calendar extends StatefulWidget {
@@ -15,6 +19,11 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+
+  late final ValueNotifier<List<dynamic>> _selectedEvents;
+  late CalendarController _controller;
+  late Map<DateTime, List<dynamic>> _appts;
+
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -31,6 +40,9 @@ class _CalendarState extends State<Calendar> {
   final CollectionReference _appointments =
   FirebaseFirestore.instance.collection('appointments');
 
+  int counter = 0;
+  get getHashCode => null;
+  
   Future<void> _create([DocumentSnapshot? documentSnapshot]) async {
 
     await showModalBottomSheet(
@@ -328,6 +340,17 @@ class _CalendarState extends State<Calendar> {
   //       content: Text('You have successfully deleted an appointment')));
   // }
 
+  Map<DateTime, List<dynamic>> _groupAppoints(List allAppointment ){
+    Map<DateTime, List<dynamic>> data = {};
+    allAppointment.forEach((appt) {
+      // print(appt['date'].toDate());
+      DateTime date = DateTime(DateTime.parse(appt['date'].toDate().toString()).year, DateTime.parse(appt['date'].toDate().toString()).month, DateTime.parse(appt['date'].toDate().toString()).day, DateTime.parse(appt['date'].toDate().toString()).hour, DateTime.parse(appt['date'].toDate().toString()).minute);
+      // print(date);
+      if(data[date] == null) data[date] = [];
+      data[date]?.add(appt);
+    });
+    return data;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +366,137 @@ class _CalendarState extends State<Calendar> {
           )
         ],*/
       ),
-      body: SingleChildScrollView(
+      body: StreamBuilder(
+        stream: globaldart.FFdb.collection("appointments").snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if(snapshot.hasData){
+            List allAppointment = snapshot.data!.docs;
+            if(allAppointment.isNotEmpty){
+              _appts = _groupAppoints(allAppointment);
+              // print(_appts);
+            }
+            return Column(
+              children: [
+                TableCalendar(
+                  eventLoader: (day) {
+                    final events = LinkedHashMap(
+                      equals: isSameDay,
+                      hashCode: getHashCode,
+                    )..addAll(_appts);
+                    //TODO: need to solve the conflict day and getHashCode.
+                    return events[day] ?? [];
+                  },
+                  firstDay: DateTime(1980),
+                  lastDay: DateTime(2050),
+                  focusedDay: _focusedDay,
+                  calendarFormat: _calendarFormat,
+                  selectedDayPredicate: (day) {
+                    // Use `selectedDayPredicate` to determine which day is currently selected.
+                    // If this returns true, then `day` will be marked as selected.
+
+                    // Using `isSameDay` is recommended to disregard
+                    // the time-part of compared DateTime objects.
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    if (!isSameDay(_selectedDay, selectedDay)) {
+                      // Call `setState()` when updating the selected day
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    }
+                  },
+                  onFormatChanged: (format) {
+                    if (_calendarFormat != format) {
+                      // Call `setState()` when updating calendar format
+                      setState(() {
+                        _calendarFormat = format;
+                      }
+                      );
+                    }
+                  },
+                  onPageChanged: (focusedDay) {
+                    // No need to call `setState()` here
+                    print(focusedDay);
+                    _focusedDay = focusedDay;
+                  },
+
+                  //Style:-
+                  //Header Style:-
+                  headerStyle: HeaderStyle(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    headerMargin: const EdgeInsets.only(bottom: 10.0),
+                    formatButtonVisible: true,
+                    titleCentered: true,
+                    formatButtonShowsNext: false,
+                    formatButtonDecoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(
+                          color: Colors.orange,
+                          width: 2
+                      ),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    formatButtonTextStyle: TextStyle(
+                      color: Colors.orange,
+                    ),
+                  ),
+
+                  //Calendar Style:-
+                  calendarStyle: CalendarStyle(
+                    isTodayHighlighted: true,
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedTextStyle: TextStyle(color: Colors.white),
+                    todayDecoration: BoxDecoration(
+                      color: Colors.pink,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                /*Expanded(
+                    child: ValueListenableBuilder<List<dynamic>>(
+                      valueListenable: _selectedEvents,
+                      builder: (context, value, _){
+                        return ListView.builder(
+                          itemCount: value?.length,
+                          itemBuilder: (context, index){
+                            return Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 4.0,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              child: ListTile(
+                                onTap:() => print('${value[index]}'),
+                                title: Text('${value[index]}')
+                              ),
+                            );
+                          }
+                        );
+                      },
+                    )
+                )*/
+              ],
+            );
+          }
+          else{
+            return CircularProgressIndicator();
+          }
+
+        }
+      ),
+
+
+      /*SingleChildScrollView(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -383,6 +536,7 @@ class _CalendarState extends State<Calendar> {
                   },
                   onPageChanged: (focusedDay) {
                     // No need to call `setState()` here
+                    print(focusedDay);
                     _focusedDay = focusedDay;
                   },
 
@@ -498,7 +652,7 @@ class _CalendarState extends State<Calendar> {
               // )
             ]
         ),
-      ),
+      ),*/
 
       floatingActionButton: FloatingActionButton(
         heroTag: null,
@@ -526,5 +680,4 @@ class _CalendarState extends State<Calendar> {
     );
   }
 }
-
 

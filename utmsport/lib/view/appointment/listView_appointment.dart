@@ -258,7 +258,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(documentSnapshot['time']),
+                                      Text(DateFormat.yMd().format(documentSnapshot['date'].toDate()).toString()),
                                       Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
