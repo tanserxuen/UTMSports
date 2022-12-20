@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/model/m_MeetAppointment.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+// import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:utmsport/view/appointment/v_readerScreen.dart';
 
 
@@ -117,7 +117,9 @@ class RequestMeetingDetail extends StatelessWidget {
               ),),
               ListTile(
                 //TODO: Solve the CORS security to display the file
-                onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => ReaderScreen(document['file'])));} ,
+                onTap: (){
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) => ReaderScreen(document['file'])));
+                  } ,
                 title: Text(document['file'], overflow: TextOverflow.ellipsis,),
                 leading: Icon(Icons.picture_as_pdf, color: Colors.red, size: 32,),
               ),

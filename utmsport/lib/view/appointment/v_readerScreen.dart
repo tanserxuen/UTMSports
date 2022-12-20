@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+// import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class ReaderScreen extends StatefulWidget {
   ReaderScreen(this.pdfName, {Key? key}) : super(key: key);
@@ -16,9 +16,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
       appBar: AppBar(
         title: Text(widget.pdfName),
       ),
-      body: Container(
-        child: SfPdfViewer.asset(
-          'assets/dummy.pdf'))
+      body: Text("abc"),
+      // Container(
+      //   child: SfPdfViewer.asset(
+      //     'assets/dummy.pdf').
+      // )
     );
   }
 }
