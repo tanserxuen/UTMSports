@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:utmsport/model/m_User.dart';
 import 'package:utmsport/view/profile/v_profileUpdatePage.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -15,20 +15,19 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Reference storageRef = FirebaseStorage.instance.ref();
-  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
   }
 
-  var uid = FirebaseAuth.instance.currentUser!.uid;
+  var uid = global.FA.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-          stream: FirebaseFirestore.instance
+          stream: global.FFdb
               .collection("users")
               .doc(uid)
               .snapshots(),

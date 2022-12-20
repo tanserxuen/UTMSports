@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         '/student-booking': (context) => CreateBooking(),
       },

@@ -14,6 +14,8 @@ class Utils {
     messengerKey.currentState!
       ..removeCurrentSnackBar()
       ..showSnackBar(snackBar);
+
+
   }
 
   static parseTimestampToFormatDate(timestamp, {format = null}) {

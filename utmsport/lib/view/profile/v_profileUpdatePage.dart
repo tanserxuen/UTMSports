@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class ProfileUpdatePage extends StatefulWidget {
   const ProfileUpdatePage({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class ProfileUpdatePage extends StatefulWidget {
 class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   final fullnameController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseFirestore db = global.FFdb;
   Reference storageRef = FirebaseStorage.instance.ref();
   String imageUrl = '';
   Timer? timer;
@@ -76,11 +77,9 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     ImagePicker imagePicker = ImagePicker();
                     XFile? file = await imagePicker.pickImage(
                         source: ImageSource.gallery);
-                    // print('${file?.path}');
 
                     if (file == null) return;
 
-                    //Import Dart:core
                     String uniqueFileName =
                     DateTime
                         .now()
@@ -96,7 +95,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
 
                     try {
                       //Store the file
-                      String filePath = '${file!.path}';
+                      String filePath = '${file.path}';
                       await ref_ImageToUpLoad.putFile(File(filePath));
 
                       //Success: get the download URL
@@ -121,7 +120,6 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                           Duration(seconds: 2),
                               (_) => updateProfile()
                       );
-
                     }),
               ],
             ),
