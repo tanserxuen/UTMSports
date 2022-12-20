@@ -23,6 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   var uid = global.FA.currentUser!.uid;
+  var email = global.FA.currentUser!.email;
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +70,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: 20),
                     Text(output['roles']),
+                    Text(email!),
+                    Text(output['matric']),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: () {

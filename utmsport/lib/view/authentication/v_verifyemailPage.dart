@@ -120,16 +120,10 @@ Widget authorization() => FutureBuilder(
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
       //set user role upon open app
       global.setUserRole(data);
-      if(data['roles'] == "admin") {
-        // return AdminPage();
-        return MyHomePage();
-      }
-      if(data['roles'] == "student") {
-        // return Text('Push ${data['roles']} to Student Page');
-        return MyHomePage();
-      }
+      return MyHomePage();
+
     }
-    return Text("loading NOTHING");
+    return Text("Please check v_verifyemailPage.dart");
   },
 );
 

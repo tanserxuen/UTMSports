@@ -8,6 +8,8 @@ import 'package:utmsport/view/appointment/v_requestList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart';
+import 'package:utmsport/view/sportTeam/v_displaySportTeamList.dart';
+import 'package:utmsport/view/sportTeam/v_teamAthletePage.dart';
 import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
 import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
 import 'package:utmsport/view/view_calendarPage.dart';
@@ -28,9 +30,9 @@ getUserRole()=>_userRole;
 
 //==================Routes
 ADMIN_ROUTES(user) => [LatestEventWall(), EventList(), RequestListPage(), ProfilePage()];
-STUDENT_ROUTES(user) => [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
-ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
-MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), FormScreen(), ProfilePage()];
+STUDENT_ROUTES(user) => [homeScreen(user), BookingCalendar(), listViewAppointment(), ProfilePage()];
+ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), TeamAthletePage(), ProfilePage()];
+MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), SportTeamPage(), ProfilePage()];
 CLUB_ROUTES(user) => [LatestEventWall(), homeScreen(user), listViewAppointment(), ProfilePage()];
 
 /*

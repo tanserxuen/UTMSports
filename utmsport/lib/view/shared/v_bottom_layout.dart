@@ -1,7 +1,10 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view/appointment/listView_appointment.dart';
+import 'package:utmsport/view/sportTeam//v_displaySportTeamList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 
 import '../view_calendarPage.dart';
@@ -27,29 +30,26 @@ const destinations = [
 Widget homeScreen(user) => Padding(
       padding: EdgeInsets.all(32),
       child: Scaffold(
-        body: Text('HomePage'),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('HomePage'),
+          ],
+        ),
       ),
     );
 
-// navScreen(user) => <Widget>[
-//       // homeScreen(user),
-//       LatestEventWall(),
-//       ProfilePage(), // CM TAN
-//       BookingCalendar(),
-//       EventList(), // JOAN TAN
-//       FormScreen(),
-//       FormScreen(), // AIDAH WONG
-//     ];
+
+
 
 navScreen(user) {
   List routes = [];
-  // print('btm layout ${global.getUserRole()}');
   switch (global.getUserRole()) {
     case 'admin':
       routes = global.ADMIN_ROUTES(user);
       break;
     case 'athlete':
-    case 'couch':
+    case 'coach':
       routes = global.ATHLETE_ROUTES(user);
       break;
     case 'manager':
@@ -61,14 +61,7 @@ navScreen(user) {
       break;
     default:
       routes = global.STUDENT_ROUTES(user);
-  };
+  }
+  ;
   return routes;
 }
-
-// navScreen(user) => <Widget>[
-//       homeScreen(user),
-//       FormScreen(),   // JOAN TAN
-//       // Calendar(),   // AIDAH WONG
-//       listViewAppointment(),
-//       ProfilePage()    // CM TAN
-//     ];
