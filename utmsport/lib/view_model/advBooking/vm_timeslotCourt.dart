@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -5,36 +6,38 @@ import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 class TimeslotCourtTable extends StatefulWidget {
-  // int noOfTimeslot = 9;
-  // int noOfCourt = 4;
   int noOfTimeslot = MasterBooking.timeslot.length;
   int noOfCourt = MasterBooking.badmintonCourt;
-  final DateTime date;
+  final List<DateTime> dateList;
   final int index;
-  void Function(String, int, String) callback;
+  void Function(String, int, String) setSelectedCourtArrayCallback;
+  void Function(List<List<String>>, int) setMasterBookingArrayCallback;
 
   TimeslotCourtTable({
-    required this.date,
+    required this.dateList,
     required this.index,
-    required this.callback,
+    required this.setSelectedCourtArrayCallback,
+    required this.setMasterBookingArrayCallback,
   });
 
   @override
   State<TimeslotCourtTable> createState() => TimeslotCourtTableState(
         this.noOfTimeslot,
         this.noOfCourt,
-        date: this.date,
+        dateList: this.dateList,
         index: this.index,
-        callback: this.callback,
+        setSelectedCourtArrayCallback: this.setSelectedCourtArrayCallback,
+        setMasterBookingArrayCallback: this.setMasterBookingArrayCallback,
       );
 }
 
 class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   int noOfTimeslot;
   int noOfCourt;
-  DateTime date;
+  List<DateTime> dateList;
   int index;
-  void Function(String, int, String) callback;
+  void Function(String, int, String) setSelectedCourtArrayCallback;
+  void Function(List<List<String>>, int) setMasterBookingArrayCallback;
   bool isFecthingDataDone = false;
 
   List<List<String>> courtTimeslot = [];
@@ -42,9 +45,10 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   TimeslotCourtTableState(
     this.noOfTimeslot,
     this.noOfCourt, {
-    required this.date,
+    required this.dateList,
     required this.index,
-    required this.callback,
+    required this.setSelectedCourtArrayCallback,
+    required this.setMasterBookingArrayCallback,
   });
 
   @override
@@ -55,27 +59,30 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
 
   @override
   Widget build(BuildContext context) {
-    late int rowLength = widget.noOfCourt + 1;
-    // return Text("abc");
     return this.isFecthingDataDone == false
         ? CircularProgressIndicator()
-        : Row(
-            children: [
-              // Text("${DateTime(2022, 12, 5).add(Duration(days: widget.index))}"),
-              Expanded(
-                child: SizedBox(
-                  height: 35.0 * widget.noOfTimeslot,
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: rowLength,
-                    ),
-                    itemBuilder: _buildGridItems,
-                    itemCount: (widget.noOfTimeslot + 1) * (rowLength),
-                  ),
-                ),
+        : _buildCourtGrid(widget);
+  }
+
+  Widget _buildCourtGrid(widget) {
+    late int rowLength = widget.noOfCourt + 1;
+    return Row(
+      children: [
+        // Text("${DateTime(2022, 12, 5).add(Duration(days: widget.index))}"),
+        Expanded(
+          child: SizedBox(
+            height: 35.0 * widget.noOfTimeslot,
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: rowLength,
               ),
-            ],
-          );
+              itemBuilder: _buildGridItems,
+              itemCount: (widget.noOfTimeslot + 1) * (rowLength),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildGridItems(BuildContext context, int index) {
@@ -100,10 +107,8 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         textWidget = TextButton(
             onPressed: () {
               setState(() {
-                widget.callback("$x $y", index, "add");
+                widget.setSelectedCourtArrayCallback("$x $y", index, "add");
                 courtTimeslot[x][y] = "Check";
-                // selectedCourtTimeslot.add(courtTimeslot[x][y]);
-                // selectedCourtTimeslot.toSet().toList();
                 print("set check ${courtTimeslot[x][y]}");
               });
             },
@@ -118,9 +123,9 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
           textWidget = TextButton(
               onPressed: () {
                 setState(() {
-                  widget.callback("$x $y", index, "remove");
+                  widget.setSelectedCourtArrayCallback(
+                      "$x $y", index, "remove");
                   courtTimeslot[x][y] = "";
-                  print("uncheck ${courtTimeslot[x][y]}");
                 });
               },
               child: Text("Selected"));
@@ -144,33 +149,24 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   }
 
   fetchAdvancedData() async {
+    final DateTime date = widget.dateList[widget.index];
     List<List<String>> _courtTimeslot = [];
     await global.FFdb.collection('master_booking')
-        .where('date', isEqualTo: this.date.add(Duration(days: widget.index)))
+        .where('date', whereIn: widget.dateList)
         .get()
         .then((val) {
-      if (val.docs.length == 0) {
-        //create a nested array
         _courtTimeslot = MasterBooking.createNestedCTArray(
-            noOfTimeslot: noOfTimeslot, noOfCourt: noOfCourt);
-      } else {
-        //use fetched data and convert to nested array
-        val.docs.forEach((element) {
-          var a;
-          a = element['booked_courtTimeslot'];
-          for (int i = 0; i <= noOfTimeslot; i++) {
-            _courtTimeslot.add(List.from(a[i]['court']));
-          }
-        });
-      }
+          date,
+          widget.dateList,
+          val.docs.toList(),
+          noOfTimeslot: noOfTimeslot,
+          noOfCourt: noOfCourt,
+        );
       setState(() => {
             this.isFecthingDataDone = true,
             courtTimeslot = _courtTimeslot,
+            this.setMasterBookingArrayCallback(courtTimeslot, this.index),
           });
     });
-  }
-
-  String updateTimeslotCourtArray(int row, int col) {
-    return "abc";
   }
 }

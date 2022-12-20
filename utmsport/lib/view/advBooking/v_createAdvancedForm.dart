@@ -1,17 +1,13 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:utmsport/globalVariable.dart' as global;
-import 'package:utmsport/model/m_CourtBooking.dart';
-import 'package:utmsport/model/m_MasterBooking.dart';
 
-import 'package:utmsport/utils.dart';
+import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CreateAdvBooking extends StatefulWidget {
   const CreateAdvBooking({Key? key, required this.dateList}) : super(key: key);
@@ -30,11 +26,67 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   int selectedDays = 0;
   Reference storageRef = FirebaseStorage.instance.ref();
   List<List<String>> selectedCourtTimeslot = [];
+  List<List<List<String>>> masterBookingArray = [];
 
   final dateRangeController = DateRangePickerController();
   final picController = TextEditingController();
   final phoneController = TextEditingController();
   final subjectController = TextEditingController();
+
+  @override
+  void initState() {
+    this.selectedDays = widget.dateList.length;
+
+    //update form combine with create form example: v_createEvent.dart
+    picController.text = "dfvx";
+    phoneController.text = "erdvs";
+    subjectController.text = "waeds";
+
+    //set selected court nested array
+    selectedCourtTimeslot = List.generate(selectedDays, (_) => []);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(12),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50,
+              ),
+              Text("Advanced Booking",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("${selectedCourtTimeslot.toString()}"),
+                        ..._buildAccordianCourtTimeslot(),
+                        _buildAttachmentField(),
+                        _buildPICField(),
+                        _buildPhoneNoField(),
+                        SizedBox(height: 50),
+                        _buildSubmitAdvanced(),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void setSelectedCourtArray(val, index, action) {
     setState(() {
@@ -45,28 +97,43 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     });
   }
 
+  void setMasterBookingArray(List<List<String>> val, int dateIndex) {
+    setState(() => masterBookingArray.add(val));
+  }
+
+  void updateMasterBookingArray(int dateIndex, String val) {
+    setState(() {
+      var a = val.split(" ").toList();
+      int row = int.parse(a[0]);
+      int col = int.parse(a[1]);
+      masterBookingArray[dateIndex][row][col] = '';
+    });
+  }
+
   List<Widget> _buildAccordianCourtTimeslot() {
     List<Widget> accordianList = [];
-    for (int i = 0; i < selectedDays; i++) {
+    for (int dateIndex = 0; dateIndex < selectedDays; dateIndex++) {
       accordianList.add(ExpansionTile(
         maintainState: true,
         title: Text(
-            "Day ${i + 1} - ${DateFormat('dd MMM yyyy').format(widget.dateList[i])}"),
+            "Day ${dateIndex + 1} - ${DateFormat('dd MMM yyyy').format(widget.dateList[dateIndex])}"),
         subtitle: Row(
           children: [
             Flexible(
               child: Wrap(
                 direction: Axis.horizontal,
-                children: generateSelectedCourtBadge(i),
+                children: generateSelectedCourtBadge(dateIndex),
               ),
             ),
           ],
         ),
         children: [
+          Text("${widget.dateList[dateIndex]}"),
           TimeslotCourtTable(
-            date: widget.dateList[i],
-            index: i,
-            callback: setSelectedCourtArray,
+            dateList: widget.dateList,
+            index: dateIndex,
+            setSelectedCourtArrayCallback: setSelectedCourtArray,
+            setMasterBookingArrayCallback: setMasterBookingArray,
           ),
         ],
       ));
@@ -74,14 +141,19 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     return accordianList;
   }
 
-  List<Widget> generateSelectedCourtBadge(int index) {
+  List<Widget> generateSelectedCourtBadge(int dateIndex) {
     List<Widget> badgeList = [];
-    for (int i = 0; i < selectedCourtTimeslot[index].length; i++) {
+    for (int elIndex = 0;
+        elIndex < selectedCourtTimeslot[dateIndex].length;
+        elIndex++) {
       badgeList.add(
         ElevatedButton(
           onPressed: () => setState(() => {
-                selectedCourtTimeslot[index].removeWhere(
-                    (element) => selectedCourtTimeslot[index][i] == element),
+                updateMasterBookingArray(
+                    dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
+                selectedCourtTimeslot[dateIndex].removeWhere((element) {
+                  return selectedCourtTimeslot[dateIndex][elIndex] == element;
+                }),
               }),
           style: ElevatedButton.styleFrom(
             minimumSize: Size(20, 10),
@@ -93,7 +165,8 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text("${selectedCourtTimeslot[index][i]}", style:TextStyle(fontSize: 12)),
+                Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
+                    style: TextStyle(fontSize: 12)),
                 SizedBox(width: 3),
                 Icon(
                   Icons.close,
@@ -108,6 +181,20 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
       badgeList.add(SizedBox(width: 3));
     }
     return badgeList;
+  }
+
+  Widget _buildSubmitAdvanced() {
+    return ElevatedButton(
+      child:
+          Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16)),
+      onPressed: () {
+        if (!_formKey.currentState!.validate()) {
+        } else {
+          _formKey.currentState!.save();
+          MasterBooking.insertAdvBooking(widget, masterBookingArray, context);
+        }
+      },
+    );
   }
 
   Widget _buildPICField() {
@@ -173,134 +260,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               side: BorderSide(width: 1.0, color: Colors.blue)),
         )
       ],
-    );
-  }
-
-  //TODO: cm-insert master and stu-appointment sekali gus
-  //TODO: cm-add sports-type into master-booking db
-  void insertAdvBooking() {
-    final _bookingId = global.FFdb.collection('student_appointment').doc().id;
-    final _bookingDetails = CourtBooking(
-      id: _bookingId,
-      userId: global.USERID,
-      subject: "Advanced Booking",
-      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
-      status: "Pending",
-      createdAt: Timestamp.fromDate(DateTime.now()),
-      personInCharge: "Joan",
-      attachment: "insert file",
-      startTime: widget.dateList.first,
-      endTime: widget.dateList.last,
-    ).advToJson();
-
-    var _masterDetails;
-
-    CollectionReference advCourtBooking =
-        global.FFdb.collection('student_appointments');
-    CollectionReference _masterBooking =
-        global.FFdb.collection('master_booking');
-    try {
-      advCourtBooking.add(_bookingDetails).then((_) {
-        Utils.showSnackBar("created an advanced booking");
-      });
-      widget.dateList.forEach((date) => {
-            _masterDetails = MasterBooking(
-              // booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-              //     TimeslotCourtTable
-              //         .timetableCourtTableStateKey.currentState.courtTimeslot,
-              //     MasterBooking.timeslot.length),
-              booked_courtTimeslot:[],
-              date: date,
-              userId: global.USERID,
-              bookingId: _bookingId,
-            ).toJson(),
-            _masterBooking.where("date", isEqualTo: date).get().then((value) {
-              if (value.docs.length == 0) {
-                _masterBooking.add(_masterDetails);
-              } else {
-                value.docs.forEach((element) {
-                  _masterBooking
-                      .doc(element.id)
-                      .update(_masterDetails)
-                      .then((_) {
-                    Utils.showSnackBar("Updated an advanced booking");
-                  });
-                });
-              }
-            })
-          });
-      // Navigator.pushNamed(context, '/');
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  @override
-  void initState() {
-    this.selectedDays = widget.dateList.length;
-    print(widget.dateList);
-
-    //TODO: cm-use this set initial value for update form
-    //update form combine with create form example: v_createEvent.dart
-    picController.text = "dfvx";
-    phoneController.text = "erdvs";
-    subjectController.text = "waeds";
-
-    //set selected court nested array
-    for (int i = 0; i < selectedDays; i++) selectedCourtTimeslot.add([]);
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 50,
-              ),
-              Text("Advanced Booking",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              SizedBox(height: 15),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("${selectedCourtTimeslot.toString()}"),
-                        ..._buildAccordianCourtTimeslot(),
-                        _buildAttachmentField(),
-                        _buildPICField(),
-                        _buildPhoneNoField(),
-                        SizedBox(height: 50),
-                        ElevatedButton(
-                          child: Text("Submit",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                          onPressed: () {
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
-                              _formKey.currentState!.save();
-                              insertAdvBooking();
-                            }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

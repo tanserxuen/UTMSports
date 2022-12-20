@@ -56,6 +56,8 @@ class _ViewFeedbackState extends State<ViewFeedback> {
     print(listOfColumns);
     return SingleChildScrollView(
       child: DataTable(
+        headingRowColor:
+        MaterialStateColor.resolveWith((states) => Colors.lightBlueAccent),
         columns: [
           DataColumn(
             label: Text('#'),
@@ -86,7 +88,7 @@ class _ViewFeedbackState extends State<ViewFeedback> {
                 )),
                 DataCell(Text(
                   element?["comment"] ?? "",
-                  overflow: TextOverflow.ellipsis,
+                  // overflow: TextOverflow.ellipsis,
                   softWrap: true,
                 )),
               ],

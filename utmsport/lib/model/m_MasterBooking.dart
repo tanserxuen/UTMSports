@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
 import 'package:utmsport/globalVariable.dart' as global;
+import 'package:utmsport/utils.dart';
+import 'package:utmsport/model/m_CourtBooking.dart';
 
 class MasterBooking {
   static final timeslot = [
@@ -43,12 +48,13 @@ class MasterBooking {
         "bookingId": bookingId,
       };
 
-  static List nestedArrayToObject(courtTimeslot, _noOfTimeslot) {
+  static List nestedArrayToObject(
+    courtTimeslot,
+  ) {
     List newObjectArray = [];
-    for (int i = 0; i < _noOfTimeslot + 1; i++) {
+    for (int i = 0; i < timeslot.length + 1; i++) {
       newObjectArray.add({'court': courtTimeslot[i]});
     }
-    print(newObjectArray);
     return newObjectArray;
   }
 
@@ -56,47 +62,105 @@ class MasterBooking {
       {required List<List<String>> courtTimeslot,
       noOfTimeslot: 9,
       noOfCourt}) async {
-    // List<List<String>> newNestedArray = [];
-    var a;
     await global.FFdb.collection('master_booking')
         .where('date', isEqualTo: DateTime(2022, 12, 5))
         .get()
         .then((val) {
       if (val.docs.length == 0)
-        createNestedCTArray(
-            // courtTimeslot: courtTimeslot,
-            noOfTimeslot: noOfTimeslot,
-            noOfCourt: noOfCourt);
+        createNestedCTArray(null, null, null,
+            noOfTimeslot: noOfTimeslot, noOfCourt: noOfCourt);
       else
         val.docs.forEach((element) {
-          a = element['booked_courtTimeslot'];
+          var cts = element['booked_courtTimeslot'];
           for (int i = 0; i < noOfTimeslot + 1; i++) {
-            courtTimeslot.add(a[i]['court']);
+            courtTimeslot.add(cts[i]['court']);
           }
         });
     });
   }
 
-  //create court-timeslot
+  //create court-timeslot 2d array
   static List<List<String>> createNestedCTArray(
-      {required noOfTimeslot, required noOfCourt}) {
+      dynamic date, dynamic dateList, dynamic documents,
+      {required int noOfTimeslot, required int noOfCourt}) {
+    List mapDocDates = documents.map((e) => e["date"].toDate()).toList();
     List<List<String>> ct = [];
-    for (int i = 0; i <= noOfTimeslot; i++) {
-      List<String> a = [];
-      for (int j = 0; j <= noOfCourt; j++) {
-        if (i == 0 && j == 0)
-          a.add("B");
-        else if (j != 0 && i == 0)
-          a.add("C$j");
-        else if (j == 0 && i != 0)
-          a.add("T$i");
-        // a.add("${MasterBooking.timeslot[i-1]}");
-        // else if (j == 0 && i != 0) a.add("Icon")
-        else
-          a.add("");
+    int docIndex = mapDocDates.indexOf(date);
+    if (docIndex >= 0) {
+      var ctRowCol = documents[docIndex]['booked_courtTimeslot'];
+      for (int row = 0; row <= noOfTimeslot; row++)
+        ct.add(List.from(ctRowCol[row]['court']));
+    } else {
+      for (int row = 0; row <= noOfTimeslot; row++) {
+        List<String> ctRow = [];
+        for (int col = 0; col <= noOfCourt; col++) {
+          if (row == 0 && col == 0)
+            ctRow.add("B");
+          else if (col != 0 && row == 0)
+            ctRow.add("C$col");
+          else if (col == 0 && row != 0)
+            ctRow.add("T$row");
+          else
+            ctRow.add("");
+        }
+        ct.add(ctRow);
       }
-      ct.add(a);
     }
     return ct;
+  }
+
+  //TODO: cm-add sports-type into master-booking db
+  static void insertAdvBooking(
+      dynamic widget, List<List<List<String>>> masterBookingArray, context) {
+    final _bookingId = global.FFdb.collection('student_appointment').doc().id;
+    final _bookingDetails = CourtBooking(
+      id: _bookingId,
+      userId: global.USERID,
+      subject: "Advanced Booking",
+      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
+      status: "Pending",
+      createdAt: Timestamp.fromDate(DateTime.now()),
+      personInCharge: "Joan",
+      attachment: "insert file",
+      startTime: widget.dateList.first,
+      endTime: widget.dateList.last,
+    ).advToJson();
+
+    var _masterBooking;
+
+    CollectionReference advCourtBooking =
+        global.FFdb.collection('student_appointments');
+    CollectionReference masterCourtBooking =
+        global.FFdb.collection('master_booking');
+    try {
+      advCourtBooking.add(_bookingDetails);
+      for (int dateIndex = 0; dateIndex < widget.dateList.length; dateIndex++) {
+        var date = widget.dateList[dateIndex];
+        _masterBooking = MasterBooking(
+          booked_courtTimeslot:
+              MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
+          date: widget.dateList[dateIndex],
+          userId: global.USERID,
+          bookingId: _bookingId,
+        ).toJson();
+        masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
+          if (value.docs.length == 0) {
+            masterCourtBooking.add(_masterBooking);
+          } else {
+            value.docs.forEach((element) {
+              masterCourtBooking
+                  .doc(element.id)
+                  .update(_masterBooking)
+                  .then((_) {
+                Utils.showSnackBar("Updated an advanced booking");
+              });
+            });
+          }
+        });
+      }
+      Navigator.pushNamed(context, '/');
+    } catch (e) {
+      print(e);
+    }
   }
 }
