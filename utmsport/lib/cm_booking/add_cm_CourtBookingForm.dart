@@ -1,357 +1,377 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
-import 'package:utmsport/view/view_calendarPage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-import '../../cm_booking/qr_generator.dart';
 import '../../utils.dart';
 
-class   listViewAppointment extends StatefulWidget {
+
+class cmCourtBookingForm extends StatefulWidget {
+  const cmCourtBookingForm({Key? key}) : super(key: key);
+
   @override
-  State<listViewAppointment> createState() => _listViewAppointmentState();
+  State<cmCourtBookingForm> createState() => _cmCourtBookingFormState();
 }
 
-class _listViewAppointmentState extends State<listViewAppointment> {
-  final TextEditingController _eventTitleController = TextEditingController();
+class _cmCourtBookingFormState extends State<cmCourtBookingForm> {
+
+
+  final TextEditingController _TitleController = TextEditingController();
   final TextEditingController _TimeController = TextEditingController();
   final TextEditingController _DateController = TextEditingController();
-  final TextEditingController _PicController = TextEditingController();
   final TextEditingController _matricNoController = TextEditingController();
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  String filename = '';
+  String timeslot = '';
+  var fileBytes;
+  Reference storageRef = FirebaseStorage.instance.ref();
+  final formKey = GlobalKey<FormState>();
+  final CollectionReference _cmCourtBooks = global.FFdb.collection('cmCourtBooks');
 
-  final CollectionReference _appointments = global.FFdb.collection('appointments');
-
-  Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
-    if (documentSnapshot != null) {
-      _eventTitleController.text = documentSnapshot['eventtitle'];
-      _TimeController.text = documentSnapshot['time'].toString();
-      _DateController.text = documentSnapshot['date'];
-      _PicController.text = documentSnapshot['pic'].toString();
-      _matricNoController.text = documentSnapshot['matricno'];
-      _phoneNoController.text = documentSnapshot['phoneno'].toString();
-      _descriptionController.text = documentSnapshot['description'];
-    }
-
-    await showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (BuildContext ctx) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 20,
-                  left: 20,
-                  right: 20,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _eventTitleController,
-                    decoration: const InputDecoration(labelText: 'Event Title'),
-                  ),
-                  TextField(
-                    controller: _TimeController,
-                    decoration: const InputDecoration(labelText: 'Time'),
-                  ),
-                  TextField(
-                      controller: _DateController,
-                      decoration: InputDecoration(
-                          labelText: "Date",
-                          suffixIcon: Icon(Icons.calendar_today)),
-                      readOnly: true,
-                      onTap: () async {
-                        DateTime? value = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2100));
-
-                        if (value == null) return null;
-                        String date;
-                        setState(() => {
-                          date = DateFormat('yyyy-MM-dd').format(value),
-                          _DateController.text = date,
-                          print(date),
-                        });
-                      }),
-                  TextField(
-                    controller: _PicController,
-                    decoration:
-                    const InputDecoration(labelText: 'Person in charge'),
-                  ),
-                  TextField(
-                    controller: _matricNoController,
-                    decoration:
-                    const InputDecoration(labelText: 'Matric Number'),
-                  ),
-                  TextField(
-                    controller: _phoneNoController,
-                    decoration:
-                    const InputDecoration(labelText: 'Phone Number'),
-                  ),
-                  TextField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    child: const Text('Update'),
-                    onPressed: () async {
-                      final String eventtitle = _eventTitleController.text;
-                      final String time = _TimeController.text;
-                      final String date = _DateController.text;
-                      final String pic = _PicController.text;
-                      final String matricno = _matricNoController.text;
-                      final String phoneno = _phoneNoController.text;
-                      final String description = _descriptionController.text;
-
-                      await _appointments.doc(documentSnapshot!.id).update({
-                        "eventtitle": eventtitle,
-                        "time": time,
-                        "date": date,
-                        "pic": pic,
-                        "matricno": matricno,
-                        "phoneno": phoneno,
-                        "description": description
-                      });
-
-                      _eventTitleController.text = '';
-                      _TimeController.text = '';
-                      _DateController.text = '';
-                      _PicController.text = '';
-                      _matricNoController.text = '';
-                      _phoneNoController.text = '';
-                      _descriptionController.text = '';
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text(
-                              'You have successfully updated your appointment')));
-                    },
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Future<void> _delete(String appointmentId) async {
-    await _appointments.doc(appointmentId).delete();
-    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //     content: Text('You have successfully deleted an appointment')));
-    Utils.showSnackBar('You have successfully deleted an appointment');
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _TitleController.text = '';
+    _TimeController.text = '';
+    _DateController.text = '';
+    _matricNoController.text = '';
+    _phoneNoController.text = '';
+    _descriptionController.text = '';
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('CM Court Booking'),
+      ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Calendar())),
-                child: Container(
-                  width: 500,
-                  height: 150,
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.red,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: EdgeInsets.all(20),
+        child: Form(
+          key: formKey,
+          child: StreamBuilder(
+            stream: global.FFdb.collection('users').doc(global.FA.currentUser!.uid).snapshots(),
+            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Center(child: CircularProgressIndicator());
+              if (snapshot.hasData){
+                _nameController.text = snapshot.data?.data()!['name'];
+                _matricNoController.text = snapshot.data?.data()!['matric'];
+                _phoneNoController.text = snapshot.data?.data()!['phoneno'];
+                _emailController.text = FirebaseAuth.instance.currentUser!.email!;
+
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Meeting Appointment',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text('Click to Book Now')
-                          ],
-                        ),
+                      TextFormField(
+                          controller: _DateController,
+                          textInputAction: TextInputAction.next,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (date) => date != null && !date.isNotEmpty
+                              ? 'Select a Date'
+                              : null,
+                          decoration: InputDecoration(
+                              labelText: "Date",
+                              suffixIcon: Icon(Icons.calendar_today)),
+                          readOnly: true,
+                          onTap: () async {
+
+                            DateTime? value = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
+
+                            if (value == null) return null;
+                            String date;
+                            setState(() => {
+                              date = DateFormat('yyyy-MM-dd').format(value),
+                              _DateController.text = date,
+                              print(date),
+                            });
+                          }
                       ),
                       Container(
-                        height: 120,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.blue,
-                        ),
-                        transform: Matrix4.rotationZ(-0.05),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Text(
-                  'Your Request List',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              Container(
-                // color: Colors.green,
-                width: 500,
-                height: 360,
-                child: StreamBuilder(
-                  stream: _appointments
-                      .where('uid',
-                      isEqualTo: global.FA.currentUser!.uid)
-                      .orderBy('created_at', descending: true)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                    if (streamSnapshot.connectionState == ConnectionState.waiting)
-                      return Center(child: CircularProgressIndicator());
-                    if (streamSnapshot.hasData) {
-                      //TODO: filter the users data
-                      return ListView.builder(
-                          padding: EdgeInsets.zero,
-                          itemCount: streamSnapshot.data!.docs.length,
-                          //Here you can see that I will get the count of my data
-                          itemBuilder: (context, int) {
-                            //perform the task you want to do here
-                            final DocumentSnapshot documentSnapshot =
-                            streamSnapshot.data!.docs[int];
-
-                            return Card(
-                              margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                              child: GestureDetector(
+                        child: Row(
+                            children: List.generate(timeslotRange.length, (index){
+                              return InkWell(
                                 onTap: (){
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => RequestMeetingDetail(
-                                              document: documentSnapshot)));
-                                },
-                                child: ListTile(
-                                  title: Text(documentSnapshot['eventtitle']),
-                                  // subtitle: Text(documentSnapshot['time']),
-                                  subtitle: Container(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(documentSnapshot['time']),
-                                            Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.horizontal(
-                                                      left: Radius.circular(10),
-                                                      right:
-                                                      Radius.circular(10)),
-                                                  color:
-                                                  documentSnapshot['status'] ==
-                                                      'rejected'
-                                                      ? Colors.red
-                                                      : documentSnapshot[
-                                                  'status'] ==
-                                                      'approved'
-                                                      ? Colors.green
-                                                      : Colors.yellow,
-                                                ),
-                                                width: 85,
-                                                margin: EdgeInsets.fromLTRB(
-                                                    10, 0, 0, 0),
-                                                padding: EdgeInsets.fromLTRB(
-                                                    10, 2, 10, 2),
-                                                child: Text(
-                                                  documentSnapshot['status'],
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.w900),
-                                                )),
-                                          ],
-                                        )
-                                      ],
-                                    ),
+                                  setState(() {
+                                    timeslot = timeslotRange[index].time;
+                                  });
+                                } ,
+                                child: Container(
+                                  height: 50,
+                                  width: 100,
+                                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                  decoration: BoxDecoration(
+                                      color:
+                                      timeslot == timeslotRange[index].time
+                                          ? Colors.orange
+                                          : Colors.white
+                                      ,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.grey.shade600,
+                                            spreadRadius: 1,
+                                            blurRadius: 1,
+                                            offset: Offset(0, 2))
+                                      ]
                                   ),
-                                  trailing: SizedBox(
-                                    width: 144,
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.qr_code_scanner_outlined,
-                                              color:
-                                              documentSnapshot['status'] == 'approved'
-                                                  ? Colors.orange
-                                                  : Colors.grey
-                                          ),
-                                          // onPressed:
-                                          // documentSnapshot['status'] == 'approved'
-                                          //     ? () => QRGenerate()
-                                          //     : null
-                                          onPressed:(){
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) => QRGenerate() ,)
-                                            );},
-                                        ),
-                                        IconButton(
-                                            icon: Icon(Icons.edit,
-                                                color:
-                                                documentSnapshot['status'] == 'pending'
-                                                    ? Colors.green
-                                                    : Colors.grey
-                                            ),
-                                            onPressed:
-                                            documentSnapshot['status'] == 'pending'
-                                                ? () => _update(documentSnapshot)
-                                                : null
-                                        ),
-                                        IconButton(
-                                            icon: Icon(Icons.delete,
-                                                color:
-                                                documentSnapshot['status'] == 'pending'
-                                                    ? Colors.red
-                                                    : Colors.grey
-                                            ),
-                                            onPressed:
-                                            documentSnapshot['status'] == 'pending'
-                                                ? ()=>  _delete(documentSnapshot.id)
-                                                : null
-                                        ),
-                                      ],
+                                  child: Center(
+                                    child: Text(
+                                      timeslotRange[index].time + 'hr',
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold
+                                      ),
                                     ),
                                   ),
                                 ),
+                              );
+                            })
+                        ),
+                      ),
+                      TextFormField(
+                        enabled: false,
+                        controller: _nameController,
+                        textInputAction: TextInputAction.next,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (name) => name != null && !name.isNotEmpty
+                            ? 'Insert your name'
+                            : null,
+                        decoration: const InputDecoration(labelText: 'Event Organizer'),
+                      ),
+                      Row(
+                          children:[
+                            Expanded(
+                              child: TextFormField(
+                                controller: _matricNoController,
+                                textInputAction: TextInputAction.next,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: (matric) => matric != null && !matric.isNotEmpty
+                                    ? 'Enter your Matric No'
+                                    : null,
+                                decoration: const InputDecoration(labelText: 'Matric Number'),
                               ),
-                            );
-                          });
-                    }
-                    if (streamSnapshot.hasError)
-                      return Text('Something went wrong');
-                    return Text('No Recorded founded');
-                  },
-                ),
-              )
-            ]),
+                            )
+                          ]
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: TextFormField(
+                                controller: _phoneNoController,
+                                textInputAction: TextInputAction.next,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: (phoneno) => phoneno != null && phoneno.length<10
+                                    ? 'Enter Phone number (atleast 10 digit)'
+                                    : null,
+                                decoration: const InputDecoration(labelText: 'Phone Number'),
+                              )
+                          ),
+                          Expanded(
+                              child: TextFormField(
+                                controller: _emailController,
+                                textInputAction: TextInputAction.next,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: (email) => email != null && !EmailValidator.validate(email)
+                                    ? 'Enter a valid email'
+                                    : null,
+                                decoration: const InputDecoration(labelText: 'Email'),
+                              )
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: _TitleController,
+                        textInputAction: TextInputAction.next,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (title) => title != null && !title.isNotEmpty
+                            ? 'Insert Event Title'
+                            : null,
+                        decoration: const InputDecoration(labelText: 'Event Title'),
+                      ),
+                      TextFormField(
+                        controller: _descriptionController,
+                        textInputAction: TextInputAction.next,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (desc) => desc != null && !desc.isNotEmpty
+                            ? 'Insert Description'
+                            : null,
+                        decoration: const InputDecoration(labelText: 'Description'),
+                        maxLines: 5,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Attachment:',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      Text(
+                        'in .pdf or .doc format',
+                        style: TextStyle(
+                            fontSize: 12
+                        ),
+                      ),
+                      Text(
+                        '$filename',
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          //TODO: Add file with validator
+
+                          FilePickerResult? result = await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            withData: true,
+                            allowedExtensions: ['pdf', 'doc'],
+                          );
+                          if(result != null && result.files.single.path != null){
+                            PlatformFile file = result.files.first;
+
+                            setState(() {
+                              filename = result.files.first.name;
+                              fileBytes = result.files.first.bytes;
+                              // print(fileBytes);
+                            });
+
+                          }
+
+                        } ,
+                        icon: Icon(Icons.file_upload_outlined, size: 22,),
+                        style: OutlinedButton.styleFrom(
+                            minimumSize: Size.fromHeight(40)
+                        ),
+                        label: Text('Atachment File'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                        child: const Text('Create'),
+                        onPressed: () async {
+                          final isValid = formKey.currentState!.validate();
+                          if(!isValid) return ;
+                          if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file');
+                          if(timeslot.isEmpty || timeslot == '') return Utils.showSnackBar('Please Select Timeslot');
+
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context){
+                                return Center(child: CircularProgressIndicator());
+                              }
+                          );
+
+                          Reference refDirfiles = storageRef.child("files");
+                          Reference refFiletoupload = refDirfiles.child(filename);
+                          await refFiletoupload.putData(fileBytes);
+
+                          try{
+                            int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+                            await _cmCourtBooks.add({
+                              'created_at': timestamp,
+                              "date": _DateController.text,
+                              "time": timeslot,
+                              "name": _nameController.text,
+                              "matricno": _matricNoController.text,
+                              "phoneno": _phoneNoController.text,
+                              "email": _emailController.text,
+                              "eventtitle": _TitleController.text,
+                              "description": _descriptionController.text,
+                              "file": filename,
+                              'uid': FirebaseAuth.instance.currentUser!.uid,
+                              'status': 'pending'
+                            })
+                                .then((value) => 'The data inserted successfully')
+                                .onError((error, stackTrace) => 'Somethings Error on inserting Appointment');
+
+                          } on FirebaseAuthException catch (e){
+                            print(e);
+
+                            Utils.showSnackBar(e.message);
+                          }
+
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context){
+                                return AlertDialog(
+                                    title: Text("Success"),
+                                    titleTextStyle:
+                                    TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,fontSize: 20),
+                                    actionsOverflowButtonSpacing: 20,
+                                    actions: [
+                                      ElevatedButton(
+                                        child: const Text("ok"),
+                                        onPressed: (){
+                                          // _navigateToNextScreen(context);
+                                          navigatorKey.currentState!.popUntil((route) => route.isFirst);
+                                        },
+                                      ),
+                                    ],
+                                    content: Text("Booked successfully"));
+                              }
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                );
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+
+          ),
+        ),
       ),
     );
   }
 }
+
+class TimeSlot{
+  final String time;
+
+  TimeSlot({
+    required this.time
+  });
+}
+
+List <TimeSlot> timeslotRange = [age1, age2, age3];
+
+TimeSlot age1 = TimeSlot(
+    time : "0800"
+);
+
+TimeSlot age2 = TimeSlot(
+    time : "1000"
+);
+
+TimeSlot age3 = TimeSlot(
+    time : "1200"
+);
+
+TimeSlot age4 = TimeSlot(
+    time : "40+"
+);

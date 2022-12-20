@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
 
 class QRScan extends StatefulWidget {
   @override
@@ -11,21 +9,11 @@ class QRScan extends StatefulWidget {
 }
 
 class _QRScan extends State<QRScan> {
-  // final qrKey = GlobalKey(debugLabel: 'QR');
-  // QRViewController? controller;
-  // Barcode? barcode;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
 
-  // void reassemble() {
-  //   super.reassemble();
-  //   if (Platform.isAndroid) {
-  //     controller!.pauseCamera();
-  //   }
-  //   controller!.resumeCamera();
-  // }
   @override
   void reassemble() {
     super.reassemble();
@@ -35,31 +23,6 @@ class _QRScan extends State<QRScan> {
       controller!.resumeCamera();
     }
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: Column(
-  //       children: <Widget>[
-  //         Expanded(
-  //           flex: 5,
-  //           child: QRView(
-  //             key: qrKey,
-  //             onQRViewCreated: _onQRViewCreated,
-  //           ),
-  //         ),
-  //         Expanded(
-  //           flex: 1,
-  //           child: Center(
-  //             child: (result != null)
-  //                 ? Text('Attended: ${result!.code}')
-  //                 : Text('Scan a code'),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -86,13 +49,7 @@ class _QRScan extends State<QRScan> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        // IconButton(
-        //   icon: Icon(Icons.flash_off),
-        //   onPressed: () async{
-        //     await controller?.toggleFlash();
-        //     setState(() {});
-        //   },
-        // ),
+
         IconButton(
           icon:FutureBuilder<bool?>(
             future: controller?.getFlashStatus(),
@@ -111,13 +68,7 @@ class _QRScan extends State<QRScan> {
             setState(() {});
           },
         ),
-        // IconButton(
-        //   icon: Icon(Icons.switch_camera),
-        //   onPressed: () async{
-        //     await controller?.flipCamera();
-        //     setState(() {});
-        //   },
-        // ),
+
         IconButton(
           icon:FutureBuilder(
             future: controller?.getCameraInfo(),
@@ -157,16 +108,24 @@ class _QRScan extends State<QRScan> {
     padding: EdgeInsets.all(12),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(8),
-      color:  Colors.white24,
+      color:  Colors.white,
     ),
-    child: (result != null)
-        ? Text('Attended: ${result!.code}')
-        : Text('Scan a code'),
-    //   Text(
-    //   barcode != null? 'Attended: ${barcode!.code}' : 'Scan a code!',
-    //   maxLines: 3,
-    // ),
+
+      child: (result != null)
+      // ? Text('Your attendance has been recorded: \n\n ${result!.code}')
+      ? AlertDialog(
+        content: Text('Your attendance has been recorded: \n\n ${result!.code}'),
+        actions: [
+          ElevatedButton(onPressed: (){
+            Navigator.of(context).pop();
+            print('ok');},
+              child: Text('OK')
+          )
+        ],
+      )
+      : Text('Scan a code'),
   );
+
 
   Widget buildQRView(BuildContext context) => QRView (
     key: qrKey,
@@ -180,24 +139,19 @@ class _QRScan extends State<QRScan> {
     ),
   );
 
-  // void onQRViewCreated(QRViewController controller){
-  //   setState(() => this.controller = controller);
-  //
-  //   controller.scannedDataStream
-  //   .listen((bacode) => setState(() => this.barcode = barcode));
-  // }
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
+      if (!mounted) return;
       setState(() {
         result = scanData;
       });
     });
   }
 
-  @override
-  void dispose(){
-    controller?.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose(){
+  //   controller?.dispose();
+  //   super.dispose();
+  // }
 }

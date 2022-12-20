@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -11,9 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-
-
-import '../../view/appointment/listView_appointment.dart';
 import '../../utils.dart';
 
 

@@ -42,8 +42,12 @@ class RequestMeetingDetail extends StatelessWidget {
               SizedBox(height: 20,),
 
               Text('Status: ' + document['status']),
+              SizedBox(height: 20,),
+              Text('_____________________________________',  textAlign: TextAlign.center, ),
             ]),
-      ),
+
+      )
+      ,
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
 import 'package:utmsport/view/view_calendarPage.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-
+import '../../cm_booking/qr_generator.dart';
 import '../../utils.dart';
 
 class   listViewAppointment extends StatefulWidget {
@@ -276,7 +276,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                                                         ? Colors.green
                                                         : Colors.yellow,
                                           ),
-                                          width: 100,
+                                          width: 85,
                                           margin: EdgeInsets.fromLTRB(
                                               10, 0, 0, 0),
                                           padding: EdgeInsets.fromLTRB(
@@ -296,6 +296,22 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                               width: 100,
                               child: Row(
                                 children: [
+                                  // IconButton(
+                                  //     icon: Icon(Icons.qr_code_scanner_outlined,
+                                  //         color:
+                                  //         documentSnapshot['status'] == 'approved'
+                                  //             ? Colors.orange
+                                  //             : Colors.grey
+                                  //     ),
+                                  //     // onPressed:
+                                  //     // documentSnapshot['status'] == 'approved'
+                                  //     //     ? () => QRGenerate()
+                                  //     //     : null
+                                  //     onPressed:(){
+                                  //       Navigator.push(context,
+                                  //           MaterialPageRoute(builder: (context) => QRGenerate() ,)
+                                  //       );},
+                                  // ),
                                   IconButton(
                                       icon: Icon(Icons.edit,
                                           color:

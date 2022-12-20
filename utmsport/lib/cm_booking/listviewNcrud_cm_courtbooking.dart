@@ -1,36 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
-import 'package:utmsport/view/view_calendarPage.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-import '../../cm_booking/qr_generator.dart';
 import '../../utils.dart';
+import 'detailsView_cm_advbooking.dart';
 
-class   cmlistViewCourtBooking extends StatefulWidget {
+class  CMlistviewNcrudCourtBook extends StatefulWidget {
   @override
-  State<cmlistViewCourtBooking> createState() => _cmlistViewCourtBookingState();
+  State<CMlistviewNcrudCourtBook > createState() => _CMlistviewNcrudCourtBookState();
 }
 
-class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
-  final TextEditingController _eventTitleController = TextEditingController();
+class _CMlistviewNcrudCourtBookState extends State<CMlistviewNcrudCourtBook > {
+  final TextEditingController _TitleController = TextEditingController();
   final TextEditingController _TimeController = TextEditingController();
   final TextEditingController _DateController = TextEditingController();
-  final TextEditingController _PicController = TextEditingController();
   final TextEditingController _matricNoController = TextEditingController();
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  final CollectionReference _appointments = global.FFdb.collection('appointments');
+  final CollectionReference _cmCourtBooks = global.FFdb.collection('cmCourtBooks');
 
   Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
     if (documentSnapshot != null) {
-      _eventTitleController.text = documentSnapshot['eventtitle'];
+      _TitleController.text = documentSnapshot['title'];
       _TimeController.text = documentSnapshot['time'].toString();
       _DateController.text = documentSnapshot['date'];
-      _PicController.text = documentSnapshot['pic'].toString();
       _matricNoController.text = documentSnapshot['matricno'];
       _phoneNoController.text = documentSnapshot['phoneno'].toString();
       _descriptionController.text = documentSnapshot['description'];
@@ -52,8 +47,8 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
-                    controller: _eventTitleController,
-                    decoration: const InputDecoration(labelText: 'Event Title'),
+                    controller: _TitleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
                   ),
                   TextField(
                     controller: _TimeController,
@@ -81,14 +76,9 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                         });
                       }),
                   TextField(
-                    controller: _PicController,
-                    decoration:
-                    const InputDecoration(labelText: 'Person in charge'),
-                  ),
-                  TextField(
                     controller: _matricNoController,
                     decoration:
-                    const InputDecoration(labelText: 'Matric Number'),
+                    const InputDecoration(labelText: 'Staff Number'),
                   ),
                   TextField(
                     controller: _phoneNoController,
@@ -105,35 +95,32 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                   ElevatedButton(
                     child: const Text('Update'),
                     onPressed: () async {
-                      final String eventtitle = _eventTitleController.text;
+                      final String title = _TitleController.text;
                       final String time = _TimeController.text;
                       final String date = _DateController.text;
-                      final String pic = _PicController.text;
                       final String matricno = _matricNoController.text;
                       final String phoneno = _phoneNoController.text;
                       final String description = _descriptionController.text;
 
-                      await _appointments.doc(documentSnapshot!.id).update({
-                        "eventtitle": eventtitle,
+                      await _cmCourtBooks.doc(documentSnapshot!.id).update({
+                        "title": title,
                         "time": time,
                         "date": date,
-                        "pic": pic,
                         "matricno": matricno,
                         "phoneno": phoneno,
                         "description": description
                       });
 
-                      _eventTitleController.text = '';
+                      _TitleController.text = '';
                       _TimeController.text = '';
                       _DateController.text = '';
-                      _PicController.text = '';
                       _matricNoController.text = '';
                       _phoneNoController.text = '';
                       _descriptionController.text = '';
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
-                              'You have successfully updated your appointment')));
+                              'You have successfully updated your booking')));
                     },
                   )
                 ],
@@ -143,64 +130,67 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
         });
   }
 
-  Future<void> _delete(String appointmentId) async {
-    await _appointments.doc(appointmentId).delete();
+  Future<void> _delete(String cmCourtBookId) async {
+    await _cmCourtBooks.doc(cmCourtBookId).delete();
     // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
     //     content: Text('You have successfully deleted an appointment')));
-    Utils.showSnackBar('You have successfully deleted an appointment');
+    Utils.showSnackBar('You have successfully deleted a booking');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text ("Court Booking List"),
+      ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Calendar())),
-                child: Container(
-                  width: 500,
-                  height: 150,
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.red,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Meeting Appointment',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            Text('Click to Book Now')
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 120,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.blue,
-                        ),
-                        transform: Matrix4.rotationZ(-0.05),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () => Navigator.push(
+              //       context, MaterialPageRoute(builder: (context) => Calendar())),
+              //   child: Container(
+              //     width: 500,
+              //     height: 150,
+              //     padding: EdgeInsets.all(10),
+              //     margin: EdgeInsets.all(10),
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10),
+              //       color: Colors.red,
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Container(
+              //           padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Text(
+              //                 'Meeting Appointment',
+              //                 style: TextStyle(
+              //                     fontWeight: FontWeight.bold, fontSize: 18),
+              //               ),
+              //               Text('Click to Book Now')
+              //             ],
+              //           ),
+              //         ),
+              //         Container(
+              //           height: 120,
+              //           width: 150,
+              //           decoration: BoxDecoration(
+              //             borderRadius: BorderRadius.circular(10),
+              //             color: Colors.blue,
+              //           ),
+              //           transform: Matrix4.rotationZ(-0.05),
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
               Padding(
                 padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Text(
@@ -216,7 +206,7 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                 width: 500,
                 height: 360,
                 child: StreamBuilder(
-                  stream: _appointments
+                  stream: _cmCourtBooks
                       .where('uid',
                       isEqualTo: global.FA.currentUser!.uid)
                       .orderBy('created_at', descending: true)
@@ -243,11 +233,11 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => RequestMeetingDetail(
+                                          builder: (context) => cmCourtBookingDetail(
                                               document: documentSnapshot)));
                                 },
                                 child: ListTile(
-                                  title: Text(documentSnapshot['eventtitle']),
+                                  title: Text(documentSnapshot['title']),
                                   // subtitle: Text(documentSnapshot['time']),
                                   subtitle: Container(
                                     child: Column(
@@ -293,25 +283,25 @@ class _cmlistViewCourtBookingState extends State<cmlistViewCourtBooking> {
                                     ),
                                   ),
                                   trailing: SizedBox(
-                                    width: 144,
+                                    width: 100,
                                     child: Row(
                                       children: [
-                                        IconButton(
-                                            icon: Icon(Icons.qr_code_scanner_outlined,
-                                                color:
-                                                documentSnapshot['status'] == 'approved'
-                                                    ? Colors.orange
-                                                    : Colors.grey
-                                            ),
-                                            // onPressed:
-                                            // documentSnapshot['status'] == 'approved'
-                                            //     ? () => QRGenerate()
-                                            //     : null
-                                            onPressed:(){
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(builder: (context) => QRGenerate() ,)
-                                              );},
-                                        ),
+                                        // IconButton(
+                                        //     icon: Icon(Icons.qr_code_scanner_outlined,
+                                        //         color:
+                                        //         documentSnapshot['status'] == 'approved'
+                                        //             ? Colors.orange
+                                        //             : Colors.grey
+                                        //     ),
+                                        //     // onPressed:
+                                        //     // documentSnapshot['status'] == 'approved'
+                                        //     //     ? () => QRGenerate()
+                                        //     //     : null
+                                        //     onPressed:(){
+                                        //       Navigator.push(context,
+                                        //           MaterialPageRoute(builder: (context) => QRGenerate() ,)
+                                        //       );},
+                                        // ),
                                         IconButton(
                                             icon: Icon(Icons.edit,
                                                 color:
