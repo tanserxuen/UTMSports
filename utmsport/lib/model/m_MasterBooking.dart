@@ -111,7 +111,7 @@ class MasterBooking {
 
   //TODO: cm-add sports-type into master-booking db
   static void insertAdvBooking(
-      dynamic widget, List<List<List<String>>> masterBookingArray, context) {
+      dynamic widget, List<List<List<String>>> masterBookingArray, context) async{
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final _bookingDetails = CourtBooking(
       id: _bookingId,
@@ -139,14 +139,16 @@ class MasterBooking {
         _masterBooking = MasterBooking(
           booked_courtTimeslot:
               MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
-          date: widget.dateList[dateIndex],
+          date: date,
           userId: global.USERID,
           bookingId: _bookingId,
         ).toJson();
-        masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
+        await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
           if (value.docs.length == 0) {
+            print("add adv");
             masterCourtBooking.add(_masterBooking);
           } else {
+            print("update adv");
             value.docs.forEach((element) {
               masterCourtBooking
                   .doc(element.id)
