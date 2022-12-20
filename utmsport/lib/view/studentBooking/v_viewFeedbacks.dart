@@ -34,11 +34,18 @@ class _ViewFeedbackState extends State<ViewFeedback> {
           if (!snapshot.hasData)
             return MyHomePage();
           else
-            return Column(children: [
-              Text("List of Feedbacks",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700)),
-              buildDatatable(snapshot)
-            ]);
+            return Row(
+              children: [
+                Expanded(
+                  child: Column(children: [
+                    Text("List of Feedbacks",
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w700)),
+                    Expanded(child: buildDatatable(snapshot))
+                  ]),
+                ),
+              ],
+            );
         });
   }
 
@@ -53,11 +60,11 @@ class _ViewFeedbackState extends State<ViewFeedback> {
         "comment": dataRow['comment'] ?? "",
       });
     }
-    print(listOfColumns);
+    // print(listOfColumns);
     return SingleChildScrollView(
       child: DataTable(
         headingRowColor:
-        MaterialStateColor.resolveWith((states) => Colors.lightBlueAccent),
+            MaterialStateColor.resolveWith((states) => Colors.lightBlueAccent),
         columns: [
           DataColumn(
             label: Text('#'),

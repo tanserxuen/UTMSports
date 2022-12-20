@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
 import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/appointment/listView_appointment.dart';
+import 'package:utmsport/view/appointment/v_requestList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart';
@@ -27,14 +28,20 @@ final USER = () async => await FFdb.collection("users").doc(USERID).get();
 
 var _userRole; //private
 setUserRole(data) => _userRole = data['roles'];
-getUserRole()=>_userRole;
+
+getUserRole() => _userRole;
 
 //==================Routes
-ADMIN_ROUTES(user) =>
-    [EventList(), ViewFeedback(), CreateAdvBookingCalendar(), ProfilePage()];
+ADMIN_ROUTES(user) => [
+      EventList(),
+      ViewFeedback(),
+      RequestListPage(),
+      CreateAdvBookingCalendar(),
+      ProfilePage()
+    ];
 
 STUDENT_ROUTES(user) =>
-    [LatestEventWall(), BookingCalendar(), homeScreen(user), ProfilePage()];
+    [LatestEventWall(), BookingCalendar(), FeedbackForm(), ProfilePage()];
 
 ATHLETE_ROUTES(user) =>
     [LatestEventWall(), BookingCalendar(), TeamAthletePage(), ProfilePage()];
@@ -42,8 +49,12 @@ ATHLETE_ROUTES(user) =>
 MANAGER_ROUTES(user) =>
     [LatestEventWall(), BookingCalendar(), SportTeamPage(), ProfilePage()];
 
-CLUB_ROUTES(user) =>
-    [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
+CLUB_ROUTES(user) => [
+      LatestEventWall(),
+      BookingCalendar(),
+      listViewAppointment(),
+      ProfilePage()
+    ];
 
 /*
 * */
