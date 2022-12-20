@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import "package:utmsport/globalVariable.dart" as global;
+import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
 
 class Event {
   String id;
   String name;
   String description;
-  String date;
+  DateTime date = DateTime.now();
   String image;
   String venue;
   String platform;
@@ -22,20 +22,6 @@ class Event {
     this.platform = "",
   });
 
-  factory Event.fromRawJson(String str) => Event.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory Event.fromJson(Map<String, dynamic> json) => Event(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        date: json["date"],
-        image: json["image"],
-        venue: json["venue"],
-        platform: json["platform"],
-      );
-
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
@@ -48,19 +34,19 @@ class Event {
 }
 
 void deleteEvents(context, id) async {
+  //TODO: update table after delete
   var eventColl = global.FFdb.collection('events');
   eventColl.where("id", isEqualTo: id).get().then((value) {
     value.docs.forEach((element) {
       eventColl.doc(element.id).delete().then((value) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('You have successfully deleted an event')));
+        Utils.showSnackBar('deleted an event', "red");
       });
     });
   });
 }
 
 void editEvents(context, event) async {
-  // print(event);
+  print(event);
   Navigator.push(
     context,
     MaterialPageRoute(

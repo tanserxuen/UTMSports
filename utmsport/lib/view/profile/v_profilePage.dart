@@ -41,63 +41,67 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.hasData) {
               var output = snapshot.data!.data();
               var name = output!['name'];
-              return Padding(
-                padding: EdgeInsets.all(60),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: snapshot.data?.data()!['image'] != ''
-                                ? NetworkImage(output['image'])
-                                : NetworkImage(
-                                    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'),
-                            fit: BoxFit.fitHeight),
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(60),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      //  TODO: Add Picture button here
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: snapshot.data?.data()!['image'] != ''
+                                  ? NetworkImage(output['image'])
+                                  : NetworkImage(
+                                      'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'),
+                              // image: NetworkImage(output['image']),
+                              fit: BoxFit.fitHeight),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      output['name'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 28,
-                        letterSpacing: -1,
+                      SizedBox(height: 20),
+                      Text(
+                        output['name'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                          letterSpacing: -1,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(output['roles']),
-                    Text(email!),
-                    Text(output['matric']),
-                    SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfileUpdatePage()));
-                      },
-                      icon: Icon(Icons.attribution_sharp, size: 22),
-                      label: Text('Update Information'),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(35),
+                      SizedBox(height: 20),
+                      Text(output['roles']),
+                      Text("${FirebaseAuth.instance.currentUser?.email}"),
+                      Text(output['matric']),
+                      SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileUpdatePage()));
+                        },
+                        icon: Icon(Icons.attribution_sharp, size: 22),
+                        label: Text('Update Information'),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size.fromHeight(35),
+                        ),
                       ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () => global.FA.signOut(),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(35),
+                      ElevatedButton.icon(
+                        onPressed: () => FirebaseAuth.instance.signOut(),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size.fromHeight(35),
+                        ),
+                        icon: Icon(Icons.arrow_back, size: 22),
+                        label: Text(
+                          'Sign Out',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
-                      icon: Icon(Icons.arrow_back, size: 22),
-                      label: Text(
-                        'Sign Out',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }

@@ -1,10 +1,7 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view/appointment/listView_appointment.dart';
-import 'package:utmsport/view/sportTeam//v_displaySportTeamList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 
 import '../view_calendarPage.dart';
@@ -39,9 +36,6 @@ Widget homeScreen(user) => Padding(
       ),
     );
 
-
-
-
 navScreen(user) {
   List routes = [];
   switch (global.getUserRole()) {
@@ -62,6 +56,5 @@ navScreen(user) {
     default:
       routes = global.STUDENT_ROUTES(user);
   }
-  ;
   return routes;
 }

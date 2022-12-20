@@ -56,18 +56,6 @@ DateTime _parseDateFormat(timestamp) {
   return t;
 }
 
-final colorCollection = [
-  Colors.redAccent,
-  Colors.amber,
-  Colors.orangeAccent,
-  Colors.blueAccent,
-  Colors.greenAccent,
-  Colors.pink,
-  Colors.purpleAccent,
-  Colors.yellowAccent,
-  Colors.white54,
-];
-
 final timeSlotViewSettings = TimeSlotViewSettings(
   // timeIntervalHeight: 50,
   minimumAppointmentDuration: Duration(minutes: 30),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:utmsport/model/m_Event.dart';
+import 'package:utmsport/utils.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -20,8 +21,7 @@ class FormScreen extends StatefulWidget {
   FormScreen({this.formType: "create", this.eventModel: null});
 
   @override
-  State<StatefulWidget> createState() =>
-      FormScreenState(event: this.eventModel);
+  State<FormScreen> createState() => FormScreenState(event: this.eventModel);
 }
 
 class FormScreenState extends State<FormScreen> {
@@ -33,7 +33,7 @@ class FormScreenState extends State<FormScreen> {
   String _eventName = "";
   String _description = "";
   String _venue = "";
-  String _date = "";
+  DateTime _date = DateTime.now();
   String _platform = "";
   String _imageUrl = "";
   String _imgPlaceholder =
@@ -49,18 +49,19 @@ class FormScreenState extends State<FormScreen> {
   final controllerDate = TextEditingController();
   final controllerPlatform = TextEditingController();
 
-  // final controllerImage = TextEditingController();
-  final eventController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    controllerEventName.text = widget.eventModel?['name'] ?? "";
-    controllerDescription.text = widget.eventModel?['description'] ?? "";
-    controllerVenue.text = widget.eventModel?['venue'] ?? "";
-    controllerDate.text = widget.eventModel?['date'] ?? "";
-    controllerPlatform.text = widget.eventModel?['platform'] ?? "";
-    _imageUrl = widget.eventModel?['imageUrl'] ?? _imgPlaceholder;
+    controllerEventName.text = widget.eventModel?.name ?? "";
+    controllerDescription.text = widget.eventModel?.description ?? "";
+    controllerVenue.text = widget.eventModel?.venue ?? "";
+    var _setDate = widget.eventModel?.date ?? "";
+    controllerDate.text = _setDate != ""
+        ? Utils.parseDateTimeToFormatDate(widget.eventModel?.date,
+            format: 'yyyy-MM-dd')
+        : _setDate;
+    controllerPlatform.text = widget.eventModel?.platform ?? "";
+    _imageUrl = widget.eventModel?.image ?? _imgPlaceholder;
   }
 
   Widget _buildEventNameField() {
@@ -114,8 +115,8 @@ class FormScreenState extends State<FormScreen> {
               lastDate: DateTime(2100));
           if (value == null) return null;
           setState(() => {
-                _date = DateFormat('yyyy-MM-dd').format(value),
-                controllerDate.text = _date,
+                _date = value,
+                controllerDate.text = DateFormat('yyyy-MM-dd').format(value),
               });
         });
   }
@@ -133,10 +134,10 @@ class FormScreenState extends State<FormScreen> {
   Widget _buildImageField() {
     const double _imgHeight = 150;
     const double _imgWidth = 150;
-    _imageUrl = widget.eventModel?['image'] ?? _imgPlaceholder;
+    // _imageUrl = widget.eventModel?.image ?? _imgPlaceholder;
     return Column(
       children: [
-        //TODO: Image not updated when upload image
+        //TODO:m Image not updated when upload image
         // Image.network(
         //   _imageUrl,
         //   height: _imgHeight,
@@ -187,7 +188,7 @@ class FormScreenState extends State<FormScreen> {
       venue: controllerVenue.text.trim(),
       platform: controllerPlatform.text.trim(),
       image: _imageUrl,
-      date: controllerDate.text,
+      date: _date,
     ).toJson();
 
     CollectionReference events =
@@ -195,15 +196,17 @@ class FormScreenState extends State<FormScreen> {
 
     try {
       if (widget.formType == 'create')
-        events.add(_event);
+        events.add(_event).then((_) {
+          Utils.showSnackBar("${widget.formType} an event", "green");
+        });
       else
         events
-            .where("id", isEqualTo: widget.eventModel?['id'])
+            .where("id", isEqualTo: widget.eventModel?.id)
             .get()
             .then((value) {
           value.docs.forEach((element) {
-            events.doc(element.id).update(_event).then((value) {
-              print("Success!");
+            events.doc(element.id).update(_event).then((_) {
+              Utils.showSnackBar("${widget.formType} an event", "green");
             });
           });
         });
@@ -217,61 +220,60 @@ class FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Container(
-          margin: EdgeInsets.all(12),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                SizedBox(
-                  height: 50,
-                ),
-                Text("Create Events",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          _buildEventNameField(),
-                          _buildDescriptionField(),
-                          _buildVenueField(),
-                          _buildDateField(),
-                          _buildPlatformField(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _buildImageField(),
-                          SizedBox(height: 50),
-                          ElevatedButton(
-                            child: Text("Submit",
-                                style:
-                                    TextStyle(color: Colors.white, fontSize: 16)),
-                            onPressed: () {
-                              // timer = Timer.periodic(
-                              //     Duration(seconds: 2),
-                              //     (_) => {
-                              if (!_formKey.currentState!.validate()) {
-                              } else {
-                                _formKey.currentState!.save();
-                                insertEventDetails();
-                              }
-                              // });
-                            },
-                          )
-                        ],
-                      ),
+      body: Container(
+        margin: EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Text("Create Events",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildEventNameField(),
+                        _buildDescriptionField(),
+                        _buildVenueField(),
+                        _buildDateField(),
+                        _buildPlatformField(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        _buildImageField(),
+                        SizedBox(height: 50),
+                        ElevatedButton(
+                          child: Text("Submit",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          onPressed: () {
+                            // timer = Timer.periodic(
+                            //     Duration(seconds: 2),
+                            //     (_) => {
+                            if (!_formKey.currentState!.validate()) {
+                            } else {
+                              _formKey.currentState!.save();
+                              insertEventDetails();
+                            }
+                            // });
+                          },
+                        )
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pop(context),
         child: Icon(Icons.arrow_back_rounded, size: 25),
