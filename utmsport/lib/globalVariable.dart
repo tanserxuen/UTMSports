@@ -30,10 +30,10 @@ getUserRole()=>_userRole;
 
 //==================Routes
 ADMIN_ROUTES(user) => [LatestEventWall(), EventList(), RequestListPage(), ProfilePage()];
-STUDENT_ROUTES(user) => [homeScreen(user), BookingCalendar(), listViewAppointment(), ProfilePage()];
-ATHLETE_ROUTES(user) => [homeScreen(user), homeScreen(user), TeamAthletePage(), ProfilePage()];
-MANAGER_ROUTES(user) => [homeScreen(user), homeScreen(user), SportTeamPage(), ProfilePage()];
-CLUB_ROUTES(user) => [LatestEventWall(), homeScreen(user), listViewAppointment(), ProfilePage()];
+STUDENT_ROUTES(user) => [homeScreen(user), BookingCalendar(), homeScreen(user), ProfilePage()];
+ATHLETE_ROUTES(user) => [homeScreen(user), BookingCalendar(), TeamAthletePage(), ProfilePage()];
+MANAGER_ROUTES(user) => [homeScreen(user), BookingCalendar(), SportTeamPage(), ProfilePage()];
+CLUB_ROUTES(user) => [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
 
 /*
 * */

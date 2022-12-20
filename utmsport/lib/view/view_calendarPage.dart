@@ -372,20 +372,20 @@ class _CalendarState extends State<Calendar> {
           if(snapshot.hasData){
             List allAppointment = snapshot.data!.docs;
             if(allAppointment.isNotEmpty){
-              _appts = _groupAppoints(allAppointment);
+              // _appts = _groupAppoints(allAppointment);
               // print(_appts);
             }
             return Column(
               children: [
                 TableCalendar(
-                  eventLoader: (day) {
-                    final events = LinkedHashMap(
-                      equals: isSameDay,
-                      hashCode: getHashCode,
-                    )..addAll(_appts);
-                    //TODO: need to solve the conflict day and getHashCode.
-                    return events[day] ?? [];
-                  },
+                  // eventLoader: (day) {
+                  //   final events = LinkedHashMap(
+                  //     equals: isSameDay,
+                  //     hashCode: getHashCode,
+                  //   )..addAll(_appts);
+                  //   //TODO: need to solve the conflict day and getHashCode.
+                  //   return events[day] ?? [];
+                  // },
                   firstDay: DateTime(1980),
                   lastDay: DateTime(2050),
                   focusedDay: _focusedDay,

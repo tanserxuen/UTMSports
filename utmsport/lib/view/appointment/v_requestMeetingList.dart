@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
 
 class RequestMeetingList extends StatefulWidget {
@@ -37,6 +38,8 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                     itemBuilder: (content, index) {
                       final DocumentSnapshot documentSnapshot =
                           snapshot.data!.docs[index];
+
+                      // print(documentSnapshot['date'].runtimeType);
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -97,7 +100,7 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                                                   padding: EdgeInsets.fromLTRB(
                                                       12, 5, 12, 5),
                                                   child: Text(
-                                                    documentSnapshot['date'],
+                                                    DateFormat('dd/MM/yyyy').format(documentSnapshot['date'].toDate()),
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
@@ -125,7 +128,7 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                                                   padding: EdgeInsets.fromLTRB(
                                                       12, 5, 12, 5),
                                                   child: Text(
-                                                    documentSnapshot['time'],
+                                                    DateFormat('HH:mm').format(documentSnapshot['date'].toDate()),
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
@@ -288,7 +291,6 @@ update(DocumentSnapshot? documentSnapshot, String status) async {
     'phoneno': documentSnapshot['phoneno'],
     'pic': documentSnapshot['pic'],
     'status': status,
-    'time': documentSnapshot['time'],
     'uid': documentSnapshot['uid']
   });
 }
