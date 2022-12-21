@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+
 import 'package:utmsport/view/shared/v_bottom_layout.dart' as bottomBar;
+import 'package:utmsport/globalVariable.dart' as global;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
+  int _currentIndex = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
           destinations: bottomBar.destinations,
         ),
       ),
-      // floatingActionButton: bottomBar.BookingButton(context),
+      floatingActionButton: global.getUserRole() == 'admin'
+          ? bottomBar.BookingButton(context)
+          : null,
       // floatingActionButtonLocation: bottomBar.fabLocation,
     );
   }

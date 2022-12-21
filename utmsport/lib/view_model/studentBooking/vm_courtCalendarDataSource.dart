@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:utmsport/model/m_MasterBooking.dart';
 
 class DataSource extends CalendarDataSource {
   DataSource(List<Appointment> source, List<CalendarResource> resourceColl) {
@@ -14,17 +13,14 @@ DataSource getCalendarBookingData(List appData) {
   late List<Appointment> appointments = <Appointment>[];
   late List<CalendarResource> resources = <CalendarResource>[];
   getCourts(resources);
-  // print(DateTime.now());
-  // print(DateTime(2022, 11, 13, 12, 0, 0));
   getAppointments(appointments, appData);
   return DataSource(appointments, resources);
 }
 
 List<CalendarResource> getCourts(resources) {
-  for (int index = 1; index < 9; index++) {
+  for (int index = 1; index <= MasterBooking.badmintonCourt; index++) {
     resources.add(
       CalendarResource(
-        // displayName: "Court $index",
         id: "${index.toString().padLeft(4, '0')}",
         displayName: "Court $index",
         color: (index) % 2 == 1 ? Colors.amber : Colors.orangeAccent,
@@ -34,30 +30,89 @@ List<CalendarResource> getCourts(resources) {
   return resources;
 }
 
-void getAppointments(appointments, appData) {
-  appData.forEach((appDetails) => {
-    if(appDetails['id']=='cuktubE2pvNRJbtLlSxD')
-        appointments.add(Appointment(
-          startTime: _parseDateFormat(appDetails['startTime']),
-          // startTime: DateTime.now(),
-          // endTime: DateTime.now().add(Duration(hours: 2)),
-          endTime: _parseDateFormat(appDetails['endTime']),
-          subject: appDetails['subject'],
-          color: Color(int.parse(appDetails['color'])),
-          resourceIds: List.from(appDetails['resourceIds']),
-        ))
-      });
+Map getCourtTimeslotDisplay(booked) {
+  String date = booked.keys.toList()[0];
+  List slots = booked.values.toList()[0], times = [];
+  int timeslot = 0;
+  var resourceIds = [], startTime = [], endTime = [];
+  var court, iterate=0;
+  for(int j=0;j<slots.length;j++){
+    var slot = slots[j];
+    var slotValue = slot.split(' ');
+    String dateToParse = date.split(' ')[0];
+    String timeToParse = MasterBooking.timeslot[j];
+    print(slotValue[0]);
+    if (court == null) {
+      court = slotValue[0];
+      iterate=1;
+      startTime.add(DateTime.parse("$dateToParse $timeToParse"));
+      resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
+      // print("null ${slotValue[0]} iterate $iterate");
+
+
+    } else if (slotValue[0] == court) {
+      timeslot = int.parse(slotValue[1]);
+      endTime.add(
+          DateTime.parse("$dateToParse $timeToParse").add(Duration(minutes: 30*iterate)));
+      iterate=0;
+      // print("remain ${slotValue[0]} iterate $iterate");
+
+
+    } else if (slotValue[0] != court) {
+      court = slotValue[0];
+      iterate+=1;
+      startTime.add(DateTime.parse("$dateToParse $timeToParse"));
+      resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
+      // print("updated ${slotValue[0]} iterate $iterate");
+
+
+    }
+    if(j==slots.length-1 && startTime.length!=endTime.length){
+      endTime.add(
+          DateTime.parse("$dateToParse $timeToParse").add(Duration(minutes: 30)));
+    }
+  }
+  // print("startTimeeeeeee ${startTime}");
+  // print("endTimeeeeeee ${endTime}");
+  return {
+    'startTime': startTime,
+    'endTime': endTime,
+    'resourceIds': resourceIds.toList().cast<Object>(),
+  };
 }
 
-DateTime _parseDateFormat(timestamp) {
-  var t = (timestamp as Timestamp).toDate();
-  print(t);
-  print(DateTime.now());
-  return t;
+void getAppointments(appointments, appData) {
+  if (appData.length == 0) return;
+
+  var appointmentList = [], subject, color;
+  appData.forEach((appDetails) {
+    subject = appDetails['subject'];
+    color = Color(int.parse(appDetails['color']));
+    appointmentList.add(
+      appDetails['startTime'].map((booked) => getCourtTimeslotDisplay(booked)),
+    );
+  });
+  print(appointmentList.length);
+  appointmentList[0].forEach((element) {
+    for (int i = 0; i < element['startTime'].length; i++) {
+      // print(" =================================== ${element['startTime']}");
+      // print({
+      //   "endTime": element['endTime'][i],
+      //   "startTime": element['startTime'][i],
+      //   "resourceIds": element['resourceIds'],
+      // });
+      appointments.add(Appointment(
+        subject: subject,
+        color: color,
+        endTime: element['endTime'][i],
+        startTime: element['startTime'][i],
+        resourceIds: element['resourceIds'],
+      ));
+    }
+  });
 }
 
 final timeSlotViewSettings = TimeSlotViewSettings(
-  // timeIntervalHeight: 50,
   minimumAppointmentDuration: Duration(minutes: 30),
   timelineAppointmentHeight: 100,
   startHour: 10,
@@ -66,9 +121,9 @@ final timeSlotViewSettings = TimeSlotViewSettings(
 );
 
 final resourceViewSettings = ResourceViewSettings(
+  size: 60,
   showAvatar: false,
   visibleResourceCount: 8,
-  size: 60,
   displayNameTextStyle: TextStyle(
       fontStyle: FontStyle.italic, fontSize: 15, fontWeight: FontWeight.w700),
 );
@@ -89,3 +144,15 @@ List<TimeRegion> getBreakTime() {
   );
   return regions;
 }
+
+List<CalendarView> getAllowedViews(bool isAdmin) => isAdmin
+    ? <CalendarView>[
+        CalendarView.schedule,
+        CalendarView.timelineDay,
+        CalendarView.timelineMonth,
+        CalendarView.month
+      ]
+    : <CalendarView>[CalendarView.schedule, CalendarView.timelineDay];
+
+getCalendarView(isAdmin, stuView) =>
+    isAdmin || stuView ? CalendarView.month : CalendarView.timelineDay;

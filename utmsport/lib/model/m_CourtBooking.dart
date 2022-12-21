@@ -11,8 +11,8 @@ class CourtBooking {
   String status;
   dynamic createdAt;
 
-  dynamic startTime;
-  dynamic endTime;
+  dynamic startTime; //List<DateTime> to tackle adv
+  dynamic endTime; //List<DateTime> to tackle adv
   dynamic resourceIds = [];
   String name1;
   String matric1;
@@ -70,17 +70,20 @@ class CourtBooking {
     this.phoneNo = "",
   });
 
-  final colorCollection = [
-    Colors.redAccent,
-    Colors.amber,
-    Colors.orangeAccent,
-    Colors.blueAccent,
-    Colors.greenAccent,
-    Colors.pink,
-    Colors.purpleAccent,
-    Colors.yellowAccent,
-    Colors.white54,
-  ];
+  final colorCollection = () {
+    List colors = [
+      Colors.redAccent,
+      Colors.amber,
+      Colors.orangeAccent,
+      Colors.blueAccent,
+      Colors.greenAccent,
+      Colors.pink,
+      Colors.purpleAccent,
+      Colors.yellowAccent,
+      Colors.white54,
+    ];
+    return colors.map((e) => e.value.toRadixString(16));
+  };
 
   Map<String, dynamic> advToJson() => {
         "id": id,
@@ -96,23 +99,23 @@ class CourtBooking {
       };
 
   Map<String, dynamic> stuToJson() => {
-    "id":id,
-    "userId":userId,
-    "startTime":startTime,
-    "endTime":endTime,
-    "subject":subject,
-    "status":status,
-    "createdAt":createdAt,
-    "resourceIds":resourceIds,
-    "isAllDay":isAllDay,
-    "color":color,
-    "name1":name1,
-    "matric1":matric1,
-    "name2":name2,
-    "matric2":matric2,
-    "name3":name3,
-    "matric3":matric3,
-    "name4":name4,
-    "matric4":matric4,
-  };
+        "id": id,
+        "userId": userId,
+        "startTime": startTime,
+        "endTime": endTime,
+        "subject": subject,
+        "status": status,
+        "createdAt": createdAt,
+        "resourceIds": resourceIds,
+        "isAllDay": isAllDay,
+        "color": color,
+        "name1": name1,
+        "matric1": matric1,
+        "name2": name2,
+        "matric2": matric2,
+        "name3": name3,
+        "matric3": matric3,
+        "name4": name4,
+        "matric4": matric4,
+      };
 }

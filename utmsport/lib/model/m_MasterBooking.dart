@@ -6,26 +6,24 @@ import 'package:utmsport/utils.dart';
 import 'package:utmsport/model/m_CourtBooking.dart';
 
 class MasterBooking {
-  static final timeslot = [
-    1000,
-    1030,
-    1100,
-    1130,
-    1200,
-    1230,
-    1400,
-    1430,
-    1500,
-    1530,
-    1600,
-    1630,
-    1700,
-    1730,
-    1800,
-    1830,
+  static final List<String> timeslot = [
+    "10:00:00",
+    "10:30:00",
+    "11:00:00",
+    "11:30:00",
+    "14:00:00",
+    "14:30:00",
+    "15:00:00",
+    "15:30:00",
+    "16:00:00",
+    "16:30:00",
+    "17:00:00",
+    "17:30:00",
+    "18:00:00",
+    "18:30:00",
   ];
 
-  static final badmintonCourt = 11;
+  static final int badmintonCourt = 11;
 
   List<dynamic> booked_courtTimeslot;
   DateTime date;
@@ -47,6 +45,15 @@ class MasterBooking {
         "userId": userId,
         "bookingId": bookingId,
       };
+
+  static mapStartTime(selectedCourtTimeslot, dateList) {
+    List a = selectedCourtTimeslot.map((e) {
+      int index = selectedCourtTimeslot.indexOf(e);
+      return {"${dateList[index]}": e};
+    }).toList();
+    // print(a[0]['2022-12-19 00:00:00.000']);
+    return a;
+  }
 
   static List nestedArrayToObject(
     courtTimeslot,
@@ -111,7 +118,10 @@ class MasterBooking {
 
   //TODO: cm-add sports-type into master-booking db
   static void insertAdvBooking(
-      dynamic widget, List<List<List<String>>> masterBookingArray, context) async{
+      dynamic widget,
+      List<List<List<String>>> masterBookingArray,
+      context,
+      selectedCourtTimeslot) async {
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final _bookingDetails = CourtBooking(
       id: _bookingId,
@@ -122,8 +132,8 @@ class MasterBooking {
       createdAt: Timestamp.fromDate(DateTime.now()),
       personInCharge: "Joan",
       attachment: "insert file",
-      startTime: widget.dateList.first,
-      endTime: widget.dateList.last,
+      startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
+      endTime: widget.dateList,
     ).advToJson();
 
     var _masterBooking;
@@ -132,37 +142,41 @@ class MasterBooking {
         global.FFdb.collection('student_appointments');
     CollectionReference masterCourtBooking =
         global.FFdb.collection('master_booking');
-    try {
-      advCourtBooking.add(_bookingDetails);
-      for (int dateIndex = 0; dateIndex < widget.dateList.length; dateIndex++) {
-        var date = widget.dateList[dateIndex];
-        _masterBooking = MasterBooking(
-          booked_courtTimeslot:
-              MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
-          date: date,
-          userId: global.USERID,
-          bookingId: _bookingId,
-        ).toJson();
-        await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
-          if (value.docs.length == 0) {
-            print("add adv");
-            masterCourtBooking.add(_masterBooking);
-          } else {
-            print("update adv");
-            value.docs.forEach((element) {
-              masterCourtBooking
-                  .doc(element.id)
-                  .update(_masterBooking)
-                  .then((_) {
-                Utils.showSnackBar("Updated an advanced booking", "green");
+
+      try {
+        //add student_appointments
+        advCourtBooking.add(_bookingDetails);
+
+        //add master_booking
+        for (int dateIndex = 0; dateIndex < widget.dateList.length; dateIndex++) {
+          var date = widget.dateList[dateIndex];
+          _masterBooking = MasterBooking(
+            booked_courtTimeslot:
+                MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
+            date: date,
+            userId: global.USERID,
+            bookingId: _bookingId,
+          ).toJson();
+          await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
+            if (value.docs.length == 0) {
+              print("add adv");
+              masterCourtBooking.add(_masterBooking);
+            } else {
+              print("update adv");
+              value.docs.forEach((element) {
+                masterCourtBooking
+                    .doc(element.id)
+                    .update(_masterBooking)
+                    .then((_) {
+                  Utils.showSnackBar("Updated an advanced booking", "green");
+                });
               });
-            });
-          }
-        });
+            }
+          });
+        }
+        Navigator.pushNamed(context, '/');
+      } catch (e) {
+        print(e);
       }
-      Navigator.pushNamed(context, '/');
-    } catch (e) {
-      print(e);
-    }
   }
 }

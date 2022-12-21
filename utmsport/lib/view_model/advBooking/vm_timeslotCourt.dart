@@ -109,7 +109,6 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
               setState(() {
                 widget.setSelectedCourtArrayCallback("$x $y", index, "add");
                 courtTimeslot[x][y] = "Check";
-                print("set check ${courtTimeslot[x][y]}");
               });
             },
             child: Text(courtTimeslot[x][y]));

@@ -1,16 +1,34 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:utmsport/globalVariable.dart' as global;
-// import 'package:utmsport/view/appointment/listView_appointment.dart';
-// import 'package:utmsport/view/profile/v_profilePage.dart';
-//
-// import '../view_calendarPage.dart';
+import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 
 Widget BookingButton(BuildContext context) {
   return (FloatingActionButton(
     tooltip: "Booking",
     onPressed: () => {
-      Navigator.pushNamed(context, '/student-booking'),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: Container(
+              margin: EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  SizedBox(height: 50),
+                  Text(
+                    "Advanced Booking",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: CreateAdvBookingCalendar(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     },
     child: Icon(Icons.add, size: 32),
   ));
@@ -37,11 +55,13 @@ navScreen(user) {
     case 'admin':
       routes = global.ADMIN_ROUTES(user);
       destinations = [
-        NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
-        NavigationDestination(icon: Icon(Icons.question_answer), label: 'Feedback'),
         NavigationDestination(
-            icon: Icon(Icons.add_alarm), label: 'Appts'),
-        NavigationDestination(icon: Icon(Icons.edit_calendar), label: 'Advance'),
+            icon: Icon(Icons.calendar_today), label: 'Events'),
+        NavigationDestination(
+            icon: Icon(Icons.question_answer), label: 'Feedback'),
+        NavigationDestination(icon: Icon(Icons.add_alarm), label: 'Appts'),
+        NavigationDestination(
+            icon: Icon(Icons.edit_calendar), label: 'Advance'),
         NavigationDestination(icon: Icon(Icons.person), label: 'Profile')
       ];
       break;
@@ -49,7 +69,8 @@ navScreen(user) {
     case 'coach':
       routes = global.ATHLETE_ROUTES(user);
       destinations = [
-        NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
+        NavigationDestination(
+            icon: Icon(Icons.calendar_today), label: 'Events'),
         NavigationDestination(
             icon: Icon(Icons.calendar_today_outlined), label: 'Bookings'),
         NavigationDestination(icon: Icon(Icons.groups), label: 'Trainings'),
@@ -59,7 +80,8 @@ navScreen(user) {
     case 'manager':
       routes = global.MANAGER_ROUTES(user);
       destinations = [
-        NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
+        NavigationDestination(
+            icon: Icon(Icons.calendar_today), label: 'Events'),
         NavigationDestination(
             icon: Icon(Icons.calendar_today_outlined), label: 'Bookings'),
         NavigationDestination(icon: Icon(Icons.group), label: 'SportTeam'),
@@ -70,7 +92,8 @@ navScreen(user) {
     case 'organizer':
       routes = global.CLUB_ROUTES(user);
       destinations = [
-        NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
+        NavigationDestination(
+            icon: Icon(Icons.calendar_today), label: 'Events'),
         NavigationDestination(
             icon: Icon(Icons.calendar_today_outlined), label: 'Bookings'),
         NavigationDestination(icon: Icon(Icons.list), label: 'Appointments'),
@@ -80,10 +103,12 @@ navScreen(user) {
     default: //student
       routes = global.STUDENT_ROUTES(user);
       destinations = [
-        NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
+        NavigationDestination(
+            icon: Icon(Icons.calendar_today), label: 'Events'),
         NavigationDestination(
             icon: Icon(Icons.calendar_today_outlined), label: 'Bookings'),
-        NavigationDestination(icon: Icon(Icons.chat_bubble_rounded), label: 'Feedback'),
+        NavigationDestination(
+            icon: Icon(Icons.chat_bubble_rounded), label: 'Feedback'),
         NavigationDestination(icon: Icon(Icons.person), label: 'Profile')
       ];
   }

@@ -69,7 +69,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("${selectedCourtTimeslot.toString()}"),
+                        // Text("${selectedCourtTimeslot.toString()}"),
                         ..._buildAccordianCourtTimeslot(),
                         _buildAttachmentField(),
                         _buildPICField(),
@@ -191,7 +191,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         if (!_formKey.currentState!.validate()) {
         } else {
           _formKey.currentState!.save();
-          MasterBooking.insertAdvBooking(widget, masterBookingArray, context);
+          MasterBooking.insertAdvBooking(widget, masterBookingArray, context, selectedCourtTimeslot);
         }
       },
     );

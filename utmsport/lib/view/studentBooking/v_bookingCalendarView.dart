@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+
 import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
 
@@ -12,103 +13,82 @@ class BookingCalendar extends StatefulWidget {
 }
 
 class _BookingCalendarState extends State<BookingCalendar> {
-  CalendarController _calendarController = CalendarController();
-  late Appointment _selectedAppointment;
-  late int _selectedResourceIndex;
+  late List appData = [];
+  final timeNow = DateTime.now();
+  bool stuView = false;
+  final isAdmin = global.getUserRole() == 'admin';
 
+  CalendarController _calendarController = CalendarController();
   final CollectionReference appointmentList =
       FirebaseFirestore.instance.collection("student_appointments");
 
-  late List appData = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchAppointments();
+  }
 
-  Future<List?> getAppointmentsFromDB() async {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Padding(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _buildStudentViewButton(isAdmin, stuView),
+          _buildAdvancedCalendarView(),
+        ],
+      ),
+    ));
+  }
+
+  fetchAppointments() async {
     List _appData = [];
-
     try {
       await appointmentList.get().then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));
       });
-
-      return _appData; // This is missing
+      setState(() => this.appData = _appData);
     } catch (e) {
       print(e.toString());
       return null;
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    getAppointmentsFromDB().then((data) {
-      setState(() {
-        this.appData = data!;
-      });
-    });
+  Widget _buildStudentViewButton(isAdmin, stuView) {
+    return Visibility(
+      visible: isAdmin,
+      child: ElevatedButton(
+        onPressed: () => stuView = true,
+        child: Text("Student View"),
+      ),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    late dynamic appointment;
-    late DateTime date;
-    late CalendarElement element;
-    late bool canBook = false;
-    late Color bookBtnColor = canBook ? Colors.blue : Colors.grey;
-
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final tomorrow = DateTime(now.year, now.month, now.day + 1);
-
-    var courtsToBook;
-
-    bool stuView = false;
-    final isAdmin = global.getUserRole() == 'student';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Visibility(
-            visible: isAdmin,
-            child: ElevatedButton(
-                onPressed: () => stuView = true, child: Text("Student View"))),
-        Expanded(
-          child: SfCalendar(
-            controller: _calendarController,
-            onViewChanged: (ViewChangedDetails details) {
-              List<DateTime> dates = details.visibleDates;
-              print(dates);
-            },
-            onLongPress: (CalendarLongPressDetails details) {
-              appointment = details.appointments;
-              date = details.date!;
-              element = details.targetElement;
-              // if (appointment == null && ) {
-              //   courtsToBook
-              // } else
-              //   canBook = false;
-              // canBook = appointment ?? true;
-              // print("appointment ${appointment}");
-              // print("date ${date}");
-              // print("element ${element.index}");
-            },
-            view: isAdmin || stuView
-                ? CalendarView.month
-                : CalendarView.timelineDay,
-            minDate: today,
-            maxDate: tomorrow,
-            dataSource: getCalendarBookingData(this.appData),
-            // showDatePickerButton: true,
-            allowViewNavigation: true,
-            allowedViews: <CalendarView>[
-              CalendarView.schedule,
-              CalendarView.timelineDay
-            ],
-            timeSlotViewSettings: timeSlotViewSettings,
-            specialRegions: isAdmin || stuView ? null : getBreakTime(),
-            resourceViewSettings: resourceViewSettings,
-          ),
-        ),
-      ],
+  Widget _buildAdvancedCalendarView() {
+    bool canShowStudentView = isAdmin || stuView;
+    final today = canShowStudentView
+        ? null
+        : DateTime(timeNow.year, timeNow.month, timeNow.day);
+    final tomorrow = canShowStudentView
+        ? null
+        : DateTime(timeNow.year, timeNow.month, timeNow.day, 23, 59, 59);
+    //TODO: think adv can book multiple date, so how to store data to display in calendar view
+    return Expanded(
+      child: SfCalendar(
+        controller: _calendarController,
+        view: getCalendarView(isAdmin, stuView),
+        // minDate: today,
+        // maxDate: tomorrow,
+        dataSource: getCalendarBookingData(this.appData),
+        showDatePickerButton: canShowStudentView ? true : false,
+        allowViewNavigation: canShowStudentView ? true : false,
+        allowedViews: getAllowedViews(isAdmin),
+        timeSlotViewSettings: timeSlotViewSettings,
+        specialRegions: canShowStudentView ? null : getBreakTime(),
+        resourceViewSettings: resourceViewSettings,
+      ),
     );
   }
 }

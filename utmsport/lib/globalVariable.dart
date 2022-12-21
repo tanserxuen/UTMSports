@@ -8,7 +8,6 @@ import 'package:utmsport/view/appointment/listView_appointment.dart';
 import 'package:utmsport/view/appointment/v_requestList.dart';
 import 'package:utmsport/view/profile/v_profilePage.dart';
 import 'package:utmsport/view/adminPost/v_eventList.dart';
-import 'package:utmsport/view/shared/v_bottom_layout.dart';
 import 'package:utmsport/view/sportTeam/v_displaySportTeamList.dart';
 import 'package:utmsport/view/sportTeam/v_teamAthletePage.dart';
 import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
@@ -36,7 +35,7 @@ ADMIN_ROUTES(user) => [
       EventList(),
       ViewFeedback(),
       RequestListPage(),
-      CreateAdvBookingCalendar(),
+      BookingCalendar(),
       ProfilePage()
     ];
 
