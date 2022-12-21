@@ -32,7 +32,7 @@ setUserRole(data) => _userRole = data['roles'];
 getUserRole() => _userRole;
 
 //==================Routes
-ADMIN_ROUTES(user) => [
+ADMIN_ROUTES(user) => [//     mihile2010@gmail.com    mihile20
       EventList(),
       ViewFeedback(),
       RequestListPage(),
@@ -44,17 +44,16 @@ STUDENT_ROUTES(user) =>
     [LatestEventWall(), BookingCalendar(), FeedbackForm(), ProfilePage()];
 
 ATHLETE_ROUTES(user) =>
+//    athlete: cmtan0108@gmail.com     123456
     [LatestEventWall(), BookingCalendar(), TeamAthletePage(), ProfilePage()];
 
 MANAGER_ROUTES(user) =>
+//    cmtan-2000@graduate.utm.my 123123
     [LatestEventWall(), BookingCalendar(), SportTeamPage(), ProfilePage()];
 
-CLUB_ROUTES(user) => [
-      LatestEventWall(),
-      BookingCalendar(),
-      listViewAppointment(),
-      ProfilePage()
-    ];
+CLUB_ROUTES(user) =>
+//    crimsontan2000@gmail.com      123456
+    [LatestEventWall(), BookingCalendar(), listViewAppointment(), ProfilePage()];
 
 /*
 * */
