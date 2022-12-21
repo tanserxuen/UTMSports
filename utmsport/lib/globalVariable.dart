@@ -7,6 +7,7 @@ import 'package:utmsport/view/adminPost/v_eventList.dart';
 import 'package:utmsport/view/shared/v_bottom_layout.dart';
 import 'package:utmsport/view/studentBooking/v_bookingCalendarView.dart';
 import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
+import 'package:utmsport/view_model/appointment/vm_appmntwidget.dart';
 import 'athlete/menuListView_athlete_trainNbooking.dart';
 import 'athlete/menu_athlete_bookingForm.dart';
 import 'cm_booking/menuListView_cm_Booking.dart';
