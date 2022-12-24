@@ -32,19 +32,24 @@ List<CalendarResource> getCourts(resources) {
 
 Map getCourtTimeslotDisplay(booked) {
   String date = booked.keys.toList()[0];
-  List slots = booked.values.toList()[0], times = [];
+  List slots = booked.values.toList()[0],
+      times = [];
   int timeslot = 0;
-  var resourceIds = [], startTime = [], endTime = [];
-  var court, iterate=0;
-  for(int j=0;j<slots.length;j++){
+  var resourceIds = [],
+      startTime = [],
+      endTime = [];
+  var court,
+      iterate = 0;
+  print(booked);
+  for (int j = 0; j < slots.length; j++) {
     var slot = slots[j];
     var slotValue = slot.split(' ');
     String dateToParse = date.split(' ')[0];
-    String timeToParse = MasterBooking.timeslot[j];
-    print(slotValue[0]);
+    String timeToParse = MasterBooking.timeslot[int.parse(slotValue[1])];
+    // print(slotValue[1]);
     if (court == null) {
       court = slotValue[0];
-      iterate=1;
+      iterate = 1;
       startTime.add(DateTime.parse("$dateToParse $timeToParse"));
       resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
       // print("null ${slotValue[0]} iterate $iterate");
@@ -53,23 +58,23 @@ Map getCourtTimeslotDisplay(booked) {
     } else if (slotValue[0] == court) {
       timeslot = int.parse(slotValue[1]);
       endTime.add(
-          DateTime.parse("$dateToParse $timeToParse").add(Duration(minutes: 30*iterate)));
-      iterate=0;
+          DateTime.parse("$dateToParse $timeToParse").add(
+              Duration(minutes: 30 * iterate)));
+      iterate = 0;
       // print("remain ${slotValue[0]} iterate $iterate");
 
 
     } else if (slotValue[0] != court) {
       court = slotValue[0];
-      iterate+=1;
+      iterate += 1;
       startTime.add(DateTime.parse("$dateToParse $timeToParse"));
       resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
       // print("updated ${slotValue[0]} iterate $iterate");
-
-
     }
-    if(j==slots.length-1 && startTime.length!=endTime.length){
+    if (j == slots.length - 1 && startTime.length != endTime.length) {
       endTime.add(
-          DateTime.parse("$dateToParse $timeToParse").add(Duration(minutes: 30)));
+          DateTime.parse("$dateToParse $timeToParse").add(
+              Duration(minutes: 30)));
     }
   }
   // print("startTimeeeeeee ${startTime}");
@@ -84,7 +89,9 @@ Map getCourtTimeslotDisplay(booked) {
 void getAppointments(appointments, appData) {
   if (appData.length == 0) return;
 
-  var appointmentList = [], subject, color;
+  var appointmentList = [],
+      subject,
+      color;
   appData.forEach((appDetails) {
     subject = appDetails['subject'];
     color = Color(int.parse(appDetails['color']));
@@ -92,24 +99,29 @@ void getAppointments(appointments, appData) {
       appDetails['startTime'].map((booked) => getCourtTimeslotDisplay(booked)),
     );
   });
-  print(appointmentList.length);
-  appointmentList[0].forEach((element) {
-    for (int i = 0; i < element['startTime'].length; i++) {
-      // print(" =================================== ${element['startTime']}");
-      // print({
-      //   "endTime": element['endTime'][i],
-      //   "startTime": element['startTime'][i],
-      //   "resourceIds": element['resourceIds'],
-      // });
-      appointments.add(Appointment(
-        subject: subject,
-        color: color,
-        endTime: element['endTime'][i],
-        startTime: element['startTime'][i],
-        resourceIds: element['resourceIds'],
-      ));
-    }
+  appointmentList.forEach((e) {
+    e.forEach((element) {
+      for (int i = 0; i < element['startTime'].length; i++) {
+        // print(" =================================== ${element['startTime']}");
+        // print({
+        //   "endTime": element['endTime'][i],
+        //   "startTime": element['startTime'][i],
+        //   "resourceIds": element['resourceIds'],
+        // });
+        appointments.add(Appointment(
+          // subject: subject,
+          subject: "$subject ${element['startTime'][i]}",
+          color: color,
+          endTime: element['endTime'][i],
+          startTime: element['startTime'][i],
+          resourceIds: element['resourceIds'],
+        ));
+      }
+    });
   });
+  // appointmentList[0].forEach((element) {
+  //
+  // });
 }
 
 final timeSlotViewSettings = TimeSlotViewSettings(
@@ -145,14 +157,15 @@ List<TimeRegion> getBreakTime() {
   return regions;
 }
 
-List<CalendarView> getAllowedViews(bool isAdmin) => isAdmin
-    ? <CalendarView>[
-        CalendarView.schedule,
-        CalendarView.timelineDay,
-        CalendarView.timelineMonth,
-        CalendarView.month
-      ]
-    : <CalendarView>[CalendarView.schedule, CalendarView.timelineDay];
+List<CalendarView> getAllowedViews(bool isAdmin) =>
+    isAdmin
+        ? <CalendarView>[
+      CalendarView.schedule,
+      CalendarView.timelineDay,
+      CalendarView.timelineMonth,
+      CalendarView.month
+    ]
+        : <CalendarView>[CalendarView.schedule, CalendarView.timelineDay];
 
 getCalendarView(isAdmin, stuView) =>
     isAdmin || stuView ? CalendarView.month : CalendarView.timelineDay;
