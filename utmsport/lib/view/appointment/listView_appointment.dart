@@ -53,31 +53,6 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                     controller: _eventTitleController,
                     decoration: const InputDecoration(labelText: 'Event Title'),
                   ),
-                  /*TextField(
-                    controller: _TimeController,
-                    decoration: const InputDecoration(labelText: 'Time'),
-                  ),*/
-                  /*TextField(
-                      controller: _DateController,
-                      decoration: InputDecoration(
-                          labelText: "Date",
-                          suffixIcon: Icon(Icons.calendar_today)),
-                      readOnly: true,
-                      onTap: () async {
-                        DateTime? value = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2100));
-
-                        if (value == null) return null;
-                        String date;
-                        setState(() => {
-                              date = DateFormat('yyyy-MM-dd').format(value),
-                              _DateController.text = date,
-                              print(date),
-                            });
-                      }),*/
                   TextField(
                     controller: _PicController,
                     decoration:
@@ -145,8 +120,6 @@ class _listViewAppointmentState extends State<listViewAppointment> {
 
   Future<void> _delete(String appointmentId) async {
     await _appointments.doc(appointmentId).delete();
-    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //     content: Text('You have successfully deleted an appointment')));
     Utils.showSnackBar('You have successfully deleted an appointment', "red");
   }
 
@@ -230,12 +203,9 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                 return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: streamSnapshot.data!.docs.length,
-                    //Here you can see that I will get the count of my data
                     itemBuilder: (context, int) {
-                      //perform the task you want to do here
                       final DocumentSnapshot documentSnapshot =
                           streamSnapshot.data!.docs[int];
-
                       return Card(
                         margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                         child: GestureDetector(
@@ -244,7 +214,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RequestMeetingDetail(
-                                        document: documentSnapshot)));
+                                        docid: documentSnapshot.id)));
                           },
                           child: ListTile(
                             title: Text(documentSnapshot['eventtitle']),
