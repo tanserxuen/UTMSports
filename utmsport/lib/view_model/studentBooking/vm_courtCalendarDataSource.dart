@@ -46,7 +46,7 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
     var slot = slots[j];
     var slotValue = slot.split(' ');
     String dateToParse = date.split(' ')[0];
-    String timeToParse = MasterBooking.timeslot[int.parse(slotValue[1])];
+    String timeToParse = global.timeslot[int.parse(slotValue[1])];
     // print(slotValue[1]);
     if (court == null) {
       court = slotValue[0];

@@ -6,23 +6,6 @@ import 'package:utmsport/utils.dart';
 import 'package:utmsport/model/m_CourtBooking.dart';
 
 class MasterBooking {
-  static final List<String> timeslot = [
-    "10:00:00",
-    "10:30:00",
-    "11:00:00",
-    "11:30:00",
-    "14:00:00",
-    "14:30:00",
-    "15:00:00",
-    "15:30:00",
-    "16:00:00",
-    "16:30:00",
-    "17:00:00",
-    "17:30:00",
-    "18:00:00",
-    "18:30:00",
-  ];
-
   List<dynamic> booked_courtTimeslot;
   DateTime date;
   String userId;
@@ -58,7 +41,7 @@ class MasterBooking {
     courtTimeslot,
   ) {
     List newObjectArray = [];
-    for (int i = 0; i < timeslot.length + 1; i++) {
+    for (int i = 0; i < global.timeslot.length + 1; i++) {
       newObjectArray.add({'court': courtTimeslot[i]});
     }
     return newObjectArray;

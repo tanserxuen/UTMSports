@@ -6,7 +6,7 @@ import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 class TimeslotCourtTable extends StatefulWidget {
-  int noOfTimeslot = MasterBooking.timeslot.length;
+  int noOfTimeslot = global.timeslot.length;
   int noOfCourt = global.badmintonCourt;
   final List<DateTime> dateList;
   final int index;

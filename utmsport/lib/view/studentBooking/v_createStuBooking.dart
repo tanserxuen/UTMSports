@@ -5,6 +5,8 @@ import 'package:utmsport/model/m_CourtBooking.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
 
+import 'package:utmsport/globalVariable.dart';
+
 class CreateStuBooking extends StatefulWidget {
   const CreateStuBooking({Key? key, required this.sportsType})
       : super(key: key);
@@ -20,8 +22,8 @@ class CreateStuBooking extends StatefulWidget {
 class CreateStuBookingState extends State<CreateStuBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  late TimeOfDay _startTime;
-  late TimeOfDay _endTime;
+  String _startTime = "10:00:00";
+  String _endTime = "11:00:00";
   String _name1 = "";
   String _matric1 = "";
   String _name2 = "";
@@ -33,17 +35,16 @@ class CreateStuBookingState extends State<CreateStuBooking> {
 
   List _resourceIds = [];
   bool _isAllDay = false;
-  String _color = "0xffb74093";
   String _sportType = "";
 
   List<int> selectedCourts = [];
+  final now = new DateTime.now();
 
   final controllerStartTime = TextEditingController();
   final controllerEndTime = TextEditingController();
   final controllerResourceIds = TextEditingController();
   final controllerIsAllDay = TextEditingController();
 
-  // final controllerColor = TextEditingController();
   final controllerName1 = TextEditingController();
   final controllerMatric1 = TextEditingController();
   final controllerName2 = TextEditingController();
@@ -54,44 +55,49 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   final controllerMatric4 = TextEditingController();
 
   Widget _buildStartTimeField() {
-    return TextFormField(
-      controller: controllerStartTime,
-      decoration: InputDecoration(
-          labelText: "Start Time", suffixIcon: Icon(Icons.access_time)),
-      readOnly: true,
-      onTap: () async {
-        TimeOfDay? startTime = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
+    return DropdownButtonFormField(
+      hint: Text("Start Time"),
+      isExpanded: true,
+      items: global.timeslot.map((option) {
+        return DropdownMenuItem(
+          value: option,
+          child: Text("$option"),
         );
-        setState(() => {
-              _startTime = startTime!,
-              controllerStartTime.text = startTime.format(context),
-            });
+      }).toList(),
+      value: _startTime,
+      validator: (value) {
+        if (value == null) return "Start time is required.";
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          print(value);
+          _startTime = value.toString();
+        });
       },
     );
   }
 
   Widget _buildEndTimeField() {
-    return TextFormField(
-      controller: controllerEndTime,
-      decoration: InputDecoration(
-          labelText: "End Time", suffixIcon: Icon(Icons.access_time)),
-      readOnly: true,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Name 1 is required";
-        }
-      },
-      onTap: () async {
-        TimeOfDay? endTime = await showTimePicker(
-          context: context,
-          initialTime: _startTime,
+    return DropdownButtonFormField(
+      hint: Text("End Time"),
+      isExpanded: true,
+      items: global.timeslot.map((option) {
+        return DropdownMenuItem(
+          value: option,
+          child: Text("$option"),
         );
-        setState(() => {
-              _endTime = endTime!,
-              controllerEndTime.text = endTime.format(context),
-            });
+      }).toList(),
+      value: _endTime,
+      validator: (value) {
+        if (global.timeslot.indexOf(_endTime) <=
+            global.timeslot.indexOf(_startTime))return "It ends before it starts.";
+      },
+      onChanged: (value) {
+        setState(() {
+          print(value);
+          _endTime = value.toString();
+        });
       },
     );
   }
@@ -192,47 +198,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         onSaved: (value) => _matric4 = value!);
   }
 
-  Widget _buildSportsTypeColorField() {
-    // print(widget.sportsType);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Select Sports Type",
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-        DropdownButton(
-          hint: Text("Sports Type"),
-          isExpanded: true,
-          items: global.sports.map((option) {
-            return DropdownMenuItem(
-              value: option,
-              child: Text("$option"),
-            );
-          }).toList(),
-          value: widget.sportsType,
-          onChanged: (value) {
-            setState(() {
-              print(value);
-              switch (value) {
-                case 'Badminton':
-                  _color = Colors.redAccent.value.toRadixString(16);
-                  break;
-                case 'Squash':
-                  _color = Colors.yellowAccent.value.toRadixString(16);
-                  break;
-                case 'PingPong':
-                  _color = Colors.greenAccent.value.toRadixString(16);
-                  break;
-              }
-              _sportType = value.toString();
-            });
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _badmintonResourceIdField() {
     int courtNumbers = 0;
     switch (widget.sportsType) {
@@ -265,24 +230,25 @@ class CreateStuBookingState extends State<CreateStuBooking> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemCount: courtNumbers,
-          itemBuilder: (BuildContext context, int index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedCourts.contains(index)
-                    ? selectedCourts.remove(index)
-                    : selectedCourts.add(index);
-                // print(this.selectedCourts);
-              });
-            },
-            child: Card(
-              color: selectedCourts.contains(index)
-                  ? Colors.lightBlueAccent
-                  : Colors.white,
-              child: Column(
-                children: <Widget>[Text("Court ${index + 1}")],
+          itemBuilder: (BuildContext context, int index) =>
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedCourts.contains(index)
+                        ? selectedCourts.remove(index)
+                        : selectedCourts.add(index);
+                    // print(this.selectedCourts);
+                  });
+                },
+                child: Card(
+                  color: selectedCourts.contains(index)
+                      ? Colors.lightBlueAccent
+                      : Colors.white,
+                  child: Column(
+                    children: <Widget>[Text("Court ${index + 1}")],
+                  ),
+                ),
               ),
-            ),
-          ),
         ),
       ],
     );
@@ -293,21 +259,24 @@ class CreateStuBookingState extends State<CreateStuBooking> {
     List<String> selectedCourtIds = selectedCourts
         .map((index) => "${(index + 1).toString().padLeft(4, "0")}")
         .toList();
-    final now = new DateTime.now();
 
     //TODO: convert to timestamp wrong
     final _courtBooking = CourtBooking(
       userId: global.USERID,
-      startTime: Timestamp.fromDate(DateTime(
-          now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
-      endTime: Timestamp.fromDate(DateTime(
-          now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
+      // startTime: Timestamp.fromDate(DateTime(
+      //     now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
+      startTime: Timestamp.fromDate(DateTime(now.year, now.month, now.day)),
+      endTime: Timestamp.fromDate(DateTime(now.year, now.month, now.day)),
+      //TODO: edit this
+      // now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
       subject: "Student Booking",
       status: "approved",
+      sportType: widget.sportsType,
       createdAt: Timestamp.fromDate(DateTime.now()),
       resourceIds: selectedCourtIds,
       isAllDay: false,
-      color: this._color,
+      color: "0xffb74093",
+      //purpleAccent
       name1: controllerName1.text.trim(),
       matric1: controllerMatric1.text.trim(),
       name2: controllerName2.text.trim(),
@@ -316,13 +285,15 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       matric3: controllerMatric3.text.trim(),
       name4: controllerName4.text.trim(),
       matric4: controllerMatric4.text.trim(),
-      id: global.FFdb.collection('student_appointment').doc().id,
+      id: global.FFdb
+          .collection('student_appointment')
+          .doc()
+          .id,
     ).stuToJson();
 
     CollectionReference courtBooking =
-        FirebaseFirestore.instance.collection('student_appointments');
+    FirebaseFirestore.instance.collection('student_appointments');
 
-    // print(_courtBooking);
     try {
       courtBooking.add(_courtBooking);
       Navigator.pushNamed(context, '/');
@@ -354,11 +325,26 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        // SizedBox(height: 15),
-                        // _buildSportsTypeColorField(),
                         SizedBox(height: 24),
                         _badmintonResourceIdField(),
                         SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text("Start Time",
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: Text("End Time",
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold)),
+                            )
+                          ],
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -420,10 +406,9 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         ElevatedButton(
                           child: Text("Submit",
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
+                              TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
+                            if (!_formKey.currentState!.validate()) {} else {
                               _formKey.currentState!.save();
                               insertCourtBooking();
                             }
