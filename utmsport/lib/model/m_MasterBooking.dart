@@ -23,19 +23,18 @@ class MasterBooking {
     "18:30:00",
   ];
 
-  static final int badmintonCourt = 11;
-
   List<dynamic> booked_courtTimeslot;
   DateTime date;
   String userId;
   String bookingId;
+  String sportsType;
 
   MasterBooking({
     required this.booked_courtTimeslot,
     required this.date,
     required this.userId,
     required this.bookingId,
-    //TODO: cm-add sports-type into master-booking db
+    required this.sportsType,
     // required this.sportsType,
   });
 
@@ -156,6 +155,7 @@ class MasterBooking {
             date: date,
             userId: global.USERID,
             bookingId: _bookingId,
+            sportsType: "Badminton", //TODO: Joan Change this
           ).toJson();
           await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
             if (value.docs.length == 0) {

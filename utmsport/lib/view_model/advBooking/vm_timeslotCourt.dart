@@ -7,7 +7,7 @@ import 'package:utmsport/globalVariable.dart' as global;
 
 class TimeslotCourtTable extends StatefulWidget {
   int noOfTimeslot = MasterBooking.timeslot.length;
-  int noOfCourt = MasterBooking.badmintonCourt;
+  int noOfCourt = global.badmintonCourt;
   final List<DateTime> dateList;
   final int index;
   void Function(String, int, String) setSelectedCourtArrayCallback;

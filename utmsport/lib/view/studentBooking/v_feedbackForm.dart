@@ -73,11 +73,11 @@ class _FeedbackFormState extends State<FeedbackForm> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        child: Icon(Icons.arrow_back_rounded, size: 25),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => Navigator.pop(context),
+      //   child: Icon(Icons.arrow_back_rounded, size: 25),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 

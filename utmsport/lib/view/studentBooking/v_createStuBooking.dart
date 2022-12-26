@@ -5,14 +5,19 @@ import 'package:utmsport/model/m_CourtBooking.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
 
-class CreateBooking extends StatefulWidget {
+class CreateStuBooking extends StatefulWidget {
+  const CreateStuBooking({Key? key, required this.sportsType})
+      : super(key: key);
+
+  final String sportsType;
+
   @override
   State<StatefulWidget> createState() {
-    return CreateBookingState();
+    return CreateStuBookingState();
   }
 }
 
-class CreateBookingState extends State<CreateBooking> {
+class CreateStuBookingState extends State<CreateStuBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late TimeOfDay _startTime;
@@ -29,7 +34,7 @@ class CreateBookingState extends State<CreateBooking> {
   List _resourceIds = [];
   bool _isAllDay = false;
   String _color = "0xffb74093";
-  String _sportType = "Badminton";
+  String _sportType = "";
 
   List<int> selectedCourts = [];
 
@@ -188,79 +193,91 @@ class CreateBookingState extends State<CreateBooking> {
   }
 
   Widget _buildSportsTypeColorField() {
-    return DropdownButton(
-      hint: Text("Sports Type"),
-      isExpanded: true,
-      items: ['Badminton', 'Squash', 'VolleyBall'].map((option) {
-        return DropdownMenuItem(
-          value: option,
-          child: Text("$option"),
-        );
-      }).toList(),
-      value: _sportType,
-      onChanged: (value) {
-        // print(value);
-        setState(() {
-          switch (value) {
-            case 'Badminton':
-              _color = Colors.redAccent.value.toRadixString(16);
-              break;
-            case 'Squash':
-              _color = Colors.yellowAccent.value.toRadixString(16);
-              break;
-            case 'VolleyBall':
-              _color = Colors.greenAccent.value.toRadixString(16);
-              break;
-          }
-          _sportType = value.toString();
-        });
-      },
+    // print(widget.sportsType);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Sports Type",
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        DropdownButton(
+          hint: Text("Sports Type"),
+          isExpanded: true,
+          items: global.sports.map((option) {
+            return DropdownMenuItem(
+              value: option,
+              child: Text("$option"),
+            );
+          }).toList(),
+          value: widget.sportsType,
+          onChanged: (value) {
+            setState(() {
+              print(value);
+              switch (value) {
+                case 'Badminton':
+                  _color = Colors.redAccent.value.toRadixString(16);
+                  break;
+                case 'Squash':
+                  _color = Colors.yellowAccent.value.toRadixString(16);
+                  break;
+                case 'PingPong':
+                  _color = Colors.greenAccent.value.toRadixString(16);
+                  break;
+              }
+              _sportType = value.toString();
+            });
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildIsAllDayField() {
-    return CheckboxListTile(
-        title: Text("All Day"),
-        checkColor: Colors.white,
-        value: _isAllDay,
-        onChanged: (bool? value) {
-          setState(() {
-            _isAllDay = value!;
-          });
-        });
-  }
-
   Widget _badmintonResourceIdField() {
-    final int _badmintonCourts = 8;
+    int courtNumbers = 0;
+    switch (widget.sportsType) {
+      case "Badminton":
+        courtNumbers = global.badmintonCourt;
+        break;
+      case "PingPong":
+        courtNumbers = global.pingPongCourt;
+        break;
+      case "Squash":
+        courtNumbers = global.squashCourt;
+        break;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Select Courts",
-          style: TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
+        SizedBox(height: 10),
         GridView.builder(
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 80,
             childAspectRatio: 16 / 8,
-            crossAxisSpacing: 20,
+            crossAxisSpacing: 10,
             mainAxisSpacing: 20,
           ),
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
-          itemCount: _badmintonCourts,
+          itemCount: courtNumbers,
           itemBuilder: (BuildContext context, int index) => GestureDetector(
             onTap: () {
               setState(() {
                 selectedCourts.contains(index)
                     ? selectedCourts.remove(index)
                     : selectedCourts.add(index);
-                print(this.selectedCourts);
+                // print(this.selectedCourts);
               });
             },
             child: Card(
-              color: selectedCourts.contains(index) ? Colors.red : Colors.white,
+              color: selectedCourts.contains(index)
+                  ? Colors.lightBlueAccent
+                  : Colors.white,
               child: Column(
                 children: <Widget>[Text("Court ${index + 1}")],
               ),
@@ -338,10 +355,10 @@ class CreateBookingState extends State<CreateBooking> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         // SizedBox(height: 15),
-                        _buildSportsTypeColorField(),
-                        SizedBox(height: 15),
+                        // _buildSportsTypeColorField(),
+                        SizedBox(height: 24),
                         _badmintonResourceIdField(),
-                        SizedBox(height: 15),
+                        SizedBox(height: 24),
                         Row(
                           children: [
                             Expanded(
@@ -399,7 +416,6 @@ class CreateBookingState extends State<CreateBooking> {
                             )
                           ],
                         ),
-                        // _buildIsAllDayField(),
                         SizedBox(height: 50),
                         ElevatedButton(
                           child: Text("Submit",

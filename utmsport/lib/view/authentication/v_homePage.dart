@@ -12,7 +12,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 3;
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           destinations: bottomBar.destinations,
         ),
       ),
-      floatingActionButton: global.getUserRole() == 'admin'
-          ? bottomBar.BookingButton(context)
-          : null,
+      floatingActionButton: bottomBar.getActionButton(context),
       // floatingActionButtonLocation: bottomBar.fabLocation,
     );
   }

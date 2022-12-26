@@ -16,7 +16,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
   late List appData = [];
   final timeNow = DateTime.now();
   bool stuView = false;
-  final isAdmin = global.getUserRole() == 'admin';
+  final isAdmin = global.getUserRole() == 'stud';
 
   CalendarController _calendarController = CalendarController();
   final CollectionReference appointmentList =
@@ -79,8 +79,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
       child: SfCalendar(
         controller: _calendarController,
         view: getCalendarView(isAdmin, stuView),
-        // minDate: today,
-        // maxDate: tomorrow,
+        minDate: today,
+        maxDate: tomorrow,
         dataSource: getCalendarBookingData(this.appData),
         showDatePickerButton: canShowStudentView ? true : false,
         allowViewNavigation: canShowStudentView ? true : false,

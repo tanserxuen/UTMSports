@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 //views
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
@@ -29,6 +30,27 @@ var _userRole; //private
 setUserRole(data) => _userRole = data['roles'];
 
 getUserRole() => _userRole;
+
+const sports = ['Badminton', 'Squash', 'PingPong'];
+
+final int badmintonCourt = 11;
+final int squashCourt = 3;
+final int pingPongCourt = 4;
+
+final colorCollection = () {
+      List colors = [
+            Colors.redAccent,
+            Colors.amber,
+            Colors.orangeAccent,
+            Colors.blueAccent,
+            Colors.greenAccent,
+            Colors.pink,
+            Colors.purpleAccent,
+            Colors.yellowAccent,
+            Colors.white54,
+      ];
+      return colors.map((e) => e.value.toRadixString(16));
+};
 
 //==================Routes
 ADMIN_ROUTES(user) => [

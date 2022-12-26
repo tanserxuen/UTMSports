@@ -2,32 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
+import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 
-Widget BookingButton(BuildContext context) {
+Widget BookingButton(BuildContext context, page) {
   return (FloatingActionButton(
     tooltip: "Booking",
     onPressed: () => {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => Scaffold(
-            body: Container(
-              margin: EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  SizedBox(height: 50),
-                  Text(
-                    "Advanced Booking",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                  Expanded(
-                    child: CreateAdvBookingCalendar(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        MaterialPageRoute(builder: (context) => page),
       ),
     },
     child: Icon(Icons.add, size: 32),
@@ -36,6 +19,42 @@ Widget BookingButton(BuildContext context) {
 
 const fabLocation = FloatingActionButtonLocation.centerDocked;
 var destinations;
+
+getActionButton(context) {
+  switch (global.getUserRole()) {
+    case 'admin':
+      return BookingButton(
+        context,
+        Scaffold(
+          body: Container(
+            margin: EdgeInsets.all(12),
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+                Text(
+                  "Advanced Booking",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+                Expanded(
+                  child: CreateAdvBookingCalendar(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    case 'athlete':
+    case 'coach':
+      return null;
+    case 'manager':
+      return null;
+    case 'club':
+    case 'organizer':
+      return null;
+    default: //student
+      return BookingButton(context, StuBookingChooseSports());
+  }
+}
 
 Widget homeScreen(user) => Padding(
       padding: EdgeInsets.all(32),

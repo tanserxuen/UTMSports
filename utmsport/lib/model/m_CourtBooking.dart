@@ -22,6 +22,7 @@ class CourtBooking {
   String matric3;
   String name4;
   String matric4;
+  String sportType;
 
   //sports training
   String remarks;
@@ -56,6 +57,7 @@ class CourtBooking {
     this.matric3: "",
     this.name4: "",
     this.matric4: "",
+    this.sportType:"",
 
     //sports training
     this.remarks = "",
@@ -69,21 +71,6 @@ class CourtBooking {
     //adv&sports
     this.phoneNo = "",
   });
-
-  final colorCollection = () {
-    List colors = [
-      Colors.redAccent,
-      Colors.amber,
-      Colors.orangeAccent,
-      Colors.blueAccent,
-      Colors.greenAccent,
-      Colors.pink,
-      Colors.purpleAccent,
-      Colors.yellowAccent,
-      Colors.white54,
-    ];
-    return colors.map((e) => e.value.toRadixString(16));
-  };
 
   Map<String, dynamic> advToJson() => {
         "id": id,

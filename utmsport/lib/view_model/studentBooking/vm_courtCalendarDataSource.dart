@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:utmsport/model/m_MasterBooking.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class DataSource extends CalendarDataSource {
   DataSource(List<Appointment> source, List<CalendarResource> resourceColl) {
@@ -18,7 +19,7 @@ DataSource getCalendarBookingData(List appData) {
 }
 
 List<CalendarResource> getCourts(resources) {
-  for (int index = 1; index <= MasterBooking.badmintonCourt; index++) {
+  for (int index = 1; index <= global.badmintonCourt; index++) {
     resources.add(
       CalendarResource(
         id: "${index.toString().padLeft(4, '0')}",
@@ -30,7 +31,7 @@ List<CalendarResource> getCourts(resources) {
   return resources;
 }
 
-Map getCourtTimeslotDisplay(booked) {
+Map getCourtTimeslotDisplay(booked, subject, color) {
   String date = booked.keys.toList()[0];
   List slots = booked.values.toList()[0],
       times = [];
@@ -80,6 +81,8 @@ Map getCourtTimeslotDisplay(booked) {
   // print("startTimeeeeeee ${startTime}");
   // print("endTimeeeeeee ${endTime}");
   return {
+    'subject': subject,
+    'color': color,
     'startTime': startTime,
     'endTime': endTime,
     'resourceIds': resourceIds.toList().cast<Object>(),
@@ -89,29 +92,29 @@ Map getCourtTimeslotDisplay(booked) {
 void getAppointments(appointments, appData) {
   if (appData.length == 0) return;
 
-  var appointmentList = [],
-      subject,
-      color;
+  var appointmentList = [], subject, color;
   appData.forEach((appDetails) {
-    subject = appDetails['subject'];
-    color = Color(int.parse(appDetails['color']));
+    // subject = appDetails['subject'];
+    print(appDetails['subject']);
+    // color = Color(int.parse(appDetails['color']));
     appointmentList.add(
-      appDetails['startTime'].map((booked) => getCourtTimeslotDisplay(booked)),
+      appDetails['startTime'].map((booked)  => getCourtTimeslotDisplay(booked, appDetails['subject'], Color(int.parse(appDetails['color'])))),
     );
   });
   appointmentList.forEach((e) {
     e.forEach((element) {
       for (int i = 0; i < element['startTime'].length; i++) {
-        // print(" =================================== ${element['startTime']}");
+        print(" ===================================");
         // print({
-        //   "endTime": element['endTime'][i],
-        //   "startTime": element['startTime'][i],
+        //   "endTime": element['endTime'].length,
+        //   "startTime": element['startTime'].length,
         //   "resourceIds": element['resourceIds'],
+        //   "i":i,
         // });
         appointments.add(Appointment(
           // subject: subject,
-          subject: "$subject ${element['startTime'][i]}",
-          color: color,
+          subject: element['subject'],
+          color: element['color'],
           endTime: element['endTime'][i],
           startTime: element['startTime'][i],
           resourceIds: element['resourceIds'],
@@ -119,9 +122,6 @@ void getAppointments(appointments, appData) {
       }
     });
   });
-  // appointmentList[0].forEach((element) {
-  //
-  // });
 }
 
 final timeSlotViewSettings = TimeSlotViewSettings(
