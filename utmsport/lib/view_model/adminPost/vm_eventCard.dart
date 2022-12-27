@@ -1,35 +1,17 @@
 import 'package:flutter/material.dart';
-
 import 'package:utmsport/model/m_Event.dart';
-import 'package:utmsport/globalVariable.dart' as global;
+import 'package:utmsport/utils.dart';
 
 Widget EventCard(BuildContext context, int index, event) {
-  String getId() => event?["id"];
-  String getName() => event?["name"] ?? "";
-  String getDate() => event?["date"] ?? "";
+  String getId() => event?.id ?? "";
+  String getName() => event?.name ?? "";
+  String getDescription() => event?.description ?? "";
+  String getDate() => Utils.parseDateTimeToFormatDate(event?.date) ?? "";
   String getImage() =>
-      event?["image"] ??
+      event?.image ??
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
-  String getPlatform() => event?["platform"] ?? "";
-  String getVenue() => event?["venue"] ?? "";
-  List<Widget> actionButtons = global.getUserRole() == 'admin'
-      ? [
-          IconButton(
-            onPressed: () => editEvents(context, event.data()),
-            icon: Icon(
-              Icons.edit,
-              color: Colors.orange[200],
-            ),
-          ),
-          IconButton(
-            onPressed: () => deleteEvents(context, getId()),
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red[200],
-            ),
-          ),
-        ]
-      : [];
+  String getPlatform() => event?.platform ?? "";
+  String getVenue() => event?.venue ?? "";
 
   return InkWell(
       child: Card(
@@ -51,14 +33,13 @@ Widget EventCard(BuildContext context, int index, event) {
                 color: Colors.blue[200],
               ),
             ),
-            ...actionButtons,
           ],
         ),
         Container(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
           alignment: Alignment.centerLeft,
           child: Text(
-            event?["description"],
+            getDescription(),
             overflow: TextOverflow.ellipsis,
             maxLines: 4,
           ),

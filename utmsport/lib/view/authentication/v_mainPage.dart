@@ -2,10 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:utmsport/view/authentication/v_authPage.dart';
-import 'package:utmsport/view/authentication/v_homePage.dart';
 import 'package:utmsport/view/authentication/v_verifyemailPage.dart';
-
-import '../../view_model/authentication/vm_loginwidget.dart';
 
 class MainPage extends StatelessWidget {
   @override

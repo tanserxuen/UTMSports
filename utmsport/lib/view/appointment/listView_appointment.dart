@@ -28,9 +28,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
   Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
     if (documentSnapshot != null) {
       _eventTitleController.text = documentSnapshot['eventtitle'];
-      _TimeController.text = documentSnapshot['time'].toString();
-      _DateController.text = documentSnapshot['date'];
-      _PicController.text = documentSnapshot['pic'].toString();
+      _PicController.text = documentSnapshot['pic'];
       _matricNoController.text = documentSnapshot['matricno'];
       _phoneNoController.text = documentSnapshot['phoneno'].toString();
       _descriptionController.text = documentSnapshot['description'];
@@ -55,31 +53,6 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                     controller: _eventTitleController,
                     decoration: const InputDecoration(labelText: 'Event Title'),
                   ),
-                  TextField(
-                    controller: _TimeController,
-                    decoration: const InputDecoration(labelText: 'Time'),
-                  ),
-                  TextField(
-                      controller: _DateController,
-                      decoration: InputDecoration(
-                          labelText: "Date",
-                          suffixIcon: Icon(Icons.calendar_today)),
-                      readOnly: true,
-                      onTap: () async {
-                        DateTime? value = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2100));
-
-                        if (value == null) return null;
-                        String date;
-                        setState(() => {
-                              date = DateFormat('yyyy-MM-dd').format(value),
-                              _DateController.text = date,
-                              print(date),
-                            });
-                      }),
                   TextField(
                     controller: _PicController,
                     decoration:
@@ -106,8 +79,6 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                     child: const Text('Update'),
                     onPressed: () async {
                       final String eventtitle = _eventTitleController.text;
-                      final String time = _TimeController.text;
-                      final String date = _DateController.text;
                       final String pic = _PicController.text;
                       final String matricno = _matricNoController.text;
                       final String phoneno = _phoneNoController.text;
@@ -115,12 +86,16 @@ class _listViewAppointmentState extends State<listViewAppointment> {
 
                       await _appointments.doc(documentSnapshot!.id).update({
                         "eventtitle": eventtitle,
-                        "time": time,
-                        "date": date,
+                        "date": documentSnapshot['date'],
                         "pic": pic,
                         "matricno": matricno,
                         "phoneno": phoneno,
-                        "description": description
+                        "description": description,
+                        "email": FirebaseAuth.instance.currentUser!.email,
+                        "file": documentSnapshot['file'],
+                        "name": documentSnapshot['name'],
+                        "status": documentSnapshot['status'],
+                        "uid": FirebaseAuth.instance.currentUser!.uid
                       });
 
                       _eventTitleController.text = '';
@@ -145,9 +120,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
 
   Future<void> _delete(String appointmentId) async {
     await _appointments.doc(appointmentId).delete();
-    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //     content: Text('You have successfully deleted an appointment')));
-    Utils.showSnackBar('You have successfully deleted an appointment');
+    Utils.showSnackBar('You have successfully deleted an appointment', "red");
   }
 
   @override
@@ -230,12 +203,9 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                 return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: streamSnapshot.data!.docs.length,
-                    //Here you can see that I will get the count of my data
                     itemBuilder: (context, int) {
-                      //perform the task you want to do here
                       final DocumentSnapshot documentSnapshot =
                           streamSnapshot.data!.docs[int];
-
                       return Card(
                         margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                         child: GestureDetector(
@@ -244,7 +214,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RequestMeetingDetail(
-                                        document: documentSnapshot)));
+                                        docid: documentSnapshot.id)));
                           },
                           child: ListTile(
                             title: Text(documentSnapshot['eventtitle']),
@@ -258,7 +228,7 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(documentSnapshot['time']),
+                                      Text(DateFormat.yMd().format(documentSnapshot['date'].toDate()).toString()),
                                       Container(
                                           decoration: BoxDecoration(
                                             borderRadius:

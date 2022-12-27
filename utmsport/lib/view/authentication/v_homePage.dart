@@ -17,29 +17,30 @@ class _MyHomePageState extends State<MyHomePage> {
     final user = FirebaseAuth.instance.currentUser!;
     final screens = bottomBar.navScreen(user);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('UTM Sports'),
-        ),
-        body: LazyLoadScrollView(
+      appBar: AppBar(
+        title: Text('UTM Sports'),
+      ),
+      body: LazyLoadScrollView(
         onEndOfPage: () {},
-        child: screens[_currentIndex],),
-        // body: screens[]
-        bottomNavigationBar: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            indicatorColor: Colors.blue.shade100,
-            labelTextStyle: MaterialStateProperty.all(
-              TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-          ),
-          child: NavigationBar(
-            selectedIndex: _currentIndex,
-            onDestinationSelected: (index) =>
-                setState(() => this._currentIndex = index),
-            destinations: bottomBar.destinations,
+        child: screens[_currentIndex],
+      ),
+      // body: screens[]
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          indicatorColor: Colors.blue.shade100,
+          labelTextStyle: MaterialStateProperty.all(
+            TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ),
-        floatingActionButton: bottomBar.BookingButton(context),
-        floatingActionButtonLocation: bottomBar.fabLocation,
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) =>
+              setState(() => this._currentIndex = index),
+          destinations: bottomBar.destinations,
+        ),
+      ),
+      // floatingActionButton: bottomBar.BookingButton(context),
+      // floatingActionButtonLocation: bottomBar.fabLocation,
     );
   }
 }

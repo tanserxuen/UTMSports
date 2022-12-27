@@ -28,7 +28,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     if (formKey.currentState!.validate()) {
       var data = {
         'name': fullnameController.text.trim(),
-        'roles': 'student',
+        'roles': global.getUserRole(),
         'userId': FirebaseAuth.instance.currentUser!.uid,
         'image': imageUrl
       };

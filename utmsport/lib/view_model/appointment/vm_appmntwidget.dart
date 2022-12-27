@@ -14,8 +14,9 @@ import '../../local_notification_service.dart';
 
 
 class AppointmentWidget extends StatefulWidget {
-  const AppointmentWidget({Key? key}) : super(key: key);
+  const AppointmentWidget({Key? key, required this.selectedDay}) : super(key: key);
 
+  final DateTime selectedDay;
   @override
   State<AppointmentWidget> createState() => _AppointmentWidgetState();
 }
@@ -39,6 +40,32 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   Reference storageRef = FirebaseStorage.instance.ref();
   final formKey = GlobalKey<FormState>();
   final CollectionReference _appointments = global.FFdb.collection('appointments');
+  final CollectionReference _availabletimes = global.FFdb.collection('availabletime');
+  var timeslotArray = [];
+
+  @override
+  initState()  {
+      // TODO: implement initState
+      super.initState();
+      _DateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
+      getAvailableTime().then((value){
+        setState(() {
+          timeslotArray = value;
+        });
+      });
+
+    }
+
+  Future<List>getAvailableTime() async {
+    await _availabletimes.get().then((querySnapshot) {
+      querySnapshot.docs.forEach((element) {
+        // print(element.data());
+        timeslotArray.add(element.data());
+      });
+    });
+
+    return timeslotArray;
+  }
 
   @override
   void dispose() {
@@ -110,48 +137,52 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                             });
                           }
                       ),
-                      Container(
-                        child: Row(
-                            children: List.generate(timeslotRange.length, (index){
-                              return InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    timeslot = timeslotRange[index].time;
-                                  });
-                                } ,
-                                child: Container(
-                                  height: 50,
-                                  width: 100,
-                                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                  decoration: BoxDecoration(
-                                      color:
-                                        timeslot == timeslotRange[index].time
-                                          ? Colors.orange
-                                          : Colors.white
-                                      ,
-                                      borderRadius: BorderRadius.circular(5),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.grey.shade600,
-                                            spreadRadius: 1,
-                                            blurRadius: 1,
-                                            offset: Offset(0, 2))
-                                      ]
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      timeslotRange[index].time + 'hr',
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          child: Row(
+                              children: List.generate(timeslotArray.length, (index){
+                                // Place where admin display the Time Avaiable
+                                return InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      timeslot = timeslotArray[index]['time'];
+                                    });
+                                  } ,
+                                  child: Container(
+                                    height: 50,
+                                    width: 100,
+                                    margin: EdgeInsets.fromLTRB(5, 10, 10, 10),
+                                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                    decoration: BoxDecoration(
+                                        color:
+                                          timeslot == timeslotArray[index]['time']
+                                            ? Colors.orange
+                                            : Colors.white
+                                        ,
+                                        borderRadius: BorderRadius.circular(5),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.grey.shade600,
+                                              spreadRadius: 1,
+                                              blurRadius: 1,
+                                              offset: Offset(0, 2))
+                                        ]
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        timeslotArray[index]['time']+ 'hr',
+                                        style: TextStyle(
+                                            fontSize: 22,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            })
+                                );
+                              })
+                          ),
                         ),
                       ),
                       TextFormField(
@@ -297,9 +328,11 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
                           final isValid = formKey.currentState!.validate();
                           if(!isValid) return ;
-                          if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file');
-                          if(timeslot.isEmpty || timeslot == '') return Utils.showSnackBar('Please Select Timeslot');
+                          if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file', "red");
+                          if(timeslot.isEmpty || timeslot == '') return Utils.showSnackBar('Please Select Timeslot', "red");
 
+                          String concentenateDate = _DateController.text + " " + timeslot + ":00";
+                          DateTime date = DateTime.parse(concentenateDate);
                           showDialog(
                               context: context,
                               builder: (BuildContext context){
@@ -316,8 +349,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
                             await _appointments.add({
                               'created_at': timestamp,
-                              "date": _DateController.text,
-                              "time": timeslot,
+                              "date": date,
                               "name": _EOnameController.text,
                               "pic": _PicController.text,
                               "matricno": _matricNoController.text,
@@ -335,7 +367,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                           } on FirebaseAuthException catch (e){
                             print(e);
 
-                            Utils.showSnackBar(e.message);
+                            Utils.showSnackBar(e.message, "red");
                           }
 
                           showDialog(

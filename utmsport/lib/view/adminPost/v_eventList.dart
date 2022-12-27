@@ -13,7 +13,7 @@ class EventList extends StatefulWidget {
 }
 
 class _EventListState extends State<EventList> {
-  late EventDataSource _eventDataSource;
+  EventDataSource? _eventDataSource;
 
   final CollectionReference eventLists =
       FirebaseFirestore.instance.collection("events");
@@ -28,7 +28,7 @@ class _EventListState extends State<EventList> {
                     id: event['id'] ?? '',
                     name: event['name'] ?? '',
                     description: event['description'] ?? '',
-                    date: event['date'] ?? '',
+                    date: event['date'].toDate() ?? '',
                     image: event['image'] ?? '',
                     venue: event['venue'] ?? '',
                     platform: event['platform'] ?? '',
@@ -44,31 +44,39 @@ class _EventListState extends State<EventList> {
 
   @override
   void initState() {
-    super.initState();
     getEvents();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8,16,8,16),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("List of Events",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w700)),
-                    ElevatedButton(
-                      child: Text("Add Event"),
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => FormScreen())),
-                    ),
-                  ]),
-            )),
-        Expanded(flex: 6, child: EventDatatableWidget(_eventDataSource)),
-      ],
-    );
+    return _eventDataSource == null
+        ? Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("List of Events",
+                              style: TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.w700)),
+                          ElevatedButton(
+                            child: Text("Create"),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FormScreen(),
+                              ),
+                            ),
+                          ),
+                        ]),
+                  )),
+              Expanded(flex: 6, child: EventDatatableWidget(_eventDataSource)),
+            ],
+          );
   }
 }
