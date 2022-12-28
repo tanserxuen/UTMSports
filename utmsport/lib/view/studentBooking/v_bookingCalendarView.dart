@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
+import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
+import 'package:utmsport/view/shared/v_checkIn.dart';
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
 
 class BookingCalendar extends StatefulWidget {
@@ -46,7 +50,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
   fetchAppointments() async {
     List _appData = [];
     try {
-      await appointmentList.get().then((querySnapshot) {
+      await appointmentList
+          .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));
       });
       setState(() => this.appData = _appData);
@@ -79,8 +86,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
       child: SfCalendar(
         controller: _calendarController,
         view: getCalendarView(isAdmin, stuView),
-        minDate: today,
-        maxDate: tomorrow,
+        // minDate: today,
+        // maxDate: tomorrow,
         dataSource: getCalendarBookingData(this.appData),
         showDatePickerButton: canShowStudentView ? true : false,
         allowViewNavigation: canShowStudentView ? true : false,
@@ -88,7 +95,87 @@ class _BookingCalendarState extends State<BookingCalendar> {
         timeSlotViewSettings: timeSlotViewSettings,
         specialRegions: canShowStudentView ? null : getBreakTime(),
         resourceViewSettings: resourceViewSettings,
+        onTap: (CalendarTapDetails details) {
+          showModalBottomSheet(
+              context: context,
+              builder: (context) =>
+                  _buildBottomModal(details.appointments, context));
+        },
       ),
+    );
+  }
+
+  Widget _buildBottomModal(appointment, context) {
+    if (appointment == null)
+      return Wrap(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("No appointments booked"),
+                ElevatedButton(
+                    onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateAdvBookingCalendar(),
+                          ),
+                        ),
+                    child: Text("Book now!"))
+              ],
+            ),
+          ),
+        ],
+      );
+    var app = appointment![0];
+    var courts = app!.resourceIds
+        .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), "Court "))
+        .join(', ');
+    var dayFormat = DateFormat("dd MMM yyy");
+    var hourFormat = DateFormat("HH:mm a");
+    return Wrap(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                children: [
+                  Text(
+                    "${app.subject}",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                            "${dayFormat.format(app!.startTime).toString()}   ${hourFormat.format(app!.startTime).toString()} - ${hourFormat.format(app!.endTime).toString()}"),
+                        Text("${app!.location}: $courts"),
+                      ]),
+                  ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CheckIn(),
+                      ),
+                    ),
+                    child: Text(
+                      "Check In",
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        )
+      ],
     );
   }
 }

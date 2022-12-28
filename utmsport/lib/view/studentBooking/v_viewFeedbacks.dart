@@ -34,16 +34,17 @@ class _ViewFeedbackState extends State<ViewFeedback> {
           if (!snapshot.hasData)
             return MyHomePage();
           else
-            return Row(
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(children: [
-                    Text("List of Feedbacks",
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.w700)),
-                    Expanded(child: buildDatatable(snapshot))
-                  ]),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(13, 16, 8, 16),
+                  child: Text("List of Feedbacks",
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700)),
                 ),
+                buildDatatable(snapshot)
               ],
             );
         });
@@ -64,7 +65,7 @@ class _ViewFeedbackState extends State<ViewFeedback> {
     return SingleChildScrollView(
       child: DataTable(
         headingRowColor:
-            MaterialStateColor.resolveWith((states) => Colors.lightBlueAccent),
+            MaterialStateColor.resolveWith((states) => const Color(0x5540C4FF)),
         columns: [
           DataColumn(
             label: Text('#'),
@@ -93,11 +94,17 @@ class _ViewFeedbackState extends State<ViewFeedback> {
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
                 )),
-                DataCell(Text(
-                  element?["comment"] ?? "",
-                  // overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                )),
+                DataCell(
+                  Container(
+                    width: 150,
+                    child:
+                    Text(
+                      element?["comment"] ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  ),
+                ),
               ],
             );
           }),

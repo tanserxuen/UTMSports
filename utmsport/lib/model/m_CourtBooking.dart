@@ -13,6 +13,7 @@ class CourtBooking {
 
   dynamic startTime; //List<DateTime> to tackle adv
   dynamic endTime; //List<DateTime> to tackle adv
+  dynamic dateList; //List<DateTime> to tackle adv
   dynamic resourceIds = [];
   String name1;
   String matric1;
@@ -45,7 +46,8 @@ class CourtBooking {
     required this.status,
     required this.createdAt,
     required this.startTime,
-    required this.endTime,
+    this.endTime,
+    this.dateList,
 
     //student booking
     this.resourceIds,

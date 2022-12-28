@@ -10,12 +10,12 @@ class EventDataSource extends DataGridSource {
   EventDataSource({required List<Event> events}) {
     dataGridRows = events
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-              DataGridCell<String>(columnName: 'action', value: ""),
-              DataGridCell<String>(columnName: 'name', value: dataGridRow.name),
+              DataGridCell<String>(columnName: 'Action', value: ""),
+              DataGridCell<String>(columnName: 'Name', value: dataGridRow.name),
               DataGridCell<DateTime>(
-                  columnName: 'date', value: dataGridRow.date),
+                  columnName: 'Date', value: dataGridRow.date),
               DataGridCell<String>(
-                  columnName: 'venue', value: dataGridRow.venue),
+                  columnName: 'Venue', value: dataGridRow.venue),
             ]))
         .toList();
 
@@ -49,12 +49,14 @@ class EventDataSource extends DataGridSource {
               ? Alignment.centerRight
               : Alignment.centerLeft,
           padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: dataGridCell.columnName == 'action'
+          child: dataGridCell.columnName == 'Action'
               ? LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                   return Row(
                     children: [
-                      IconButton(
+                      SizedBox(width: 5),
+                      IconButton(padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
                         icon: Icon(Icons.format_list_numbered_outlined),
                         onPressed: () {
                           showDialog(
@@ -90,7 +92,8 @@ class EventDataSource extends DataGridSource {
                           );
                         },
                       ),
-                      IconButton(
+                      IconButton(padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
                         icon: Icon(Icons.edit),
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -100,7 +103,8 @@ class EventDataSource extends DataGridSource {
                           ),
                         ),
                       ),
-                      IconButton(
+                      IconButton(padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
                         icon: Icon(Icons.delete, color:Colors.red),
                         onPressed: () => deleteEvents(context,dataGridDetailRows[idx].id)
                     ),

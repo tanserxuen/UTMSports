@@ -57,7 +57,7 @@ class _EventListState extends State<EventList> {
               Expanded(
                   flex: 1,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+                    padding: const EdgeInsets.fromLTRB(13, 16, 8, 16),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

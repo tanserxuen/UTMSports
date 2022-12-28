@@ -23,7 +23,7 @@ import 'package:utmsport/view/studentBooking/v_viewFeedbacks.dart';
 final FFdb = FirebaseFirestore.instance;
 final FA = FirebaseAuth.instance;
 
-final USERID = FA.currentUser!.uid;
+final USERID = FirebaseAuth.instance.currentUser!.uid;
 final USER = () async => await FFdb.collection("users").doc(USERID).get();
 
 var _userRole; //private

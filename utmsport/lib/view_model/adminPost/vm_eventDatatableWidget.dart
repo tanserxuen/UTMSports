@@ -3,13 +3,13 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 List<String> colNames = [
-  'action',
+  'Action',
   // 'id',
-  'name',
+  'Name',
   // 'description',
-  'date',
+  'Date',
   // 'image',
-  'venue',
+  'Venue',
   // 'platform',
 ];
 
@@ -17,7 +17,7 @@ List<GridColumn> getColumns() => colNames
     .map(
       (name) => GridColumn(
           columnName: name,
-          width: name == "action" ? 160 : 100,
+          width: name == "Action" ? 90 : 100,
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
@@ -25,6 +25,7 @@ List<GridColumn> getColumns() => colNames
                 name,
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,
+                style: TextStyle(fontWeight: FontWeight.bold),
               ))),
     )
     .toList();

@@ -91,7 +91,8 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       value: _endTime,
       validator: (value) {
         if (global.timeslot.indexOf(_endTime) <=
-            global.timeslot.indexOf(_startTime))return "It ends before it starts.";
+            global.timeslot.indexOf(_startTime))
+          return "It ends before it starts.";
       },
       onChanged: (value) {
         setState(() {
@@ -230,25 +231,24 @@ class CreateStuBookingState extends State<CreateStuBooking> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemCount: courtNumbers,
-          itemBuilder: (BuildContext context, int index) =>
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedCourts.contains(index)
-                        ? selectedCourts.remove(index)
-                        : selectedCourts.add(index);
-                    // print(this.selectedCourts);
-                  });
-                },
-                child: Card(
-                  color: selectedCourts.contains(index)
-                      ? Colors.lightBlueAccent
-                      : Colors.white,
-                  child: Column(
-                    children: <Widget>[Text("Court ${index + 1}")],
-                  ),
-                ),
+          itemBuilder: (BuildContext context, int index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedCourts.contains(index)
+                    ? selectedCourts.remove(index)
+                    : selectedCourts.add(index);
+                // print(this.selectedCourts);
+              });
+            },
+            child: Card(
+              color: selectedCourts.contains(index)
+                  ? Colors.lightBlueAccent
+                  : Colors.white,
+              child: Column(
+                children: <Widget>[Text("Court ${index + 1}")],
               ),
+            ),
+          ),
         ),
       ],
     );
@@ -265,8 +265,13 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       userId: global.USERID,
       // startTime: Timestamp.fromDate(DateTime(
       //     now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
-      startTime: Timestamp.fromDate(DateTime(now.year, now.month, now.day)),
-      endTime: Timestamp.fromDate(DateTime(now.year, now.month, now.day)),
+      startTime: [
+        {
+          "${DateTime(now.year, now.month, now.day).toString()}":
+              selectedCourtIds
+        }
+      ],
+      endTime: [Timestamp.fromDate(DateTime(now.year, now.month, now.day))],
       //TODO: edit this
       // now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
       subject: "Student Booking",
@@ -285,18 +290,16 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       matric3: controllerMatric3.text.trim(),
       name4: controllerName4.text.trim(),
       matric4: controllerMatric4.text.trim(),
-      id: global.FFdb
-          .collection('student_appointment')
-          .doc()
-          .id,
+      id: global.FFdb.collection('student_appointment').doc().id,
     ).stuToJson();
 
     CollectionReference courtBooking =
-    FirebaseFirestore.instance.collection('student_appointments');
+        FirebaseFirestore.instance.collection('student_appointments');
 
     try {
+      print(_courtBooking);
       courtBooking.add(_courtBooking);
-      Navigator.pushNamed(context, '/');
+      // Navigator.pushNamed(context, '/');
     } catch (e) {
       print(e);
     }
@@ -333,7 +336,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                             Expanded(
                               child: Text("Start Time",
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold)),
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             ),
                             SizedBox(
                               width: 15,
@@ -341,7 +344,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                             Expanded(
                               child: Text("End Time",
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold)),
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             )
                           ],
                         ),
@@ -406,9 +409,10 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         ElevatedButton(
                           child: Text("Submit",
                               style:
-                              TextStyle(color: Colors.white, fontSize: 16)),
+                                  TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {
-                            if (!_formKey.currentState!.validate()) {} else {
+                            if (!_formKey.currentState!.validate()) {
+                            } else {
                               _formKey.currentState!.save();
                               insertCourtBooking();
                             }

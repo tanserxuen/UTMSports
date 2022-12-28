@@ -115,7 +115,7 @@ class MasterBooking {
       personInCharge: "Joan",
       attachment: "insert file",
       startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
-      endTime: widget.dateList,
+      dateList: widget.dateList,
     ).advToJson();
 
     var _masterBooking;
@@ -152,12 +152,14 @@ class MasterBooking {
                     .update(_masterBooking)
                     .then((_) {
                   Utils.showSnackBar("Updated an advanced booking", "green");
+                  Navigator.pushNamed(context, '/');
                 });
               });
             }
+
+            Navigator.pushNamed(context, '/');
           });
         }
-        Navigator.pushNamed(context, '/');
       } catch (e) {
         print(e);
       }
