@@ -5,9 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:utmsport/globalVariable.dart';
 
 import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
+
+import '../../utils.dart';
 
 class CreateAdvBooking extends StatefulWidget {
   const CreateAdvBooking({Key? key, required this.dateList}) : super(key: key);
@@ -60,6 +63,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               ),
               Text("Advanced Booking",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Card(child:_buildLegend(),),
               SizedBox(height: 15),
               Card(
                 child: Padding(
@@ -116,19 +120,16 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
       accordianList.add(ExpansionTile(
         maintainState: true,
         title: Text(
-            "Day ${dateIndex + 1} - ${DateFormat('dd MMM yyyy').format(widget.dateList[dateIndex])}"),
-        subtitle: Row(
-          children: [
-            Flexible(
-              child: Wrap(
-                direction: Axis.horizontal,
-                children: generateSelectedCourtBadge(dateIndex),
-              ),
-            ),
-          ],
+          "Day ${dateIndex + 1} - ${DateFormat('dd MMM yyyy').format(widget.dateList[dateIndex])}",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Wrap(
+          direction: Axis.horizontal,
+          children: generateSelectedCourtBadge(dateIndex),
         ),
         children: [
-          Text("${widget.dateList[dateIndex]}"),
+          // Text("${widget.dateList[dateIndex]}"),
+          SizedBox(height: 8),
           TimeslotCourtTable(
             dateList: widget.dateList,
             index: dateIndex,
@@ -147,32 +148,36 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         elIndex < selectedCourtTimeslot[dateIndex].length;
         elIndex++) {
       badgeList.add(
-        ElevatedButton(
-          onPressed: () => setState(() => {
-                updateMasterBookingArray(
-                    dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
-                selectedCourtTimeslot[dateIndex].removeWhere((element) {
-                  return selectedCourtTimeslot[dateIndex][elIndex] == element;
+        Padding(
+          padding: const EdgeInsets.fromLTRB(1, 3, 1, 3),
+          child: ElevatedButton(
+            onPressed: () => setState(() => {
+                  updateMasterBookingArray(
+                      dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
+                  selectedCourtTimeslot[dateIndex].removeWhere((element) {
+                    return selectedCourtTimeslot[dateIndex][elIndex] == element;
+                  }),
                 }),
-              }),
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size(20, 10),
-            maximumSize: Size(90, 40),
-            shape: StadiumBorder(),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
-                    style: TextStyle(fontSize: 12)),
-                SizedBox(width: 3),
-                Icon(
-                  Icons.close,
-                  size: 14,
-                ),
-              ],
+            style: ElevatedButton.styleFrom(
+                minimumSize: Size(20, 10),
+                maximumSize: Size(90, 40),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: StadiumBorder(),
+                primary: Colors.lightBlue[700]),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
+                      style: TextStyle(fontSize: 12)),
+                  SizedBox(width: 3),
+                  Icon(
+                    Icons.close,
+                    size: 14,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -191,7 +196,8 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         if (!_formKey.currentState!.validate()) {
         } else {
           _formKey.currentState!.save();
-          MasterBooking.insertAdvBooking(widget, masterBookingArray, context, selectedCourtTimeslot);
+          MasterBooking.insertAdvBooking(
+              widget, masterBookingArray, context, selectedCourtTimeslot);
         }
       },
     );
@@ -261,5 +267,27 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         )
       ],
     );
+  }
+
+  Widget _buildLegend() {
+    return Wrap(children: [
+      ...timeslot.map((slot){
+        int index = timeslot.indexOf(slot);
+        // var timeNow = Utils.getCurrentTimeOnly(slot);
+        //TODO: change this
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
+          child: Wrap(children: [
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(color: Colors.red),
+              ),
+            ),Text("$index $slot")
+          ],),
+        );
+      })
+    ]);
   }
 }

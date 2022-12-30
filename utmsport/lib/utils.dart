@@ -36,4 +36,16 @@ class Utils {
   static parseTimestampToDateTime(Timestamp timestamp){
     return timestamp.toDate();
   }
+
+  static getCurrentDateOnly() {
+    DateTime now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  static getCurrentTimeOnly(String timeString) {
+    DateTime now = DateTime.now();
+    String dateString = now.toString().split(' ')[0];
+    print(DateFormat("HH:mm a").parse("$dateString $timeString"));
+    return DateFormat("HH:mm a").parse("$dateString $timeString");
+  }
 }

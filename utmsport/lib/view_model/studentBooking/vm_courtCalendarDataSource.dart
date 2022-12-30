@@ -34,40 +34,66 @@ List<CalendarResource> getCourts(resources) {
 Map getCourtTimeslotDisplay(booked, subject, color) {
   String date = booked.keys.toList()[0];
   List slots = booked.values.toList()[0], times = [];
-  int timeslot = 0;
-  var resourceIds = [], startTime = [], endTime = [];
-  var court, iterate = 0;
-  print(booked);
+  List resourceIds = slots
+      .map((e) => e.split(' ')[0].toString().padLeft(4, '0'))
+      .toSet()
+      .toList();
+  var startTime = [], endTime = [];
+  int iterate = 0;
+  // print("$booked $subject");
+  String tempTimeslot = "", tempCourt = "";
   for (int j = 0; j < slots.length; j++) {
     var slot = slots[j];
     var slotValue = slot.split(' ');
-    String dateToParse = date.split(' ')[0];
-    String timeToParse = global.timeslot[int.parse(slotValue[1])];
-    // print(slotValue[1]);
-    if (court == null) {
-      court = slotValue[0];
+    String dataTimeslot = slotValue[0], dataCourt = slotValue[1];
+    String dateString = date.split(' ')[0];
+    String timeString = global.timeslot[int.parse(slotValue[0]) - 1];
+
+    // print(resourceIds);
+    if (tempCourt == "") {
+      // print(
+      //     "dataCourt: $dataCourt    tempCourt: $tempCourt    resourceIds $resourceIds");
+      tempCourt = dataCourt;
+      tempTimeslot = dataTimeslot;
       iterate = 1;
-      startTime.add(DateTime.parse("$dateToParse $timeToParse"));
-      resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
-      // print("null ${slotValue[0]} iterate $iterate");
-
-    } else if (slotValue[0] == court) {
-      timeslot = int.parse(slotValue[1]);
-      endTime.add(DateTime.parse("$dateToParse $timeToParse")
-          .add(Duration(minutes: 30 * iterate)));
-      iterate = 0;
-      // print("remain ${slotValue[0]} iterate $iterate");
-
-    } else if (slotValue[0] != court) {
-      court = slotValue[0];
+      startTime.add(DateTime.parse("$dateString $timeString"));
+      // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
+      // print(
+      //     "null Number of Iterate: $iterate    dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
+    } else if (tempCourt == dataCourt) {
+      // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
+      tempTimeslot = dataTimeslot;
       iterate += 1;
-      startTime.add(DateTime.parse("$dateToParse $timeToParse"));
-      resourceIds.add("${court.toString().padLeft(4, '0')}" as Object);
-      // print("updated ${slotValue[0]} iterate $iterate");
+      // endTime.add(DateTime.parse("$dateString $timeString")
+      //     .add(Duration(minutes: 30 * iterate)));
+      // print(
+      //     "remain ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
+    } else if (tempCourt != dataCourt) {
+      // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
+      tempCourt = dataCourt;
+      if (int.parse(tempTimeslot) + 1 != int.parse(dataTimeslot)) {
+        // print(resourceIds);
+        startTime.add(DateTime.parse("$dateString $timeString"));
+        endTime.add(DateTime.parse("$dateString $timeString")
+            .add(Duration(minutes: 30 * iterate)));
+        iterate = 1;
+        // print(int.parse(tempTimeslot) + 1);
+        // print(int.parse(dataTimeslot));
+        // print(resourceIds);
+      } else {
+        iterate += 1;
+      }
+      tempTimeslot = dataTimeslot;
+      // String courtName = dataCourt.toString().padLeft(4, '0');
+      // resourceIds.add("${courtName}" as Object);
+
+      // print(
+      //     "updated ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
     }
-    if (j == slots.length - 1 && startTime.length != endTime.length) {
-      endTime.add(DateTime.parse("$dateToParse $timeToParse")
-          .add(Duration(minutes: 30)));
+    if (j == slots.length - 1) {
+      endTime.add(DateTime.parse("$dateString $timeString")
+          .add(Duration(minutes: 30 * iterate)));
+      // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
     }
   }
   // print("startTimeeeeeee ${startTime}");
@@ -77,7 +103,7 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
     'color': color,
     'startTime': startTime,
     'endTime': endTime,
-    'resourceIds': resourceIds.toList().cast<Object>(),
+    'resourceIds': resourceIds.cast<Object>(),
   };
 }
 
@@ -87,7 +113,7 @@ void getAppointments(appointments, appData) {
   var appointmentList = [], subject, color;
   appData.forEach((appDetails) {
     // subject = appDetails['subject'];
-    print(appDetails['subject']);
+    // print(appDetails['subject']);
     // color = Color(int.parse(appDetails['color']));
     appointmentList.add(
       appDetails['startTime'].map((booked) => getCourtTimeslotDisplay(booked,
@@ -96,24 +122,27 @@ void getAppointments(appointments, appData) {
   });
   appointmentList.forEach((e) {
     e.forEach((element) {
+      // print("");
+      // print("");
+      // print("");
+      // print("");
+      // print(" ===================================");
       for (int i = 0; i < element['startTime'].length; i++) {
-        print(" ===================================");
         // print({
         //   "endTime": element['endTime'].length,
         //   "startTime": element['startTime'].length,
         //   "resourceIds": element['resourceIds'],
-        //   "i":i,
+        //   "i": i,
         // });
         appointments.add(Appointment(
-          // subject: subject,
-          subject: element['subject'],
-          color: element['color'],
-          endTime: element['endTime'][i],
-          startTime: element['startTime'][i],
-          resourceIds: element['resourceIds'],
-          notes: element['resourceIds'].toString(),
-          location: "Sports Hall 1"
-        ));
+            // subject: subject,
+            subject: "${element['subject']} ${element['resourceIds']}",
+            color: element['color'],
+            endTime: element['endTime'][i],
+            startTime: element['startTime'][i],
+            resourceIds: element['resourceIds'],
+            notes: element['resourceIds'].toString(),
+            location: "Sports Hall 1"));
       }
     });
   });

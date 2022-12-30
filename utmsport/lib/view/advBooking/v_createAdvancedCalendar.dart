@@ -37,18 +37,19 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 style: TextButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: this._dateList.length <= 0?Colors.grey:Colors.blue,
                   shape: CircleBorder(),
                 ),
                 child: Icon(
                   Icons.arrow_forward_rounded,
                   color: Colors.white,
                 ),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => CreateAdvBooking(dateList: this._dateList),
-                  ),
-                ),
+                onPressed: () => this._dateList.length <= 0
+                    ? null
+                    : Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            CreateAdvBooking(dateList: this._dateList),
+                      )),
               ),
             )
           ],
@@ -60,8 +61,10 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
   void selectionDateChanged(DateRangePickerSelectionChangedArgs args) {
     List<Timestamp> formattedDates = [];
     // args.value.forEach((e)=>formattedDates.add(DateFormat('yyyy-MM-dd').format(e)));
-    this._dateList = List.castFrom(args.value);
-    this._dateList.sort();
-    print(this._dateList);
+    setState(() {
+      this._dateList = List.castFrom(args.value);
+      this._dateList.sort();
+      print(this._dateList);
+    });
   }
 }

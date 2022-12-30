@@ -42,8 +42,13 @@ class MasterBooking {
   ) {
     List newObjectArray = [];
     for (int i = 0; i < global.timeslot.length + 1; i++) {
-      newObjectArray.add({'court': courtTimeslot[i]});
+      print(courtTimeslot[i]);
+      var convertedCourtTimeslot = courtTimeslot[i]
+          .map((e) => e.contains("Check") ? "Booked" : e)
+          .toList();
+      newObjectArray.add({'court': convertedCourtTimeslot});
     }
+    print(newObjectArray);
     return newObjectArray;
   }
 
@@ -125,43 +130,43 @@ class MasterBooking {
     CollectionReference masterCourtBooking =
         global.FFdb.collection('master_booking');
 
-      try {
-        //add student_appointments
-        advCourtBooking.add(_bookingDetails);
+    try {
+      //add student_appointments
+      advCourtBooking.add(_bookingDetails);
 
-        //add master_booking
-        for (int dateIndex = 0; dateIndex < widget.dateList.length; dateIndex++) {
-          var date = widget.dateList[dateIndex];
-          _masterBooking = MasterBooking(
-            booked_courtTimeslot:
-                MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
-            date: date,
-            userId: global.USERID,
-            bookingId: _bookingId,
-            sportsType: "Badminton", //TODO: Joan Change this
-          ).toJson();
-          await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
-            if (value.docs.length == 0) {
-              print("add adv");
-              masterCourtBooking.add(_masterBooking);
-            } else {
-              print("update adv");
-              value.docs.forEach((element) {
-                masterCourtBooking
-                    .doc(element.id)
-                    .update(_masterBooking)
-                    .then((_) {
-                  Utils.showSnackBar("Updated an advanced booking", "green");
-                  Navigator.pushNamed(context, '/');
-                });
+      //add master_booking
+      for (int dateIndex = 0; dateIndex < widget.dateList.length; dateIndex++) {
+        var date = widget.dateList[dateIndex];
+        _masterBooking = MasterBooking(
+          booked_courtTimeslot:
+              MasterBooking.nestedArrayToObject(masterBookingArray[dateIndex]),
+          date: date,
+          userId: global.USERID,
+          bookingId: _bookingId,
+          sportsType: "Badminton", //TODO: Joan Change this
+        ).toJson();
+        await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
+          if (value.docs.length == 0) {
+            print("add adv");
+            masterCourtBooking.add(_masterBooking);
+          } else {
+            print("update adv");
+            value.docs.forEach((element) {
+              masterCourtBooking
+                  .doc(element.id)
+                  .update(_masterBooking)
+                  .then((_) {
+                Utils.showSnackBar("Updated an advanced booking", "green");
+                Navigator.pushNamed(context, '/');
               });
-            }
+            });
+          }
 
-            Navigator.pushNamed(context, '/');
-          });
-        }
-      } catch (e) {
-        print(e);
+          Navigator.pushNamed(context, '/');
+        });
       }
+    } catch (e) {
+      print(e);
+    }
   }
 }

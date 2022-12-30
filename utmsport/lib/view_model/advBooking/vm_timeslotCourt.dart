@@ -114,21 +114,24 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
             child: Text(courtTimeslot[x][y]));
         break;
       case 'Booked':
-        textWidget = Text("${courtTimeslot[x][y].toString()}");
+        textWidget = Icon(
+          Icons.close,
+          color: Colors.white,
+        );
         containerStyle = Colors.black12;
         break;
       default: // x&y axis and check
         if (RegExp("[a-z]").hasMatch(courtTimeslot[x][y])) {
           textWidget = TextButton(
-              onPressed: () {
-                setState(() {
-                  widget.setSelectedCourtArrayCallback(
-                      "$x $y", index, "remove");
-                  courtTimeslot[x][y] = "";
-                });
-              },
-              child: Text("Selected"));
-          containerStyle = Colors.limeAccent;
+            onPressed: () {
+              setState(() {
+                widget.setSelectedCourtArrayCallback("$x $y", index, "remove");
+                courtTimeslot[x][y] = "";
+              });
+            },
+            child: Icon(Icons.check_circle, size: 16, color: Colors.red),
+          );
+          // containerStyle = Colors.limeAccent;
         } else {
           textWidget = Text(
             courtTimeslot[x][y].toString(),
@@ -154,13 +157,13 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         .where('date', whereIn: widget.dateList)
         .get()
         .then((val) {
-        _courtTimeslot = MasterBooking.createNestedCTArray(
-          date,
-          widget.dateList,
-          val.docs.toList(),
-          noOfTimeslot: noOfTimeslot,
-          noOfCourt: noOfCourt,
-        );
+      _courtTimeslot = MasterBooking.createNestedCTArray(
+        date,
+        widget.dateList,
+        val.docs.toList(),
+        noOfTimeslot: noOfTimeslot,
+        noOfCourt: noOfCourt,
+      );
       setState(() => {
             this.isFecthingDataDone = true,
             courtTimeslot = _courtTimeslot,
