@@ -18,8 +18,9 @@ import '../../utils.dart';
 
 
 class AppointmentWidget extends StatefulWidget {
-  const AppointmentWidget({Key? key}) : super(key: key);
+  const AppointmentWidget({Key? key, required this.selectedDay}) : super(key: key);
 
+  final DateTime selectedDay;
   @override
   State<AppointmentWidget> createState() => _AppointmentWidgetState();
 }
@@ -49,6 +50,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   initState()  {
       // TODO: implement initState
       super.initState();
+      _DateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
       getAvailableTime().then((value){
         setState(() {
           timeslotArray = value;

@@ -37,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
               AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
             if (snapshot.hasError) return Text('Something went wrong');
             if (snapshot.connectionState == ConnectionState.waiting)
-              return Text('Loading');
+              return Center(child: CircularProgressIndicator());
             if (snapshot.hasData) {
               var output = snapshot.data!.data();
               var name = output!['name'];
@@ -105,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               );
             }
-            return Center(child: CircularProgressIndicator());
+            return Text('...');
           }),
     );
   }
