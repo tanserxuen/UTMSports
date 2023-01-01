@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
-import 'package:utmsport/admin_post/view/create_post.dart';
+import 'package:utmsport/view/adminPost/v_createEvent.dart';
+import 'package:utmsport/view/studentBooking/v_createBooking.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,8 +21,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
-        '/student-booking': (context) => FormScreen(),
+        '/student-booking': (context) => CreateBooking(),
       },
       scaffoldMessengerKey: Utils.messengerKey,
       navigatorKey: navigatorKey,
@@ -27,10 +31,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
-        onGenerateRoute: (settings) {
-          print("initialize");
-          return MaterialPageRoute(builder: (_) => FormScreen());
+      // onGenerateRoute: (settings) {
+      //   print("initialize");
+      //   return MaterialPageRoute(builder: (_) => FormScreen());
+      // },
+
+      scrollBehavior: MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown
         },
+      ),
     );
   }
 }

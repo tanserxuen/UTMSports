@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:utmsport/globalVariable.dart' as global;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:utmsport/view/authentication/v_adminPage.dart';
 import 'package:utmsport/view/authentication/v_homePage.dart';
 
 import '../../utils.dart';
@@ -64,14 +68,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await Future.delayed(Duration(seconds: 5));
       setState(() => canResendEmail = true);
     } catch (e) {
-      Utils.showSnackBar(e.toString());
+      Utils.showSnackBar(e.toString(), "red");
     }
 
   }
 
   @override
   Widget build(BuildContext context) => isEmailVerified
-      ? MyHomePage()
+      // ? MyHomePage()
+      ? authorization()
       : Scaffold(
         appBar: AppBar(
           title: Text('Verify Email')
@@ -104,3 +109,22 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         ),
   );
 }
+
+Widget authorization() => FutureBuilder(
+  future: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get(),
+  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    if(snapshot.hasError) return Text("Something went wrong");
+    if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+    if(snapshot.connectionState == ConnectionState.done){
+      if(snapshot.data!.data() == null) return MyHomePage();
+      Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+      //set user role upon open app
+      global.setUserRole(data);
+      return MyHomePage();
+
+    }
+    return Text("Please check v_verifyemailPage.dart");
+  },
+);
+
+
