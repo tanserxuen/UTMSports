@@ -166,6 +166,26 @@ class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
                       leading: Icon(Icons.picture_as_pdf, color: Colors.red, size: 32,),
                     ),
 
+                    SizedBox(height: 25,),
+                    Text('Attendence Report', style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18
+                    ),),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      color: Colors.blueGrey[100],
+                      child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                data['description'],
+                                textAlign: TextAlign.justify,
+                              ),
+                            )
+                          ]),
+                    ),
+                    SizedBox(height: 20,),
+
                   ]));
             }
             return Text("loading");

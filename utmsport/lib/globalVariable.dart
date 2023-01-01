@@ -16,6 +16,8 @@ import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
 import 'package:utmsport/view/studentBooking/v_feedbackForm.dart';
 import 'package:utmsport/view/studentBooking/v_viewFeedbacks.dart';
 
+import 'athlete/listView_training.dart';
+
 // usage:
 // import this file in files that you need these variables and add gloabl.
 
@@ -45,7 +47,7 @@ STUDENT_ROUTES(user) =>
 
 ATHLETE_ROUTES(user) =>
 //    athlete: cmtan0108@gmail.com     123456
-    [LatestEventWall(), BookingCalendar(), TeamAthletePage(), ProfilePage()];
+    [LatestEventWall(), BookingCalendar(), listviewTraining(), ProfilePage()];
 
 MANAGER_ROUTES(user) =>
 //    cmtan-2000@graduate.utm.my 123123

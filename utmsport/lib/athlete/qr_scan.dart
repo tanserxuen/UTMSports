@@ -142,16 +142,18 @@ class _QRScan extends State<QRScan> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      if (!mounted) return;
+      if (!mounted){
+        print("operation peform");
+        return;}
       setState(() {
         result = scanData;
       });
     });
   }
 
-  // @override
-  // void dispose(){
-  //   controller?.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose(){
+    controller?.dispose();
+    super.dispose();
+  }
 }

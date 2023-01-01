@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRGenerate extends StatefulWidget {
+  final eventTitle;
+  const QRGenerate({Key? key, this.eventTitle}): super(key: key);
   @override
   State<QRGenerate> createState() => _QRGenerate();
 
@@ -9,6 +11,13 @@ class QRGenerate extends StatefulWidget {
 
 class _QRGenerate extends State<QRGenerate> {
   final controller = TextEditingController();
+  @override
+
+  void initState() {
+    controller.text = widget.eventTitle;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
