@@ -6,6 +6,8 @@ import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/sportTeam/v_createTeamPage.dart';
 import 'package:utmsport/view/sportTeam/v_sportMemberPage.dart';
 
+import '../advBooking/v_createAdvancedCalendar.dart';
+
 class SportTeamPage extends StatefulWidget {
   const SportTeamPage({Key? key}) : super(key: key);
 
@@ -54,6 +56,13 @@ class _SportTeamPageState extends State<SportTeamPage> {
                                 Text(documentSnapshot['teamName']),
                                 Wrap(
                                   children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAdvBookingCalendar()));
+                                      },
+                                      icon: Icon(Icons.calendar_today_rounded),
+                                      color: Colors.indigo
+                                    ),
                                     IconButton(
                                       onPressed: () => Navigator.push(
                                           context,
