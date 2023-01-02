@@ -35,13 +35,14 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
   String date = booked.keys.toList()[0];
   List slots = booked.values.toList()[0], times = [];
   List resourceIds = slots
-      .map((e) => e.split(' ')[0].toString().padLeft(4, '0'))
+      .map((e) => e.split(' ')[1].toString().padLeft(4, '0'))
       .toSet()
       .toList();
   var startTime = [], endTime = [];
   int iterate = 0;
   // print("$booked $subject");
   String tempTimeslot = "", tempCourt = "";
+    // print("====================================== $subject");
   for (int j = 0; j < slots.length; j++) {
     var slot = slots[j];
     var slotValue = slot.split(' ');
@@ -96,8 +97,12 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
       // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
     }
   }
-  // print("startTimeeeeeee ${startTime}");
-  // print("endTimeeeeeee ${endTime}");
+
+  // print({'subject': subject,
+  //   'color': color,
+  //   'startTime': startTime,
+  //   'endTime': endTime,
+  //   'resourceIds': resourceIds.cast<Object>(),});
   return {
     'subject': subject,
     'color': color,
@@ -129,8 +134,10 @@ void getAppointments(appointments, appData) {
       // print(" ===================================");
       for (int i = 0; i < element['startTime'].length; i++) {
         // print({
-        //   "endTime": element['endTime'].length,
-        //   "startTime": element['startTime'].length,
+        //   "endTime": element['endTime'],
+        //   "endTimeLength": element['endTime'].length,
+        //   "startTime": element['startTime'],
+        //   "startTimeLength": element['startTime'].length,
         //   "resourceIds": element['resourceIds'],
         //   "i": i,
         // });
