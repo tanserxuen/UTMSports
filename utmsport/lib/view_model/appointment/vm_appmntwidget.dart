@@ -11,8 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-
-
 import '../../view/appointment/listView_appointment.dart';
 import '../../utils.dart';
 
@@ -27,6 +25,7 @@ class AppointmentWidget extends StatefulWidget {
 
 class _AppointmentWidgetState extends State<AppointmentWidget> {
 
+  // late final LocalNotificationService service;//deb coding notification
 
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _TimeController = TextEditingController();
@@ -48,6 +47,13 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
   @override
   initState()  {
+
+    // service = LocalNotificationService();//deb
+    // service.intialize();//deb
+
+    // service = LocalNotificationService();//add by deb
+    // service.iniState();//add by deb
+
       // TODO: implement initState
       super.initState();
       _DateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
@@ -320,6 +326,11 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                       ElevatedButton(
                         child: const Text('Create'),
                         onPressed: () async {
+                          // await service.showNotification(
+                          //     id: 0,
+                          //     title: 'Meeting Request ',
+                          //     body: 'Pending'
+                          // );//deb
                           final isValid = formKey.currentState!.validate();
                           if(!isValid) return ;
                           if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file', "red");

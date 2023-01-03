@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
-
 import '../../main.dart';
 import '../../model/m_AppointmentDetail.dart';
+import '../../notification/notification.dart';
+
 
 class RequestMeetingList extends StatefulWidget {
   const RequestMeetingList({Key? key}) : super(key: key);
@@ -16,12 +17,18 @@ class RequestMeetingList extends StatefulWidget {
 }
 
 class _RequestMeetingListState extends State<RequestMeetingList> {
+
+  @override
+  void iniState(){
+    super.initState();
+  }
+
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
   final CollectionReference _appointments =
-      FirebaseFirestore.instance.collection('appointments');
+  FirebaseFirestore.instance.collection('appointments');
   var listAppointment;
 
   getAppointments() async {
@@ -35,18 +42,18 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
         setState(() {
           _listappointmentDetails = querySnapshot.docs
               .map((appt) => AppointmentDetail(
-                  dateTime: appt['date'].toDate(),
-                  eventDescp: appt['description'],
-                  eventTitle: appt['eventtitle'],
-                  email: appt['email'],
-                  file: appt['file'],
-                  matricno: appt['matricno'],
-                  name: appt['name'],
-                  phoneno: appt['phoneno'],
-                  pic: appt['pic'],
-                  status: appt['status'],
-                  uid: appt['uid'],
-                  docid: appt.id))
+              dateTime: appt['date'].toDate(),
+              eventDescp: appt['description'],
+              eventTitle: appt['eventtitle'],
+              email: appt['email'],
+              file: appt['file'],
+              matricno: appt['matricno'],
+              name: appt['name'],
+              phoneno: appt['phoneno'],
+              pic: appt['pic'],
+              status: appt['status'],
+              uid: appt['uid'],
+              docid: appt.id))
               .toList();
         });
       });
@@ -55,7 +62,7 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
         String date = DateFormat('yyyy-MM-dd')
             .format(_listappointmentDetails[i].dateTime);
         String time =
-            DateFormat.jm().format(_listappointmentDetails[i].dateTime);
+        DateFormat.jm().format(_listappointmentDetails[i].dateTime);
         if (listAppointment.containsKey(date)) {
           print("THIS WONNT REPLACE");
         } else {
@@ -174,36 +181,52 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
               ),
             ),
             ..._listOfDayEvents(_selectedDay!).map(
-              (myEvents) => ListTile(
+                  (myEvents) => ListTile(
                 onLongPress: myEvents['status'] == 'pending'
                     ? () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Confirmation'),
-                              content: const Text('Do you want to approve?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                    onPressed: () => _reject(myEvents['docid'])
-                                            .then((value) {
-                                          navigatorKey.currentState!.popUntil(
-                                              (route) => route.isFirst);
-                                        }),
-                                    child: const Text('Reject')),
-                                TextButton(
-                                  onPressed: () =>
-                                      _approve(myEvents['docid']).then((value) {
-                                    navigatorKey.currentState!
-                                        .popUntil((route) => route.isFirst);
-                                  }),
-                                  child: const Text('Ok'),
-                                )
-                              ],
-                            ))
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Confirmation'),
+                      content: const Text('Do you want to approve?'),
+                      actions: <Widget>[
+                        TextButton(
+                          // onPressed: () =>
+                          //     Navigator.pop(context, 'Cancel'),
+                          onPressed: () {
+                            // sendNotification(
+                            //   title: "Cancel",
+                            //   body: "cancel eventTitle",
+                            //   //fln: flutterLocalNotificationsPlugin,
+                            // );
+                            Navigator.pop(context, 'Cancel');},
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                            onPressed: () => _reject(myEvents['docid'])
+                                .then((value) {
+                              sendNotification(
+                                title: "Rejected",
+                                body: "Rejected Event Title", //deb
+                              );
+                              navigatorKey.currentState!.popUntil(
+                                      (route) => route.isFirst);}
+                            ),
+
+                            child: const Text('Reject')),
+                        TextButton(
+                          onPressed: () =>
+                              _approve(myEvents['docid']).then((value) {
+                                sendNotification(
+                                  title: "Approved",
+                                  body: "Approved eventTitle",//deb
+                                );
+                                navigatorKey.currentState!
+                                    .popUntil((route) => route.isFirst);
+                              }),
+                          child: const Text('Ok'),
+                        )
+                      ],
+                    ))
                     : null,
                 onTap: () {
                   Navigator.push(
@@ -214,15 +237,15 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                 },
                 leading: myEvents['status'] == 'approved'
                     ? Icon(
-                        Icons.done,
-                        color: Colors.teal,
-                        size: 32,
-                      )
+                  Icons.done,
+                  color: Colors.teal,
+                  size: 32,
+                )
                     : Icon(
-                        Icons.pending,
-                        color: Colors.amberAccent,
-                        size: 32,
-                      ),
+                  Icons.pending,
+                  color: Colors.amberAccent,
+                  size: 32,
+                ),
                 title: Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(' ${myEvents['eventTitle']}'),
