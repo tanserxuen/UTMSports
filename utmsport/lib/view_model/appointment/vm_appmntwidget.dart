@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -11,10 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
-
-
-import '../../view/appointment/listView_appointment.dart';
 import '../../utils.dart';
+import '../../local_notification_service.dart';
 
 
 class AppointmentWidget extends StatefulWidget {
@@ -27,6 +23,7 @@ class AppointmentWidget extends StatefulWidget {
 
 class _AppointmentWidgetState extends State<AppointmentWidget> {
 
+  //late final LocalNotificationService service;//deb 20/12 coding notification
 
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _TimeController = TextEditingController();
@@ -73,6 +70,9 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   @override
   void dispose() {
     // TODO: implement dispose
+    // service = LocalNotificationService();//deb
+    // service.intialize();//deb
+
     _eventTitleController.text = '';
     _TimeController.text = '';
     _DateController.text = '';
@@ -320,6 +320,12 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                       ElevatedButton(
                         child: const Text('Create'),
                         onPressed: () async {
+                          // await service.showNotification(
+                          //     id: 0,
+                          //     title: 'Meeting Request ',
+                          //     body: 'Pending'
+                          // );//deb
+
                           final isValid = formKey.currentState!.validate();
                           if(!isValid) return ;
                           if(filename.isEmpty || filename == '') return Utils.showSnackBar('Please Upload PDF file', "red");

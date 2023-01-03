@@ -127,4 +127,3 @@ Widget authorization() => FutureBuilder(
   },
 );
 
-
