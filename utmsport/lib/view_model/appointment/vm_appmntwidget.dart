@@ -11,6 +11,7 @@ import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 import '../../utils.dart';
 import '../../local_notification_service.dart';
+import '../../view/notification_api.dart';
 
 
 class AppointmentWidget extends StatefulWidget {
@@ -385,6 +386,11 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                                         child: const Text("ok"),
                                         onPressed: (){
                                           // _navigateToNextScreen(context);
+                                          sendNotification(
+                                            title: "Booked",
+                                            body: "Booked eventTitle",
+                                            //fln: flutterLocalNotificationsPlugin,
+                                          );
                                           navigatorKey.currentState!.popUntil((route) => route.isFirst);
                                         },
                                       ),

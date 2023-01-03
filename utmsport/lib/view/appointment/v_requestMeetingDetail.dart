@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:utmsport/model/m_MeetAppointment.dart';
 // import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:utmsport/view/appointment/v_readerScreen.dart';
-
 import '../../model/m_AppointmentDetail.dart';
 
 
@@ -20,7 +19,6 @@ class RequestMeetingDetail extends StatefulWidget {
 }
 
 class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
-
   final CollectionReference _appointments =
   FirebaseFirestore.instance.collection('appointments');
 
@@ -134,7 +132,13 @@ class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
                       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          color: data['status'] == "pending" ? Colors.yellow : Colors.transparent,
+                          //color: data['status'] == "pending" ? Colors.yellow : Colors.transparent,
+                          color:
+                          data['status'] == 'rejected'
+                              ? Colors.red
+                              : data['status'] == 'approved'
+                              ? Colors.green
+                              : Colors.yellow,
                           border: Border.all(
                             color: data['status'] == 'approved'
                                 ? Colors.green : data['status'] == 'rejected'
@@ -166,25 +170,54 @@ class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
                       leading: Icon(Icons.picture_as_pdf, color: Colors.red, size: 32,),
                     ),
 
-                    SizedBox(height: 25,),
-                    Text('Attendence Report', style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18
-                    ),),
                     Container(
-                      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                      color: Colors.blueGrey[100],
-                      child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                data['description'],
-                                textAlign: TextAlign.justify,
+                        child:LayoutBuilder(builder: (context, constraints) {
+                          if(data['status']== 'approved'){
+                            return Container(
+                              child:
+                              Column(
+                                children: [
+                                  SizedBox(height: 50,),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      new Align(
+                                        alignment: Alignment.center,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                          child: Text('Attendence Report',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                            //textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 3,),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                    color: Colors.blueGrey[100],
+                                    child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              data['description'],
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          )
+                                        ]),
+                                  ),
+                                ],
                               ),
-                            )
-                          ]),
-                    ),
-                    SizedBox(height: 20,),
+                            );
+                          }else{
+                            return Text("");
+                          }
+                        })
+                    )
 
                   ]));
             }
@@ -194,3 +227,4 @@ class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
     );
   }
 }
+

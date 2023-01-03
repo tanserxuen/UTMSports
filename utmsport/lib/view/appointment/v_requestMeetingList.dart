@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:utmsport/view/appointment/v_requestMeetingDetail.dart';
 
 import '../../main.dart';
 import '../../model/m_AppointmentDetail.dart';
+import '../notification_api.dart';
+
 
 class RequestMeetingList extends StatefulWidget {
   const RequestMeetingList({Key? key}) : super(key: key);
@@ -16,6 +19,42 @@ class RequestMeetingList extends StatefulWidget {
 }
 
 class _RequestMeetingListState extends State<RequestMeetingList> {
+
+  // NotificationServices notificationsServices = NotificationServices();
+  // @override
+  // void iniState(){
+  //   super.initState();
+  //   notificationsServices.initialiseNotifications();
+  // }
+
+  // void sendNotification({String? title, String? body}) async{
+  //   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //   FlutterLocalNotificationsPlugin();
+  //   // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+  //   const AndroidInitializationSettings initializationSettingsAndroid =
+  //   AndroidInitializationSettings('@mipmap/ic_launcher');
+  //   const InitializationSettings initializationSettings = InitializationSettings(
+  //       android: initializationSettingsAndroid,);
+  //   await flutterLocalNotificationsPlugin.initialize(
+  //     initializationSettings,
+  //   );
+  //   const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  //       'title',
+  //       'body',
+  //       description: 'description',
+  //     importance: Importance.max);
+  //
+  //   flutterLocalNotificationsPlugin.show(
+  //       0,
+  //       title,
+  //       body,
+  //       NotificationDetails(
+  //         android: AndroidNotificationDetails(channel.id, channel.name,
+  //         channelDescription: channel.description),
+  //       ),
+  //   );
+  // }
+
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
@@ -183,20 +222,47 @@ class _RequestMeetingListState extends State<RequestMeetingList> {
                               content: const Text('Do you want to approve?'),
                               actions: <Widget>[
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
+                                  // onPressed: () =>
+                                  //     Navigator.pop(context, 'Cancel'),
+                                  onPressed: () {
+                                    sendNotification(
+                                      title: "Cancel",
+                                      body: "cancel eventTitle",
+                                      //fln: flutterLocalNotificationsPlugin,
+                                    );
+                                    Navigator.pop(context, 'Cancel');},
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
                                     onPressed: () => _reject(myEvents['docid'])
-                                            .then((value) {
+                                        .then((value) {
+                                          sendNotification(
+                                            title: "Rejected",
+                                            body: "Rejected eventTitle",
+                                            //fln: flutterLocalNotificationsPlugin,
+                                          );
                                           navigatorKey.currentState!.popUntil(
-                                              (route) => route.isFirst);
+                                                  (route) => route.isFirst);
+                                          // NotificationApi.showNotification(
+                                          //   title: "Rejected a Meeting",
+                                          //   body: "eventtitle",
+                                          //   //payload: "sarah.abs",
+                                          // );
                                         }),
+                                    // onClicked: () => NotificationApi.showNotification(
+                                    //     title: "Rejected a Meeting",
+                                    //     body: "eventtitle",
+                                    //     //payload: "sarah.abs",
+                                    // ),
                                     child: const Text('Reject')),
                                 TextButton(
                                   onPressed: () =>
                                       _approve(myEvents['docid']).then((value) {
+                                        sendNotification(
+                                          title: "Approved",
+                                          body: "Approved eventTitle",
+                                          //fln: flutterLocalNotificationsPlugin,
+                                        );
                                     navigatorKey.currentState!
                                         .popUntil((route) => route.isFirst);
                                   }),
