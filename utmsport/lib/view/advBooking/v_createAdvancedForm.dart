@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:utmsport/globalVariable.dart';
+import 'package:utmsport/model/m_Training.dart';
 
 import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
@@ -13,8 +15,8 @@ import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
 import '../../utils.dart';
 
 class CreateAdvBooking extends StatefulWidget {
-  const CreateAdvBooking({Key? key, required this.dateList}) : super(key: key);
-
+  const CreateAdvBooking({Key? key, required this.dateList, this.sportId}) : super(key: key);
+  final sportId;
   final List<DateTime> dateList;
 
   @override
@@ -35,6 +37,8 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final picController = TextEditingController();
   final phoneController = TextEditingController();
   final subjectController = TextEditingController();
+  final timeTrainController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -79,6 +83,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                         _buildPICField(),
                         _buildPhoneNoField(),
                         SizedBox(height: 50),
+                        /*_displayAdditionalInfo(),*/
                         _buildSubmitAdvanced(),
                       ],
                     ),
@@ -92,6 +97,31 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     );
   }
 
+ /* Widget _displayAdditionalInfo() {
+    return widget.sportId==null ? Text('') : Column(
+      children: [
+        TextFormField(
+          controller: timeTrainController,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(labelText: 'Training Time'),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          maxLength: 4,
+          validator: (value) => value != null && value.length < 4
+              ? 'Enter min 4 charactor'
+              : null,
+        ),
+        TextFormField(
+          controller: descriptionController,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(labelText: 'Description'),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          keyboardType: TextInputType.multiline,
+          maxLines: 5,
+        ),
+      ],
+    );
+  }
+*/
   void setSelectedCourtArray(val, index, action) {
     setState(() {
       action == 'add'
@@ -197,11 +227,31 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         } else {
           _formKey.currentState!.save();
           MasterBooking.insertAdvBooking(
-              widget, masterBookingArray, context, selectedCourtTimeslot);
+              widget, masterBookingArray, context, selectedCourtTimeslot, widget.sportId);
+          // insertTraining();
         }
       },
     );
   }
+
+  /*Future<void> insertTraining() async {
+    await FirebaseFirestore.instance.collection('sportTeam').doc(widget.sportId).get().then((sportTeam,) async {
+      final _data = Training(
+          createdAt: DateTime.now(),
+          appointmentId: ,
+          subject: subjectController.text,
+          sport: sportTeam['sportType'][0],
+          startDate: '',
+          startTime: '',
+          description: descriptionController.text
+      ).toJson();
+      await FirebaseFirestore.instance.collection("training").add(_data).then((_){
+        Utils.showSnackBar("Training collection added", "green");
+        Navigator.of(context).pop();
+      });
+
+    });
+  }*/
 
   Widget _buildPICField() {
     return TextFormField(

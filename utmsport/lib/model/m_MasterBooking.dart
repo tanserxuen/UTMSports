@@ -108,20 +108,49 @@ class MasterBooking {
       dynamic widget,
       List<List<List<String>>> masterBookingArray,
       context,
-      selectedCourtTimeslot) async {
+      selectedCourtTimeslot, sportId) async {
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
-    final _bookingDetails = CourtBooking(
-      id: _bookingId,
-      userId: global.USERID,
-      subject: "Advanced Booking",
-      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
-      status: "Pending",
-      createdAt: Timestamp.fromDate(DateTime.now()),
-      personInCharge: "Joan",
-      attachment: "insert file",
-      startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
-      dateList: widget.dateList,
-    ).advToJson();
+    var _bookingDetails;
+
+    if(sportId==null){
+      //IF Manager booking, will run this
+      _bookingDetails = CourtBooking(
+          id: _bookingId,
+          userId: global.USERID,
+          subject: sportId == null ? "Advanced Booking" : "Training Booking",
+          color: sportId == null ? "0x${Colors.blueAccent.value.toRadixString(16)}" : "0x${Colors.orangeAccent.value.toRadixString(16)}",
+          status: "Pending",
+          createdAt: Timestamp.fromDate(DateTime.now()),
+          personInCharge: "Joan",
+          attachment: "insert file",
+          startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
+          dateList: widget.dateList,
+          sportId: ''
+      ).advToJson();
+    }else{
+      //Student run this
+      await global.FFdb.collection('sportTeam').doc(sportId).get().then((sportTeam) async {
+        await global.FFdb.collection('users').where('userId', isEqualTo: sportTeam['managerid']).get().then((user) {
+          _bookingDetails = CourtBooking(
+              id: _bookingId,
+              userId: user.docs.first['userId'] /*global.USERID*/,
+              subject: sportId == null ? "Advanced Booking" : "Training Booking",
+              color: sportId == null ? "0x${Colors.blueAccent.value.toRadixString(16)}" : "0x${Colors.orangeAccent.value.toRadixString(16)}",
+              status: "Pending",
+              createdAt: Timestamp.fromDate(DateTime.now()),
+              personInCharge: user.docs.first['name'],
+              attachment: "insert file",
+              startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
+              dateList: widget.dateList,
+              sportId: sportId
+          ).advToJson();
+
+        });
+      });
+    };
+
+
+
 
     var _masterBooking;
 
@@ -143,7 +172,7 @@ class MasterBooking {
           date: date,
           userId: global.USERID,
           bookingId: _bookingId,
-          sportsType: "Badminton", //TODO: Joan Change this
+          sportsType: "Badminton", //TODO: Joan Change this  @ CMTAn also
         ).toJson();
         await masterCourtBooking.where("date", isEqualTo: date).get().then((value) {
           if (value.docs.length == 0) {
@@ -157,7 +186,6 @@ class MasterBooking {
                   .update(_masterBooking)
                   .then((_) {
                 Utils.showSnackBar("Updated an advanced booking", "green");
-                Navigator.pushNamed(context, '/');
               });
             });
           }

@@ -51,7 +51,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     List _appData = [];
     try {
       await appointmentList
-          .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          // .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));

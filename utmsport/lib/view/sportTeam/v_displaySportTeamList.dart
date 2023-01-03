@@ -58,7 +58,8 @@ class _SportTeamPageState extends State<SportTeamPage> {
                                   children: [
                                     IconButton(
                                       onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAdvBookingCalendar()));
+                                        //  TODO: documentSnapshot.id  ---  SportTeamID
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAdvBookingCalendar(sportID: documentSnapshot.id)));
                                       },
                                       icon: Icon(Icons.calendar_today_rounded),
                                       color: Colors.indigo

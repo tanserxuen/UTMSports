@@ -24,6 +24,7 @@ class CourtBooking {
   String name4;
   String matric4;
   String sportType;
+  String sportId;
 
   //sports training
   String remarks;
@@ -65,6 +66,7 @@ class CourtBooking {
     this.remarks = "",
     this.couch = "",
     this.athletes = "", //list of matrics or user id
+    this.sportId = "",
 
     //adv booking
     this.attachment = "",
@@ -85,6 +87,7 @@ class CourtBooking {
         "attachment": attachment,
         "startTime": startTime,
         "endTime": endTime,
+        "sportId": sportId
       };
 
   Map<String, dynamic> stuToJson() => {
