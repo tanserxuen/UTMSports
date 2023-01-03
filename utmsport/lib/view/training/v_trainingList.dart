@@ -32,7 +32,7 @@ class TrainingListPage extends StatelessWidget {
                     return Card(
                       child: ListTile(
                         title: Text(date),
-                        leading: FlutterLogo(size: 56.0),
+                        leading: Icon(Icons.sports_cricket_rounded, color: Colors.orange,),
                         subtitle: Text(time),
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot.id,)));

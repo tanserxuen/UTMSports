@@ -265,25 +265,8 @@ class _listViewAppointmentState extends State<listViewAppointment> {
                             trailing: SizedBox(
                               width: 145,
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  IconButton(
-                                      icon: Icon(Icons.qr_code_scanner_outlined,
-                                          color:
-                                          documentSnapshot['status'] == 'approved'
-                                              ? Colors.orange
-                                              : Colors.grey
-                                      ),
-                                      onPressed:
-                                      documentSnapshot['status'] == 'approved'
-                                          ? () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => QRGenerate(eventTitle: documentSnapshot['eventtitle'],)));
-                                      } : null
-                                      // onPressed:(){
-                                      //   Navigator.push(context,
-                                      //       MaterialPageRoute(builder: (context) => QRGenerate(eventTitle: documentSnapshot['eventtitle'],))
-                                      //   );} ,
-                                  ),
                                   IconButton(
                                       icon: Icon(Icons.edit,
                                           color:

@@ -84,7 +84,7 @@ STUDENT_ROUTES(user) =>
 
 ATHLETE_ROUTES(user) =>
 //    athlete: cmtan0108@gmail.com     123456
-    [LatestEventWall(), BookingCalendar(), listviewTraining(), ProfilePage()];
+    [LatestEventWall(), BookingCalendar(), TeamAthletePage()/*listviewTraining()*/, ProfilePage()];
 
 MANAGER_ROUTES(user) =>
 //    cmtan-2000@graduate.utm.my 123123

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRGenerate extends StatefulWidget {
-  final eventTitle;
-  const QRGenerate({Key? key, this.eventTitle}): super(key: key);
+  final trainingId;
+  const QRGenerate({Key? key, this.trainingId}): super(key: key);
+
   @override
   State<QRGenerate> createState() => _QRGenerate();
 
@@ -14,7 +15,7 @@ class _QRGenerate extends State<QRGenerate> {
   @override
 
   void initState() {
-    controller.text = widget.eventTitle;
+    controller.text = widget.trainingId;
     super.initState();
   }
 
@@ -43,6 +44,8 @@ class _QRGenerate extends State<QRGenerate> {
   );
 
   Widget buildTextField(BuildContext context) => TextField(
+    textAlign: TextAlign.center,
+    readOnly: true,
     controller: controller,
     style: TextStyle(
       color: Colors.black,
@@ -55,17 +58,6 @@ class _QRGenerate extends State<QRGenerate> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.blueAccent),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.secondary,
-          ),
-        ),
-        suffixIcon: IconButton(
-          color: Theme.of(context).colorScheme.secondary,
-          icon: Icon(Icons.done, size: 30,),
-          onPressed: () => setState(() {}),
         ),
       ),
   );
