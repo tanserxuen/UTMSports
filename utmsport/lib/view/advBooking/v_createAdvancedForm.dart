@@ -321,21 +321,31 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
 
   Widget _buildLegend() {
     return Wrap(children: [
-      ...timeslot.map((slot){
+      Text(
+        "Notes  ",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      ),
+      ...timeslot.map((slot) {
+        // var time = Utils.getCurrentTimeOnly(slot);
         int index = timeslot.indexOf(slot);
         // var timeNow = Utils.getCurrentTimeOnly(slot);
         //TODO: change this
         return Padding(
           padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
-          child: Wrap(children: [
-            SizedBox(
-              width: 14,
-              height: 14,
-              child: const DecoratedBox(
-                decoration: const BoxDecoration(color: Colors.red),
+          child: Wrap(
+            children: [
+              SizedBox(
+                width: 13,
+                height: 13,
+                child: const DecoratedBox(
+                  decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                ),
               ),
-            ),Text("$index $slot")
-          ],),
+              Text(" T${index + 1} $slot ")
+            ],
+          ),
         );
       })
     ]);
