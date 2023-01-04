@@ -49,9 +49,10 @@ dependencies:
   intl: ^0.17.0
   event_bus: ^2.0.0
   flutter_local_notifications: ^12.0.4
-  timezone: ^0.9.0
-  rxdart: ^0.27.7
-
+  firebase_core: ^2.4.1
+  firebase_messaging: ^14.2.1
+#  timezone: ^0.9.0
+#  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:

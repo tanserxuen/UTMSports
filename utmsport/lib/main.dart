@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      // routes: <String, WidgetBuilder>{
-      //   '/student-booking': (context) => CreateStuBooking(),
-      // },
+      routes: <String, WidgetBuilder>{
+        '/student-booking': (context) => CreateStuBooking(sportsType: '',),
+      },
       scaffoldMessengerKey: Utils.messengerKey,
       navigatorKey: navigatorKey,
       theme: ThemeData(

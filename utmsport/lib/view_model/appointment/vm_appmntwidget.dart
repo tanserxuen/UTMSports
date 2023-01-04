@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
@@ -9,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:utmsport/main.dart';
 import 'package:utmsport/globalVariable.dart' as global;
+import '../../view/appointment/listView_appointment.dart';
 import '../../utils.dart';
 import '../../local_notification_service.dart';
 
@@ -23,7 +26,6 @@ class AppointmentWidget extends StatefulWidget {
 
 class _AppointmentWidgetState extends State<AppointmentWidget> {
 
-  //late final LocalNotificationService service;//deb 20/12 coding notification
 
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _TimeController = TextEditingController();
@@ -45,6 +47,13 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
   @override
   initState()  {
+
+    // service = LocalNotificationService();//deb
+    // service.intialize();//deb
+
+    // service = LocalNotificationService();//add by deb
+    // service.iniState();//add by deb
+
       // TODO: implement initState
       super.initState();
       _DateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
@@ -70,9 +79,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   @override
   void dispose() {
     // TODO: implement dispose
-    // service = LocalNotificationService();//deb
-    // service.intialize();//deb
-
     _eventTitleController.text = '';
     _TimeController.text = '';
     _DateController.text = '';
