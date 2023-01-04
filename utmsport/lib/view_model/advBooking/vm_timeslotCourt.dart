@@ -9,12 +9,16 @@ class TimeslotCourtTable extends StatefulWidget {
   int noOfTimeslot = global.timeslot.length;
   int noOfCourt = global.badmintonCourt;
   final List<DateTime> dateList;
+  final String formType;
+  final List<String> slots;
   final int index;
   void Function(String, int, String) setSelectedCourtArrayCallback;
   void Function(List<List<String>>, int) setMasterBookingArrayCallback;
 
   TimeslotCourtTable({
     required this.dateList,
+    required this.formType,
+    required this.slots,
     required this.index,
     required this.setSelectedCourtArrayCallback,
     required this.setMasterBookingArrayCallback,
@@ -25,6 +29,8 @@ class TimeslotCourtTable extends StatefulWidget {
         this.noOfTimeslot,
         this.noOfCourt,
         dateList: this.dateList,
+        formType: this.formType,
+        slots: this.slots,
         index: this.index,
         setSelectedCourtArrayCallback: this.setSelectedCourtArrayCallback,
         setMasterBookingArrayCallback: this.setMasterBookingArrayCallback,
@@ -35,6 +41,8 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   int noOfTimeslot;
   int noOfCourt;
   List<DateTime> dateList;
+  String formType;
+  List<String> slots;
   int index;
   void Function(String, int, String) setSelectedCourtArrayCallback;
   void Function(List<List<String>>, int) setMasterBookingArrayCallback;
@@ -46,6 +54,8 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
     this.noOfTimeslot,
     this.noOfCourt, {
     required this.dateList,
+    required this.formType,
+    required this.slots,
     required this.index,
     required this.setSelectedCourtArrayCallback,
     required this.setMasterBookingArrayCallback,
@@ -68,10 +78,9 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
     late int rowLength = widget.noOfCourt + 1;
     return Row(
       children: [
-        // Text("${DateTime(2022, 12, 5).add(Duration(days: widget.index))}"),
         Expanded(
           child: SizedBox(
-            height: 35.0 * widget.noOfTimeslot,
+            height: 29.0 * widget.noOfTimeslot,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: rowLength,
@@ -114,11 +123,27 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
             child: Text(courtTimeslot[x][y]));
         break;
       case 'Booked':
-        textWidget = Icon(
-          Icons.close,
-          color: Colors.white,
-        );
-        containerStyle = Colors.black12;
+        if (widget.formType == 'Edit') {
+          textWidget = TextButton(
+            onPressed: () {
+              setState(() {
+                widget.setSelectedCourtArrayCallback("$x $y", index, "remove");
+                courtTimeslot[x][y] = "";
+              });
+            },
+            child: Icon(
+              Icons.remove_circle_outline,size: 16,
+              color: Colors.white,
+            ),
+          );
+          containerStyle = Colors.green[200];
+        } else {
+          textWidget = Icon(
+            Icons.close,
+            color: Colors.white,
+          );
+          containerStyle = Colors.black12;
+        }
         break;
       default: // x&y axis and check
         if (RegExp("[a-z]").hasMatch(courtTimeslot[x][y])) {

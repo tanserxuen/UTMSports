@@ -56,6 +56,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
 
   Widget _buildStartTimeField() {
     return DropdownButtonFormField(
+      decoration: InputDecoration(labelText: 'Start Time'),
       hint: Text("Start Time"),
       isExpanded: true,
       items: global.timeslot.map((option) {
@@ -71,7 +72,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       },
       onChanged: (value) {
         setState(() {
-          print(value);
+          // print(value);
           _startTime = value.toString();
         });
       },
@@ -80,6 +81,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
 
   Widget _buildEndTimeField() {
     return DropdownButtonFormField(
+      decoration: InputDecoration(labelText: 'End Time'),
       hint: Text("End Time"),
       isExpanded: true,
       items: global.timeslot.map((option) {
@@ -96,7 +98,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       },
       onChanged: (value) {
         setState(() {
-          print(value);
+          // print(value);
           _endTime = value.toString();
         });
       },
@@ -280,7 +282,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       createdAt: Timestamp.fromDate(DateTime.now()),
       resourceIds: selectedCourtIds,
       isAllDay: false,
-      color: "0xffb74093",
+      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
       //purpleAccent
       name1: controllerName1.text.trim(),
       matric1: controllerMatric1.text.trim(),
@@ -297,7 +299,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         FirebaseFirestore.instance.collection('student_appointments');
 
     try {
-      print(_courtBooking);
       courtBooking.add(_courtBooking);
       // Navigator.pushNamed(context, '/');
     } catch (e) {
