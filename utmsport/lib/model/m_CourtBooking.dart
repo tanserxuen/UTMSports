@@ -104,7 +104,7 @@ class CourtBooking {
         "subject": subject,
         "status": status,
         "createdAt": createdAt,
-        "resourceIds": resourceIds,
+        // "resourceIds": resourceIds,
         "isAllDay": isAllDay,
         "color": color,
         "name1": name1,
@@ -115,5 +115,6 @@ class CourtBooking {
         "matric3": matric3,
         "name4": name4,
         "matric4": matric4,
+        "sportType": sportType,
       };
 }

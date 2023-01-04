@@ -81,9 +81,12 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         Expanded(
           child: SizedBox(
             height: 29.0 * widget.noOfTimeslot,
+            width: 1000,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: rowLength,
+                // mainAxisExtent: 35,
+                // childAspectRatio: 3/2,
               ),
               itemBuilder: _buildGridItems,
               itemCount: (widget.noOfTimeslot + 1) * (rowLength),

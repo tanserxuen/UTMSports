@@ -1,20 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:utmsport/model/m_CourtBooking.dart';
-
 import 'package:utmsport/globalVariable.dart' as global;
-
-import 'package:utmsport/globalVariable.dart';
+import 'package:utmsport/model/m_MasterBooking.dart';
+import 'package:utmsport/utils.dart';
+import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
 
 class CreateStuBooking extends StatefulWidget {
-  const CreateStuBooking({Key? key, required this.sportsType})
-      : super(key: key);
-
   final String sportsType;
+  final String formType;
+  dynamic stuAppModel;
+  var date;
+  var slotLists;
+
+  // ignore: avoid_init_to_null
+  CreateStuBooking({
+    Key? key,
+    required this.sportsType,
+    this.date: null,
+    this.slotLists: null,
+    this.formType: "Create",
+    this.stuAppModel: null,
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
+  State<CreateStuBooking> createState() {
     return CreateStuBookingState();
   }
 }
@@ -22,8 +34,6 @@ class CreateStuBooking extends StatefulWidget {
 class CreateStuBookingState extends State<CreateStuBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _startTime = "10:00:00";
-  String _endTime = "11:00:00";
   String _name1 = "";
   String _matric1 = "";
   String _name2 = "";
@@ -33,17 +43,13 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   String _name4 = "";
   String _matric4 = "";
 
-  List _resourceIds = [];
-  bool _isAllDay = false;
   String _sportType = "";
-
   List<int> selectedCourts = [];
   final now = new DateTime.now();
-
-  final controllerStartTime = TextEditingController();
-  final controllerEndTime = TextEditingController();
-  final controllerResourceIds = TextEditingController();
-  final controllerIsAllDay = TextEditingController();
+  int selectedDays = 0;
+  DateTime date = Utils.getCurrentDateOnly();
+  List<List<String>> selectedCourtTimeslot = [];
+  List<List<List<String>>> masterBookingArray = [];
 
   final controllerName1 = TextEditingController();
   final controllerMatric1 = TextEditingController();
@@ -54,55 +60,218 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   final controllerName4 = TextEditingController();
   final controllerMatric4 = TextEditingController();
 
-  Widget _buildStartTimeField() {
-    return DropdownButtonFormField(
-      decoration: InputDecoration(labelText: 'Start Time'),
-      hint: Text("Start Time"),
-      isExpanded: true,
-      items: global.timeslot.map((option) {
-        return DropdownMenuItem(
-          value: option,
-          child: Text("$option"),
-        );
-      }).toList(),
-      value: _startTime,
-      validator: (value) {
-        if (value == null) return "Start time is required.";
-        return null;
-      },
-      onChanged: (value) {
-        setState(() {
-          // print(value);
-          _startTime = value.toString();
-        });
-      },
+  @override
+  void initState() {
+    if (widget.formType == 'Edit') {
+      date = widget.date;
+      controllerName1.text = widget.stuAppModel['name1'];
+      controllerMatric1.text = widget.stuAppModel['matric1'];
+      controllerName2.text = widget.stuAppModel['name2'];
+      controllerMatric2.text = widget.stuAppModel['matric2'];
+      controllerName3.text = widget.stuAppModel['name3'];
+      controllerMatric3.text = widget.stuAppModel['matric3'];
+      controllerName4.text = widget.stuAppModel['name4'];
+      controllerMatric4.text = widget.stuAppModel['matric4'];
+      // _sportType = widget.stuAppModel['sportType'];
+    }
+    this.selectedDays = 1; //set selected court nested array
+    widget.formType == 'Edit'
+        ? selectedCourtTimeslot = widget.slotLists
+        : selectedCourtTimeslot = List.generate(1, (_) => []);
+    print(selectedCourtTimeslot);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        margin: EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Text("Book Court",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildLegend(),
+                        SizedBox(height: 15),
+                        _buildAccordianCourtTimeslot(),
+                        Row(
+                          children: [
+                            Expanded(child: _buildName1Field()),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: _buildMatric1Field(),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(child: _buildName2Field()),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: _buildMatric2Field(),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(child: _buildName3Field()),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: _buildMatric3Field(),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(child: _buildName4Field()),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: _buildMatric4Field(),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 50),
+                        ElevatedButton(
+                          child: Text("Submit",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          onPressed: () {
+                            if (!_formKey.currentState!.validate()) {
+                            } else {
+                              _formKey.currentState!.save();
+                              insertCourtBooking();
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pop(context),
+        child: Icon(Icons.arrow_back_rounded, size: 25),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
-  Widget _buildEndTimeField() {
-    return DropdownButtonFormField(
-      decoration: InputDecoration(labelText: 'End Time'),
-      hint: Text("End Time"),
-      isExpanded: true,
-      items: global.timeslot.map((option) {
-        return DropdownMenuItem(
-          value: option,
-          child: Text("$option"),
-        );
-      }).toList(),
-      value: _endTime,
-      validator: (value) {
-        if (global.timeslot.indexOf(_endTime) <=
-            global.timeslot.indexOf(_startTime))
-          return "It ends before it starts.";
-      },
-      onChanged: (value) {
-        setState(() {
-          // print(value);
-          _endTime = value.toString();
-        });
-      },
+  Widget _buildAccordianCourtTimeslot() {
+    int dateIndex = 0;
+    return ExpansionTile(
+      maintainState: true,
+      title: Text(
+        "${DateFormat('dd MMM yyyy').format(date)}",
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Wrap(
+        direction: Axis.horizontal,
+        spacing: 5,
+        runSpacing: 4,
+        children: generateSelectedCourtBadge(dateIndex),
+      ),
+      children: [
+        // Text("${widget.dateList[dateIndex]}"),
+        TimeslotCourtTable(
+          dateList: [date],
+          formType: widget.formType,
+          slots: selectedCourtTimeslot[dateIndex],
+          index: 0,
+          setSelectedCourtArrayCallback: setSelectedCourtArray,
+          setMasterBookingArrayCallback: setMasterBookingArray,
+        ),
+      ],
     );
+  }
+
+  List<Widget> generateSelectedCourtBadge(int dateIndex) {
+    List<Widget> badgeList = [];
+    for (int elIndex = 0;
+        elIndex < selectedCourtTimeslot[dateIndex].length;
+        elIndex++) {
+      badgeList.add(
+        ElevatedButton(
+          onPressed: () => setState(() => {
+                updateMasterBookingArray(
+                    dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
+                selectedCourtTimeslot[dateIndex].removeWhere((element) {
+                  return selectedCourtTimeslot[dateIndex][elIndex] == element;
+                }),
+              }),
+          style: ElevatedButton.styleFrom(
+              minimumSize: Size(20, 10),
+              maximumSize: Size(90, 40),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: EdgeInsets.fromLTRB(7, 2, 5, 2),
+              shape: StadiumBorder(),
+              primary: Colors.lightBlue),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
+                    style: TextStyle(fontSize: 12)),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.close,
+                  size: 14,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return badgeList;
+  }
+
+  void setSelectedCourtArray(val, index, action) {
+    setState(() {
+      action == 'add'
+          ? selectedCourtTimeslot[index].add(val)
+          : selectedCourtTimeslot[index].removeWhere((item) => item == val);
+      selectedCourtTimeslot[index].toSet().toList();
+    });
+  }
+
+  void setMasterBookingArray(List<List<String>> val, int dateIndex) {
+    setState(() => masterBookingArray.add(val));
+  }
+
+  void updateMasterBookingArray(int dateIndex, String val) {
+    setState(() {
+      var a = val.split(" ").toList();
+      int row = int.parse(a[0]);
+      int col = int.parse(a[1]);
+      masterBookingArray[dateIndex][row][col] = '';
+    });
   }
 
   Widget _buildName1Field() {
@@ -201,89 +370,50 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         onSaved: (value) => _matric4 = value!);
   }
 
-  Widget _badmintonResourceIdField() {
-    int courtNumbers = 0;
-    switch (widget.sportsType) {
-      case "Badminton":
-        courtNumbers = global.badmintonCourt;
-        break;
-      case "PingPong":
-        courtNumbers = global.pingPongCourt;
-        break;
-      case "Squash":
-        courtNumbers = global.squashCourt;
-        break;
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Select Courts",
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 80,
-            childAspectRatio: 16 / 8,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 20,
-          ),
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: courtNumbers,
-          itemBuilder: (BuildContext context, int index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedCourts.contains(index)
-                    ? selectedCourts.remove(index)
-                    : selectedCourts.add(index);
-                // print(this.selectedCourts);
-              });
-            },
-            child: Card(
-              color: selectedCourts.contains(index)
-                  ? Colors.lightBlueAccent
-                  : Colors.white,
-              child: Column(
-                children: <Widget>[Text("Court ${index + 1}")],
+  Widget _buildLegend() {
+    return Wrap(children: [
+      Text(
+        "Notes  ",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      ),
+      ...global.timeslot.map((slot) {
+        var time = Utils.getCurrentTimeOnly(slot);
+        int index = global.timeslot.indexOf(slot);
+        // var timeNow = Utils.getCurrentTimeOnly(slot);
+        //TODO: change this
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
+          child: Wrap(
+            children: [
+              SizedBox(
+                width: 13,
+                height: 13,
+                child: const DecoratedBox(
+                  decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                ),
               ),
-            ),
+              Text(" T${index + 1} $slot ")
+            ],
           ),
-        ),
-      ],
-    );
+        );
+      })
+    ]);
   }
 
   void insertCourtBooking() {
-// TODO: form validation
-    List<String> selectedCourtIds = selectedCourts
-        .map((index) => "${(index + 1).toString().padLeft(4, "0")}")
-        .toList();
-
-    //TODO: convert to timestamp wrong
     final _courtBooking = CourtBooking(
+      id: global.FFdb.collection('student_appointment').doc().id,
       userId: global.USERID,
-      // startTime: Timestamp.fromDate(DateTime(
-      //     now.year, now.month, now.day, _startTime.hour, _startTime.minute)),
-      startTime: [
-        {
-          "${DateTime(now.year, now.month, now.day).toString()}":
-              selectedCourtIds
-        }
-      ],
+      startTime: MasterBooking.mapStartTime(selectedCourtTimeslot, [date]),
       endTime: [Timestamp.fromDate(DateTime(now.year, now.month, now.day))],
-      //TODO: edit this
-      // now.year, now.month, now.day, _endTime.hour, _endTime.minute)),
       subject: "Student Booking",
       status: "approved",
       sportType: widget.sportsType,
       createdAt: Timestamp.fromDate(DateTime.now()),
-      resourceIds: selectedCourtIds,
       isAllDay: false,
       color: "0x${Colors.blueAccent.value.toRadixString(16)}",
-      //purpleAccent
       name1: controllerName1.text.trim(),
       matric1: controllerMatric1.text.trim(),
       name2: controllerName2.text.trim(),
@@ -292,147 +422,89 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       matric3: controllerMatric3.text.trim(),
       name4: controllerName4.text.trim(),
       matric4: controllerMatric4.text.trim(),
-      id: global.FFdb.collection('student_appointment').doc().id,
     ).stuToJson();
 
     CollectionReference courtBooking =
         FirebaseFirestore.instance.collection('student_appointments');
+    CollectionReference masterCourtBooking =
+        global.FFdb.collection('master_booking');
 
     try {
-      courtBooking.add(_courtBooking);
-      // Navigator.pushNamed(context, '/');
+      var _masterBooking;
+      final _bookingId = global.FFdb.collection('student_appointment').doc().id;
+      if (widget.stuAppModel?['id'] != null &&
+          widget.stuAppModel?['id'] != "") {
+        //update existing student booking
+        courtBooking
+            .where("id", isEqualTo: widget.stuAppModel['id'])
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            courtBooking.doc(element.id).update(_courtBooking).then((_) async {
+              await masterCourtBooking
+                  .where("date", isEqualTo: date)
+                  .get()
+                  .then((value) {
+                _masterBooking = MasterBooking(
+                  booked_courtTimeslot:
+                      MasterBooking.nestedArrayToObject(masterBookingArray[0]),
+                  date: date,
+                  userId: global.USERID,
+                  bookingId: _bookingId,
+                  sportsType: widget.sportsType,
+                ).toJson();
+                print("update stu booking");
+                value.docs.forEach((element) {
+                  masterCourtBooking
+                      .doc(element.id)
+                      .update(_masterBooking)
+                      .then((_) {
+                    Utils.showSnackBar("Created a booking", "green");
+                    Navigator.pushNamed(context, '/');
+                  });
+                });
+              });
+            });
+          });
+        });
+      } else {
+        //add new student booking
+        courtBooking.add(_courtBooking).then((_) async {
+          await masterCourtBooking
+              .where("date", isEqualTo: date)
+              .get()
+              .then((value) {
+            _masterBooking = MasterBooking(
+              booked_courtTimeslot:
+                  MasterBooking.nestedArrayToObject(masterBookingArray[0]),
+              date: date,
+              userId: global.USERID,
+              bookingId: _bookingId,
+              sportsType: widget.sportsType,
+            ).toJson();
+            if (value.docs.length == 0) {
+              print("add adv");
+              masterCourtBooking.add(_masterBooking).then((_) {
+                Utils.showSnackBar("Created a booking", "green");
+                Navigator.pushNamed(context, '/');
+              });
+            } else {
+              print("update adv");
+              value.docs.forEach((element) {
+                masterCourtBooking
+                    .doc(element.id)
+                    .update(_masterBooking)
+                    .then((_) {
+                  Utils.showSnackBar("Created a booking", "green");
+                  Navigator.pushNamed(context, '/');
+                });
+              });
+            }
+          });
+        });
+      }
     } catch (e) {
       print(e);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.all(12),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-              ),
-              Text("Book Court",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              SizedBox(height: 15),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(height: 24),
-                        _badmintonResourceIdField(),
-                        SizedBox(height: 24),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text("Start Time",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: Text("End Time",
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildStartTimeField(),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildEndTimeField(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName1Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric1Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName2Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric2Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName3Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric3Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName4Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric4Field(),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 50),
-                        ElevatedButton(
-                          child: Text("Submit",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                          onPressed: () {
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
-                              _formKey.currentState!.save();
-                              insertCourtBooking();
-                            }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        child: Icon(Icons.arrow_back_rounded, size: 25),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-    );
   }
 }

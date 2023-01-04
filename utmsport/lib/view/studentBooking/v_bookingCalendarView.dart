@@ -8,6 +8,8 @@ import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 import 'package:utmsport/view/shared/v_checkIn.dart';
+import 'package:utmsport/view/studentBooking/v_createStuBooking.dart';
+import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
 
 class BookingCalendar extends StatefulWidget {
@@ -136,7 +138,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
       );
     var app = appointment![0];
     var courts = app!.resourceIds
-        .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), "Court "))
+        .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
         .join(', ');
     var dayFormat = DateFormat("dd MMM yyy");
     var hourFormat = DateFormat("HH:mm a");
@@ -163,7 +165,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                       children: <Widget>[
                         Text(
                             "${dayFormat.format(app!.startTime).toString()}   ${hourFormat.format(app!.startTime).toString()} - ${hourFormat.format(app!.endTime).toString()}"),
-                        Text("${app!.location}: $courts"),
+                        Text("${app!.location}: Court $courts"),
                       ]),
                   if (global.getUserRole() == 'admin')
                     ElevatedButton(
@@ -173,16 +175,34 @@ class _BookingCalendarState extends State<BookingCalendar> {
                       ),
                     )
                   else
-                    ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CheckIn(),
+                    Wrap(
+                      spacing: 5,
+                      direction: Axis.vertical,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckIn(),
+                            ),
+                          ),
+                          child: Text(
+                            "Check In",
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        "Check In",
-                      ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () => editStuBooking(context, app),
+                          child: Text(
+                            "Edit",
+                          ),
+                        )
+                      ],
                     )
                 ],
               )
@@ -193,39 +213,83 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
-  editAdv(appointment) async {
-      List<DateTime> dateLists = [];
+  editStuBooking(context, appointment) async {
+    await FirebaseFirestore.instance
+        .collection('student_appointments')
+        .where('id', isEqualTo: appointment.notes)
+        .get()
+        .then((val) {
       List<List<String>> slotLists = [[]];
-      await FirebaseFirestore.instance
-          .collection('student_appointments')
-          .where('id', isEqualTo: appointment.notes)
-          .get()
-          .then((val) {
-        var ct = val.docs[0]['startTime'];
-        dateLists = ct
-            .map<DateTime>((e) => e.keys
-            .map((f) => DateTime.parse(f))
-            .toList()[0] as DateTime)
-            .toList();
-        slotLists=ct.map<List<String>>((e){
-          var a= e.values.toList()[0];
-          List<String> d =[];
-          a.forEach((f){
-            return d.add(f.toString());
-          });
-          return d;
-        }).toList();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateAdvBooking(
-              dateList: dateLists,
-              formType: "Edit",
-              slotLists: slotLists,
-              stuAppModel: val.docs[0],
-            ),
+      var ct = val.docs[0]['startTime'];
+
+      String dateString = ct
+          .map<DateTime>((e) =>
+              e.keys.map((f) => DateTime.parse(f)).toList()[0] as DateTime)
+          .toList()[0]
+          .toString();
+      DateTime date = DateTime.parse(dateString);
+
+      slotLists = ct.map<List<String>>((e) {
+        var a = e.values.toList()[0];
+        List<String> d = [];
+        a.forEach((f) {
+          return d.add(f.toString());
+        });
+        return d;
+      }).toList();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StuBookingChooseSports(
+            formType: "Edit",
+            params: {
+              'sportsType': val.docs[0]['sportType'],
+              'formType': "Edit",
+              'stuAppModel': val.docs[0],
+              'slotLists': slotLists,
+              'date': date,
+            },
           ),
-        );
-      });
-    }
+        ),
+      );
+    });
+  }
+
+  editAdv(appointment) async {
+    List<DateTime> dateLists = [];
+    List<List<String>> slotLists = [[]];
+    await FirebaseFirestore.instance
+        .collection('student_appointments')
+        .where('id', isEqualTo: appointment.notes)
+        .get()
+        .then((val) {
+      var ct = val.docs[0]['startTime'];
+
+      dateLists = ct
+          .map<DateTime>((e) =>
+              e.keys.map((f) => DateTime.parse(f)).toList()[0] as DateTime)
+          .toList();
+
+      slotLists = ct.map<List<String>>((e) {
+        var a = e.values.toList()[0];
+        List<String> d = [];
+        a.forEach((f) {
+          return d.add(f.toString());
+        });
+        return d;
+      }).toList();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreateAdvBooking(
+            dateList: dateLists,
+            formType: "Edit",
+            slotLists: slotLists,
+            stuAppModel: val.docs[0],
+          ),
+        ),
+      );
+    });
+  }
 }

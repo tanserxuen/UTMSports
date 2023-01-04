@@ -92,7 +92,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("${selectedCourtTimeslot.toString()}"),
+                        // Text("${selectedCourtTimeslot.toString()}"),
                         ..._buildAccordianCourtTimeslot(),
                         _buildSubjectField(),
                         _buildTypeField(),
@@ -147,11 +147,12 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         ),
         subtitle: Wrap(
           direction: Axis.horizontal,
+          spacing: 5,
+          runSpacing: 4,
           children: generateSelectedCourtBadge(dateIndex),
         ),
         children: [
           // Text("${widget.dateList[dateIndex]}"),
-          SizedBox(height: 8),
           TimeslotCourtTable(
             dateList: widget.dateList,
             formType: widget.formType,
@@ -172,42 +173,38 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         elIndex < selectedCourtTimeslot[dateIndex].length;
         elIndex++) {
       badgeList.add(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(1, 3, 1, 3),
-          child: ElevatedButton(
-            onPressed: () => setState(() => {
-                  updateMasterBookingArray(
-                      dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
-                  selectedCourtTimeslot[dateIndex].removeWhere((element) {
-                    return selectedCourtTimeslot[dateIndex][elIndex] == element;
-                  }),
+        ElevatedButton(
+          onPressed: () => setState(() => {
+                updateMasterBookingArray(
+                    dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
+                selectedCourtTimeslot[dateIndex].removeWhere((element) {
+                  return selectedCourtTimeslot[dateIndex][elIndex] == element;
                 }),
-            style: ElevatedButton.styleFrom(
-                minimumSize: Size(20, 10),
-                maximumSize: Size(90, 40),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: StadiumBorder(),
-                primary: Colors.lightBlue[700]),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
-                      style: TextStyle(fontSize: 12)),
-                  SizedBox(width: 3),
-                  Icon(
-                    Icons.close,
-                    size: 14,
-                  ),
-                ],
-              ),
+              }),
+          style: ElevatedButton.styleFrom(
+              minimumSize: Size(20, 10),
+              maximumSize: Size(90, 40),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: EdgeInsets.fromLTRB(7,2,5,2),
+              shape: StadiumBorder(),
+              primary: Colors.lightBlue),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
+                    style: TextStyle(fontSize: 12)),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.close,
+                  size: 14,
+                ),
+              ],
             ),
           ),
         ),
       );
-
-      badgeList.add(SizedBox(width: 3));
     }
     return badgeList;
   }
@@ -235,6 +232,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               selectedCourtTimeslot: selectedCourtTimeslot,
               phoneNo: _phoneNo,
               attachment: _attachment,
+              personInCharge: _pic,
             );
         }
       },

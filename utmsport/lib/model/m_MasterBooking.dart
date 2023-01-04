@@ -89,7 +89,8 @@ class MasterBooking {
         List<String> ctRow = [];
         for (int col = 0; col <= noOfCourt; col++) {
           if (row == 0 && col == 0)
-            ctRow.add("B");
+            ctRow.add(
+                "B");
           else if (col != 0 && row == 0)
             ctRow.add("C$col");
           else if (col == 0 && row != 0)
@@ -112,7 +113,7 @@ class MasterBooking {
       context,
       selectedCourtTimeslot,
       phoneNo,
-      attachment}) async {
+      attachment, personInCharge}) async {
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final color = getColor(bookingType);
     final _bookingDetails = CourtBooking(
@@ -122,7 +123,7 @@ class MasterBooking {
       color: color,
       status: "Pending",
       createdAt: Timestamp.fromDate(DateTime.now()),
-      personInCharge: "Joan",
+      personInCharge: personInCharge,
       attachment: attachment,
       startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
       dateList: widget.dateList,
@@ -189,7 +190,8 @@ class MasterBooking {
           for (int dateIndex = 0;
               dateIndex < widget.dateList.length;
               dateIndex++) {
-            var date = widget.dateList[dateIndex]; _masterBooking = MasterBooking(
+            var date = widget.dateList[dateIndex];
+            _masterBooking = MasterBooking(
               booked_courtTimeslot: MasterBooking.nestedArrayToObject(
                   masterBookingArray[dateIndex]),
               date: date,
@@ -204,7 +206,7 @@ class MasterBooking {
               if (value.docs.length == 0) {
                 print("add adv");
                 masterCourtBooking.add(_masterBooking).then((_) {
-                  Utils.showSnackBar("Updated an advanced booking", "green");
+                  Utils.showSnackBar("Created an advanced booking", "green");
                   Navigator.pushNamed(context, '/');
                 });
               } else {
@@ -214,7 +216,7 @@ class MasterBooking {
                       .doc(element.id)
                       .update(_masterBooking)
                       .then((_) {
-                    Utils.showSnackBar("Updated an advanced booking", "green");
+                    Utils.showSnackBar("Created an advanced booking", "green");
                     Navigator.pushNamed(context, '/');
                   });
                 });
@@ -223,78 +225,6 @@ class MasterBooking {
           }
         });
       }
-      // advCourtBooking
-      //     .where("id", isEqualTo: widget.stuAppModel['id'])
-      //     .get()
-      //     .then((value) {
-      //   value.docs.forEach((element) {
-      //     advCourtBooking.doc(element.id).update(_bookingDetails).then((_) async {
-      //       //add master_booking
-      //       for (int dateIndex = 0;
-      //           dateIndex < widget.dateList.length;
-      //           dateIndex++) {
-      //         var date = widget.dateList[dateIndex];
-      //         _masterBooking = MasterBooking(
-      //           booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-      //               masterBookingArray[dateIndex]),
-      //           date: date,
-      //           userId: global.USERID,
-      //           bookingId: _bookingId,
-      //           sportsType: "Badminton", //TODO: Joan Change this
-      //         ).toJson();
-      //         if (widget.stuAppModel?['id'] != null &&
-      //             widget.stuAppModel?['id'] != "") {
-      //           //update student_appointments
-      //           await masterCourtBooking
-      //               .where("date", isEqualTo: date)
-      //               .get()
-      //               .then((value) {
-      //             value.docs.forEach((element) {
-      //               masterCourtBooking
-      //                   .doc(element.id)
-      //                   .update(_masterBooking)
-      //                   .then((_) {
-      //                 Utils.showSnackBar(
-      //                     "Updated an advanced booking", "green");
-      //                 Navigator.pushNamed(context, '/');
-      //               });
-      //             });
-      //           });
-      //
-      //         } else {
-      //           //add student_appointments
-      //           advCourtBooking.add(_bookingDetails);
-      //           //create
-      //           await masterCourtBooking
-      //               .where("date", isEqualTo: date)
-      //               .get()
-      //               .then((value) {
-      //             if (value.docs.length == 0) {
-      //               print("add adv");
-      //               masterCourtBooking.add(_masterBooking).then((_) {
-      //                 Utils.showSnackBar(
-      //                     "Updated an advanced booking", "green");
-      //                 Navigator.pushNamed(context, '/');
-      //               });
-      //             } else {
-      //               print("update adv");
-      //               value.docs.forEach((element) {
-      //                 masterCourtBooking
-      //                     .doc(element.id)
-      //                     .update(_masterBooking)
-      //                     .then((_) {
-      //                   Utils.showSnackBar(
-      //                       "Updated an advanced booking", "green");
-      //                   Navigator.pushNamed(context, '/');
-      //                 });
-      //               });
-      //             }
-      //           });
-      //         }
-      //       }
-      //     });
-      //   });
-      // });
     } catch (e) {
       Utils.showSnackBar(e.toString(), "red");
     }
