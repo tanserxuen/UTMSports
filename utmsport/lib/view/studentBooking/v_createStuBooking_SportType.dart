@@ -27,7 +27,6 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.params['date']);
     return Scaffold(
       body: Center(
         child: Container(
@@ -50,13 +49,17 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CreateStuBooking(
-              sportsType: widget.params['sportsType'],
-              formType: widget.formType,
-              stuAppModel: widget.params['stuAppModel'],
-              slotLists: widget.params['slotLists'],
-              date: widget.params['date'],
-            ),
+            builder: (context) => widget.formType == 'Edit'
+                ? CreateStuBooking(
+                    sportsType: widget.params['sportsType'],
+                    formType: widget.formType,
+                    stuAppModel: widget.params['stuAppModel'],
+                    slotLists: widget.params['slotLists'],
+                    date: widget.params['date'],
+                  )
+                : CreateStuBooking(
+                    sportsType: sportType,
+                  ),
           ),
         ),
         child: Icon(Icons.arrow_forward_rounded, size: 25),
@@ -69,19 +72,23 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
     List<Widget> buttons = [];
     global.sports.forEach((sport) {
       int index = global.sports.indexOf(sport);
-      bool matchEditValue = widget.params['sportsType'] == sport;
+      bool matchEditValue = sportType == sport;
       buttons.add(
         SizedBox(
           width: 200,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                primary: matchEditValue
-                    ? Colors.lightBlueAccent
-                    : widget.formType == 'Edit'
-                        ? Colors.grey
-                        : Colors.blue),
+              primary: matchEditValue
+                  ? Colors.lightBlueAccent
+                  : widget.formType == 'Edit'
+                      ? Colors.grey
+                      : Colors.blue,
+              elevation: !matchEditValue && widget.formType == 'Edit' ? 0 : 4,
+            ),
             onPressed: () {
-              widget.formType == 'Edit' ? sportType = sport : null;
+              setState(() {
+                widget.formType == 'Edit' ? null : sportType = sport;
+              });
             },
             child: Padding(
               padding: const EdgeInsets.all(12.0),

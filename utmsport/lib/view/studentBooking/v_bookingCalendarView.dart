@@ -89,8 +89,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
       child: SfCalendar(
         controller: _calendarController,
         view: getCalendarView(isAdmin, stuView),
-        minDate: today,
-        maxDate: tomorrow,
+        // minDate: today,
+        // maxDate: tomorrow,
         showNavigationArrow: isAdmin || stuView ? true : false,
         monthViewSettings: MonthViewSettings(
             appointmentDisplayCount: 4,
