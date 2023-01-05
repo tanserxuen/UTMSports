@@ -14,8 +14,16 @@ class TrainingDetailPage extends StatelessWidget {
   final trainingTitle;
 
   Widget qrCodeOption(BuildContext context) {
-    return global.getUserRole() == "coach"
+    return global.getUserRole() == "athlete"
         ? IconButton(
+            icon: Icon(Icons.qr_code_scanner_rounded),
+            color: Colors.yellow,
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => QRScan()));
+            },
+          )
+        : IconButton(
             icon: Icon(Icons.qr_code),
             color: Colors.black,
             onPressed: () {
@@ -25,15 +33,7 @@ class TrainingDetailPage extends StatelessWidget {
                       builder: (context) => QRGenerate(
                             trainingId: trainingId,
                           )));
-            })
-        : IconButton(
-            icon: Icon(Icons.qr_code_scanner_rounded),
-            color: Colors.yellow,
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => QRScan()));
-            },
-          );
+            });
   }
 
   @override
@@ -90,28 +90,27 @@ class TrainingDetailPage extends StatelessWidget {
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Training Time: '),
-                          Text(time)
-                        ],
+                        children: [Text('Training Time: '), Text(time)],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 10,),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text('Description: '),
                           Row(
                             children: [
                               Expanded(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.lightBlue.shade50,
-                                    borderRadius: BorderRadius.circular(10)
-                                  ),
+                                      color: Colors.lightBlue.shade50,
+                                      borderRadius: BorderRadius.circular(10)),
                                   padding: EdgeInsets.all(5),
                                   child: SizedBox(
                                       height: 100,
-                                      child: Text(documentSnapshot!['description'])),
+                                      child: Text(
+                                          documentSnapshot!['description'])),
                                 ),
                               ),
                             ],
@@ -123,8 +122,7 @@ class TrainingDetailPage extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.lightGreen.shade50,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
+                              borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(5),
                           child: ListView.builder(
                               itemCount: snapshot.data!['athlete'].length,
