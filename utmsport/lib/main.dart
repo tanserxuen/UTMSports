@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:utmsport/shared/errorPage.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
 import 'package:utmsport/view/adminPost/v_createEvent.dart';
@@ -21,21 +22,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      // routes: <String, WidgetBuilder>{
-      //   '/student-booking': (context) => CreateStuBooking(),
-      // },
-      scaffoldMessengerKey: Utils.messengerKey,
-      navigatorKey: navigatorKey,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
-      // onGenerateRoute: (settings) {
-      //   print("initialize");
-      //   return MaterialPageRoute(builder: (_) => FormScreen());
-      // },
-
+      debugShowCheckedModeBanner: false,
+      builder: (context, widget) {
+        setErrorBuilder();
+        return widget as Widget;
+      },
+      scaffoldMessengerKey: Utils.messengerKey,
+      navigatorKey: navigatorKey,
       scrollBehavior: MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,
@@ -45,5 +42,13 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void setErrorBuilder() {
+    ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+      return Scaffold(
+          body: Center(
+              child: Text("Unexpected error. See console for details.")));
+    };
   }
 }
