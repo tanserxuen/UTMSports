@@ -61,54 +61,58 @@ class _ViewFeedbackState extends State<ViewFeedback> {
         "comment": dataRow['comment'] ?? "",
       });
     }
-    // print(listOfColumns);
+
     return SingleChildScrollView(
-      child: DataTable(
-        headingRowColor:
-            MaterialStateColor.resolveWith((states) => const Color(0x5540C4FF)),
-        columns: [
-          DataColumn(
-            label: Text('#'),
-          ),
-          DataColumn(
-            label: Text('Image'),
-          ),
-          DataColumn(
-            label: Text('Comments'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DataTable(
+            headingRowColor: MaterialStateColor.resolveWith(
+                (states) => const Color(0x5540C4FF)),
+            columns: [
+              DataColumn(
+                label: Text('#'),
+              ),
+              DataColumn(
+                label: Text('Image'),
+              ),
+              DataColumn(
+                label: Text('Comments'),
+              ),
+            ],
+            rows: listOfColumns.map(
+              ((element) {
+                int index = listOfColumns.indexOf(element) + 1;
+                return DataRow(
+                  cells: <DataCell>[
+                    DataCell(Container(
+                        width: 10,
+                        child: Text(
+                          index.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ))),
+                    DataCell(Text(
+                      element?["image"] ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    )),
+                    DataCell(
+                      Container(
+                        width: 150,
+                        child: Text(
+                          element?["comment"] ?? "",
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ).toList(),
           ),
         ],
-        rows: listOfColumns.map(
-          ((element) {
-            int index = listOfColumns.indexOf(element) + 1;
-            return DataRow(
-              cells: <DataCell>[
-                DataCell(Container(
-                    width: 10,
-                    child: Text(
-                      index.toString(),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ))),
-                DataCell(Text(
-                  element?["image"] ?? "",
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                )),
-                DataCell(
-                  Container(
-                    width: 150,
-                    child:
-                    Text(
-                      element?["comment"] ?? "",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
-        ).toList(),
       ),
     );
   }

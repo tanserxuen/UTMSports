@@ -17,7 +17,7 @@ List<GridColumn> getColumns() => colNames
     .map(
       (name) => GridColumn(
           columnName: name,
-          width: name == "Action" ? 90 : 100,
+          width: name == "Action" ? 120 : 100,
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,

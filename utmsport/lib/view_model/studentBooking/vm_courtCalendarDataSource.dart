@@ -55,7 +55,7 @@ Map sortSlots(slots) {
 
 Map getCourtTimeslotDisplay(booked, subject, color, id) {
   String date = booked.keys.toList()[0];
-  List slots = booked.values.toList()[0], times = [];
+  List slots = booked.values.toList()[0];
   List resourceIds = slots
       .map((e) => e.split(' ')[1].toString().padLeft(4, '0'))
       .toSet()
@@ -68,7 +68,7 @@ Map getCourtTimeslotDisplay(booked, subject, color, id) {
     List<int> timeslots = slotGroup.map<int>((e)=>int.parse(e.split(' ')[0])).toList();
     int max = timeslots.reduce(math.max)-1;
     int min = timeslots.reduce(math.min)-1;
-    print("$max $min");
+    // print("$max $min");
     startTime.add(DateTime.parse("$dateString ${global.timeslot[min]}"));
     endTime.add(DateTime.parse("$dateString ${global.timeslot[max]}").add(Duration(minutes: 30)));
   });
