@@ -120,6 +120,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
           ? selectedCourtTimeslot[index].add(val)
           : selectedCourtTimeslot[index].removeWhere((item) => item == val);
       selectedCourtTimeslot[index].toSet().toList();
+      print(selectedCourtTimeslot);
     });
   }
 

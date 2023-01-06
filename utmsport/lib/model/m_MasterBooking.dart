@@ -33,7 +33,6 @@ class MasterBooking {
       int index = selectedCourtTimeslot.indexOf(e);
       return {"${dateList[index]}": e};
     }).toList();
-    // print(a[0]['2022-12-19 00:00:00.000']);
     return a;
   }
 
