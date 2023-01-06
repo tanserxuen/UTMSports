@@ -6,6 +6,7 @@ import 'package:utmsport/athlete/qr_scan.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 import '../../cm_booking/qr_generator.dart';
+import '../../utils.dart';
 
 class TrainingDetailPage extends StatelessWidget {
   const TrainingDetailPage({Key? key, this.trainingId, this.trainingTitle})
@@ -20,7 +21,56 @@ class TrainingDetailPage extends StatelessWidget {
             color: Colors.yellow,
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => QRScan()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          QRScan(callback: (qrcodeId, matricNo) async {
+                            //check whether the matricNo is located inside the sportTeam
+                            var trainingRef = await FirebaseFirestore.instance
+                                .collection('training')
+                                .doc(qrcodeId)
+                                .get();
+                            var sprtTeamRef = await FirebaseFirestore.instance
+                                .collection('sportTeam')
+                                .doc(trainingRef.data()!['sportId'])
+                                .get();
+                            if (sprtTeamRef
+                                .data()!['athletes']
+                                .contains(matricNo)) {
+                              var athleteList = [];
+                              var athleteTimeList = [];
+                              FirebaseFirestore.instance
+                                  .collection('training')
+                                  .doc(qrcodeId)
+                                  .get()
+                                  .then(
+                                (training) {
+                                  athleteList = training['athlete'];
+                                  athleteTimeList = training['athletetime'];
+                                  //Perform Data Insert if no matric contain inside trainingDocument
+                                  if (!athleteList.contains(matricNo)) {
+                                    athleteList.add(matricNo);
+                                    var currentTime = DateTime.now();
+                                    athleteTimeList.add(currentTime);
+                                    var data = {'athlete': athleteList, 'athletetime': athleteTimeList};
+                                    FirebaseFirestore.instance
+                                        .collection('training')
+                                        .doc(qrcodeId)
+                                        .update(data)
+                                        .then((_) {
+                                      print('updated successsfully');
+                                    });
+                                  }
+                                  Utils.showSnackBar(
+                                      "your matric has been recorded", "red");
+                                },
+                              );
+                            } else {
+                              Utils.showSnackBar(
+                                  "You are not athlete of this sport Team",
+                                  "red");
+                            }
+                          })));
             },
           )
         : IconButton(
@@ -31,7 +81,7 @@ class TrainingDetailPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => QRGenerate(
-                            trainingId: trainingId,
+                            qrId: trainingId,
                           )));
             });
   }
@@ -120,17 +170,45 @@ class TrainingDetailPage extends StatelessWidget {
                       Text('List Attendance Athlete: '),
                       Expanded(
                         child: Container(
+                          padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                               color: Colors.lightGreen.shade50,
                               borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(5),
                           child: ListView.builder(
                               itemCount: snapshot.data!['athlete'].length,
                               itemBuilder: (BuildContext context, int index) {
                                 final documentSnapshot =
-                                    snapshot.data!['athlete'][index];
-                                // print(documentSnapshot['startTime'][0]);
-                                return ListTile(title: Text(documentSnapshot));
+                                    snapshot.data!['athlete'];
+                                final timeAttend =
+                                snapshot.data!['athletetime'];
+                                if (documentSnapshot.length == 0)
+                                  return Text('Empty Data');
+                                return StreamBuilder(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('users')
+                                        .where('matric',
+                                            isEqualTo: documentSnapshot[index])
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting)
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      if (snapshot.hasError)
+                                        return Text(
+                                            'SomethingError occured in trainingDetail.dart');
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(documentSnapshot[index]),
+                                          Text(DateFormat.Hm().format(timeAttend[index].toDate())),
+                                          Text(
+                                              snapshot.data?.docs.first['name'])
+                                        ],
+                                      );
+                                    });
                               }),
                         ),
                       ),

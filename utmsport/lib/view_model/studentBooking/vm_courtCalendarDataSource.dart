@@ -31,7 +31,7 @@ List<CalendarResource> getCourts(resources) {
   return resources;
 }
 
-Map getCourtTimeslotDisplay(booked, subject, color) {
+Map getCourtTimeslotDisplay(booked, subject, color, id) {
   String date = booked.keys.toList()[0];
   List slots = booked.values.toList()[0], times = [];
   List resourceIds = slots
@@ -42,7 +42,7 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
   int iterate = 0;
   // print("$booked $subject");
   String tempTimeslot = "", tempCourt = "";
-    // print("====================================== $subject");
+  // print("====================================== $subject");
   for (int j = 0; j < slots.length; j++) {
     var slot = slots[j];
     var slotValue = slot.split(' ');
@@ -104,6 +104,7 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
   //   'endTime': endTime,
   //   'resourceIds': resourceIds.cast<Object>(),});
   return {
+    'id': id,
     'subject': subject,
     'color': color,
     'startTime': startTime,
@@ -114,6 +115,7 @@ Map getCourtTimeslotDisplay(booked, subject, color) {
 
 void getAppointments(appointments, appData) {
   if (appData.length == 0) return;
+  // print(appData);
 
   var appointmentList = [], subject, color;
   appData.forEach((appDetails) {
@@ -121,8 +123,16 @@ void getAppointments(appointments, appData) {
     // print(appDetails['subject']);
     // color = Color(int.parse(appDetails['color']));
     appointmentList.add(
-      appDetails['startTime'].map((booked) => getCourtTimeslotDisplay(booked,
-          appDetails['subject'], Color(int.parse(appDetails['color'])))),
+      appDetails['startTime'].map(
+        (booked) => getCourtTimeslotDisplay(
+          booked,
+          appDetails['subject'],
+          Color(
+            int.parse(appDetails['color']),
+          ),
+          appDetails["id"],
+        ),
+      ),
     );
   });
   appointmentList.forEach((e) {
@@ -141,15 +151,17 @@ void getAppointments(appointments, appData) {
         //   "resourceIds": element['resourceIds'],
         //   "i": i,
         // });
-        appointments.add(Appointment(
-            // subject: subject,
-            subject: "${element['subject']} ${element['resourceIds']}",
-            color: element['color'],
-            endTime: element['endTime'][i],
-            startTime: element['startTime'][i],
-            resourceIds: element['resourceIds'],
-            notes: element['resourceIds'].toString(),
-            location: "Sports Hall 1"));
+        appointments.add(
+          Appointment(
+              // subject: subject,
+              subject: "${element['subject']} ${element['resourceIds']}",
+              color: element['color'],
+              endTime: element['endTime'][i],
+              startTime: element['startTime'][i],
+              resourceIds: element['resourceIds'],
+              notes: element['id'],
+              location: "Sports Hall 1"),
+        );
       }
     });
   });

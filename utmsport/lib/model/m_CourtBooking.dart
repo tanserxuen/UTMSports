@@ -24,7 +24,6 @@ class CourtBooking {
   String name4;
   String matric4;
   String sportType;
-  String sportId;
 
   //sports training
   String remarks;
@@ -37,6 +36,9 @@ class CourtBooking {
 
   //adv&sports
   String phoneNo;
+
+  //all
+  String bookingType;
 
   CourtBooking({
     required this.id,
@@ -60,13 +62,12 @@ class CourtBooking {
     this.matric3: "",
     this.name4: "",
     this.matric4: "",
-    this.sportType:"",
+    this.sportType: "",
 
     //sports training
     this.remarks = "",
     this.couch = "",
     this.athletes = "", //list of matrics or user id
-    this.sportId = "",
 
     //adv booking
     this.attachment = "",
@@ -74,6 +75,10 @@ class CourtBooking {
 
     //adv&sports
     this.phoneNo = "",
+
+    //all
+    // Training, Sport Events, Club Events
+    this.bookingType = "",
   });
 
   Map<String, dynamic> advToJson() => {
@@ -87,7 +92,8 @@ class CourtBooking {
         "attachment": attachment,
         "startTime": startTime,
         "endTime": endTime,
-        "sportId": sportId
+        "phoneNo": phoneNo,
+        "bookingType": bookingType,
       };
 
   Map<String, dynamic> stuToJson() => {
@@ -98,7 +104,7 @@ class CourtBooking {
         "subject": subject,
         "status": status,
         "createdAt": createdAt,
-        "resourceIds": resourceIds,
+        // "resourceIds": resourceIds,
         "isAllDay": isAllDay,
         "color": color,
         "name1": name1,
@@ -109,5 +115,6 @@ class CourtBooking {
         "matric3": matric3,
         "name4": name4,
         "matric4": matric4,
+        "sportType": sportType,
       };
 }

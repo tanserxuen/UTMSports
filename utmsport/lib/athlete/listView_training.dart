@@ -138,9 +138,10 @@ class _listviewTrainingState extends State<listviewTraining> {
                                           //     ? () => QRGenerate()
                                           //     : null
                                           onPressed:(){
-                                            Navigator.push(context,
+                                            /*Navigator.push(context,
                                                 MaterialPageRoute(builder: (context) => QRScan())
-                                            );} ,
+                                            );*/
+                                          } ,
                                         ),
                                       ],
                                     ),

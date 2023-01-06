@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:utmsport/utils.dart';
-
+import 'package:utmsport/globalVariable.dart' as global;
 class QRScan extends StatefulWidget {
+  const QRScan({Key? key, required this.callback,}) : super(key: key);
+  final Function(String?, String?) callback;
   @override
   State<QRScan> createState() => _QRScan();
 }
@@ -26,20 +28,10 @@ class _QRScan extends State<QRScan> {
     }
   }
 
-  Future<void> getMatric() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((user) {
-      this.matricNo = user['matric'];
-    });
-  }
-
   @override
   void initState() {
     // TODO: implement initState
-    getMatric();
+    matricNo = global.getMatric();
     super.initState();
   }
 
@@ -105,21 +97,6 @@ class _QRScan extends State<QRScan> {
         ),
       );
 
-  // Widget buildResult() => Container(
-  //   padding: EdgeInsets.all(12),
-  //   decoration: BoxDecoration(
-  //     borderRadius: BorderRadius.circular(8),
-  //     color:  Colors.white24,
-  //   ),
-  //   child: (result != null)
-  //       ? Text('Attended: ${result!.code}')
-  //       : Text('Scan a code'),
-  //   //   Text(
-  //   //   barcode != null? 'Attended: ${barcode!.code}' : 'Scan a code!',
-  //   //   maxLines: 3,
-  //   // ),
-  // );
-
   Widget buildResult() => Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -134,8 +111,10 @@ class _QRScan extends State<QRScan> {
                 actions: [
                   ElevatedButton(
                       onPressed: () {
+                        widget.callback(result!.code, matricNo);
+                        Navigator.of(context).pop();
                         //HERE PERFORM UPDATE ATTENDANCE
-                        var athleteList = [];
+                        /*var athleteList = [];
                         FirebaseFirestore.instance
                             .collection('training')
                             .doc(result!.code)
@@ -155,7 +134,7 @@ class _QRScan extends State<QRScan> {
                           }
                           Utils.showSnackBar("your matric has been recorded","red");
                           Navigator.of(context).pop();
-                        });
+                        })*/;
                       },
                       child: Text('OK'))
                 ],

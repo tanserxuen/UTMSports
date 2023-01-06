@@ -1,23 +1,32 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:utmsport/globalVariable.dart';
-import 'package:utmsport/model/m_Training.dart';
 
+import 'package:utmsport/globalVariable.dart';
 import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
-
-import '../../utils.dart';
+import 'package:utmsport/utils.dart';
 
 class CreateAdvBooking extends StatefulWidget {
-  const CreateAdvBooking({Key? key, required this.dateList, this.sportId}) : super(key: key);
-  final sportId;
   final List<DateTime> dateList;
+  final String formType;
+  var slotLists; //List<List<String>>
+  dynamic stuAppModel;
+  final sportId;
+
+  // ignore: avoid_init_to_null
+  CreateAdvBooking({
+    Key? key,
+    required this.dateList,
+    this.slotLists: null,
+    this.formType: "Create",
+    this.stuAppModel:null,
+    this.sportId,
+  }) : super(key: key);
 
   @override
   State<CreateAdvBooking> createState() => _CreateAdvBookingState();
@@ -28,6 +37,9 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
 
   String _pic = "";
   String _attachment = "";
+  String _subject = "";
+  String _advType = "";
+  String _phoneNo = "";
   int selectedDays = 0;
   Reference storageRef = FirebaseStorage.instance.ref();
   List<List<String>> selectedCourtTimeslot = [];
@@ -37,20 +49,23 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final picController = TextEditingController();
   final phoneController = TextEditingController();
   final subjectController = TextEditingController();
-  final timeTrainController = TextEditingController();
-  final descriptionController = TextEditingController();
 
   @override
   void initState() {
     this.selectedDays = widget.dateList.length;
 
-    //update form combine with create form example: v_createEvent.dart
-    picController.text = "dfvx";
-    phoneController.text = "erdvs";
-    subjectController.text = "waeds";
+    if(widget.formType == 'Edit') {
+      picController.text = widget.stuAppModel['personInCharge'];
+      phoneController.text = widget.stuAppModel['phoneNo'];
+      subjectController.text = widget.stuAppModel['subject'];
+      _advType = widget.stuAppModel['bookingType'];
+    }else
+      _advType = "Sport Events";
 
     //set selected court nested array
-    selectedCourtTimeslot = List.generate(selectedDays, (_) => []);
+    widget.formType == 'Edit'
+        ? selectedCourtTimeslot = widget.slotLists
+        : selectedCourtTimeslot = List.generate(selectedDays, (_) => []);
     super.initState();
   }
 
@@ -67,7 +82,9 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               ),
               Text("Advanced Booking",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              Card(child:_buildLegend(),),
+              Card(
+                child: _buildLegend(),
+              ),
               SizedBox(height: 15),
               Card(
                 child: Padding(
@@ -79,11 +96,13 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                       children: [
                         // Text("${selectedCourtTimeslot.toString()}"),
                         ..._buildAccordianCourtTimeslot(),
-                        _buildAttachmentField(),
+                        _buildSubjectField(),
+                        _buildTypeField(),
                         _buildPICField(),
                         _buildPhoneNoField(),
+                        SizedBox(height: 10),
+                        _buildAttachmentField(),
                         SizedBox(height: 50),
-                        /*_displayAdditionalInfo(),*/
                         _buildSubmitAdvanced(),
                       ],
                     ),
@@ -97,31 +116,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     );
   }
 
- /* Widget _displayAdditionalInfo() {
-    return widget.sportId==null ? Text('') : Column(
-      children: [
-        TextFormField(
-          controller: timeTrainController,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(labelText: 'Training Time'),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          maxLength: 4,
-          validator: (value) => value != null && value.length < 4
-              ? 'Enter min 4 charactor'
-              : null,
-        ),
-        TextFormField(
-          controller: descriptionController,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(labelText: 'Description'),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          keyboardType: TextInputType.multiline,
-          maxLines: 5,
-        ),
-      ],
-    );
-  }
-*/
   void setSelectedCourtArray(val, index, action) {
     setState(() {
       action == 'add'
@@ -155,13 +149,16 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         ),
         subtitle: Wrap(
           direction: Axis.horizontal,
+          spacing: 5,
+          runSpacing: 4,
           children: generateSelectedCourtBadge(dateIndex),
         ),
         children: [
           // Text("${widget.dateList[dateIndex]}"),
-          SizedBox(height: 8),
           TimeslotCourtTable(
             dateList: widget.dateList,
+            formType: widget.formType,
+            slots: selectedCourtTimeslot[dateIndex],
             index: dateIndex,
             setSelectedCourtArrayCallback: setSelectedCourtArray,
             setMasterBookingArrayCallback: setMasterBookingArray,
@@ -178,80 +175,71 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         elIndex < selectedCourtTimeslot[dateIndex].length;
         elIndex++) {
       badgeList.add(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(1, 3, 1, 3),
-          child: ElevatedButton(
-            onPressed: () => setState(() => {
-                  updateMasterBookingArray(
-                      dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
-                  selectedCourtTimeslot[dateIndex].removeWhere((element) {
-                    return selectedCourtTimeslot[dateIndex][elIndex] == element;
-                  }),
+        ElevatedButton(
+          onPressed: () => setState(() => {
+                updateMasterBookingArray(
+                    dateIndex, selectedCourtTimeslot[dateIndex][elIndex]),
+                selectedCourtTimeslot[dateIndex].removeWhere((element) {
+                  return selectedCourtTimeslot[dateIndex][elIndex] == element;
                 }),
-            style: ElevatedButton.styleFrom(
-                minimumSize: Size(20, 10),
-                maximumSize: Size(90, 40),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: StadiumBorder(),
-                primary: Colors.lightBlue[700]),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
-                      style: TextStyle(fontSize: 12)),
-                  SizedBox(width: 3),
-                  Icon(
-                    Icons.close,
-                    size: 14,
-                  ),
-                ],
-              ),
+              }),
+          style: ElevatedButton.styleFrom(
+              minimumSize: Size(20, 10),
+              maximumSize: Size(90, 40),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: EdgeInsets.fromLTRB(7,2,5,2),
+              shape: StadiumBorder(),
+              primary: Colors.lightBlue),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("${selectedCourtTimeslot[dateIndex][elIndex]}",
+                    style: TextStyle(fontSize: 12)),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.close,
+                  size: 14,
+                ),
+              ],
             ),
           ),
         ),
       );
-
-      badgeList.add(SizedBox(width: 3));
     }
     return badgeList;
   }
 
   Widget _buildSubmitAdvanced() {
+    //if there is court selected
+    bool canSubmit = RegExp('[1-9]').hasMatch(selectedCourtTimeslot.toString());
     return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all(canSubmit ? Colors.blue : Colors.grey)),
       child:
           Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16)),
       onPressed: () {
         if (!_formKey.currentState!.validate()) {
         } else {
           _formKey.currentState!.save();
-          MasterBooking.insertAdvBooking(
-              widget, masterBookingArray, context, selectedCourtTimeslot, widget.sportId);
-          // insertTraining();
+          if (canSubmit)
+            MasterBooking.insertAdvBooking(
+              masterBookingArray: masterBookingArray,
+              subject: _subject,
+              bookingType: _advType,
+              widget: widget,
+              context: context,
+              selectedCourtTimeslot: selectedCourtTimeslot,
+              phoneNo: _phoneNo,
+              attachment: _attachment,
+              personInCharge: _pic,
+            );
         }
       },
     );
   }
-
-  /*Future<void> insertTraining() async {
-    await FirebaseFirestore.instance.collection('sportTeam').doc(widget.sportId).get().then((sportTeam,) async {
-      final _data = Training(
-          createdAt: DateTime.now(),
-          appointmentId: ,
-          subject: subjectController.text,
-          sport: sportTeam['sportType'][0],
-          startDate: '',
-          startTime: '',
-          description: descriptionController.text
-      ).toJson();
-      await FirebaseFirestore.instance.collection("training").add(_data).then((_){
-        Utils.showSnackBar("Training collection added", "green");
-        Navigator.of(context).pop();
-      });
-
-    });
-  }*/
 
   Widget _buildPICField() {
     return TextFormField(
@@ -265,6 +253,49 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         onSaved: (value) => _pic = value!);
   }
 
+  Widget _buildSubjectField() {
+    return TextFormField(
+        controller: subjectController,
+        decoration: InputDecoration(labelText: "Subject"),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Subject is required";
+          }
+        },
+        onSaved: (value) => _subject = value!);
+  }
+
+  Widget _buildTypeField() {
+    List<String> bookingTypes = [
+      "Training",
+      "Sport Events",
+      "Club Events",
+      "Others"
+    ];
+    return DropdownButtonFormField(
+      decoration: InputDecoration(labelText: 'Booking Type'),
+      hint: Text("Booking Type"),
+      isExpanded: true,
+      items: bookingTypes.map((option) {
+        var i = bookingTypes.indexOf((option));
+        return DropdownMenuItem(
+          value: option,
+          child: Text("$option"),
+        );
+      }).toList(),
+      value: _advType,
+      validator: (value) {
+        if (value == null) return "Booking Type is required.";
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          _advType = value.toString();
+        });
+      },
+    );
+  }
+
   Widget _buildPhoneNoField() {
     return TextFormField(
         controller: phoneController,
@@ -274,7 +305,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
             return "Phone Number is required";
           }
         },
-        onSaved: (value) => _pic = value!);
+        onSaved: (value) => _phoneNo = value!);
   }
 
   Widget _buildAttachmentField() {
@@ -326,7 +357,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       ...timeslot.map((slot) {
-        // var time = Utils.getCurrentTimeOnly(slot);
+        var time = Utils.getCurrentTimeOnly(slot);
         int index = timeslot.indexOf(slot);
         // var timeNow = Utils.getCurrentTimeOnly(slot);
         //TODO: change this

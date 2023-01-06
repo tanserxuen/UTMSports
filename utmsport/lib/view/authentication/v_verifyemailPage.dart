@@ -120,6 +120,8 @@ Widget authorization() => FutureBuilder(
       Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
       //set user role upon open app
       global.setUserRole(data);
+      global.setMatric(data);
+
       return MyHomePage();
 
     }

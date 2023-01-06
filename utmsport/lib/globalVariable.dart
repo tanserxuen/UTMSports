@@ -28,10 +28,15 @@ final FA = FirebaseAuth.instance;
 final USERID = FirebaseAuth.instance.currentUser!.uid;
 final USER = () async => await FFdb.collection("users").doc(USERID).get();
 
+
+
 var _userRole; //private
+var _userMatric;
 setUserRole(data) => _userRole = data['roles'];
+setMatric(data) => _userMatric = data['matric'];
 
 getUserRole() => _userRole;
+getMatric() => _userMatric;
 
 const sports = ['Badminton', 'Squash', 'PingPong'];
 

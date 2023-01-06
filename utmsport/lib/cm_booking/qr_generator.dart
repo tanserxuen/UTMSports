@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRGenerate extends StatefulWidget {
-  final trainingId;
-  const QRGenerate({Key? key, this.trainingId}): super(key: key);
+  final qrId;
+  const QRGenerate({Key? key, this.qrId}): super(key: key);
 
   @override
   State<QRGenerate> createState() => _QRGenerate();
@@ -15,7 +15,7 @@ class _QRGenerate extends State<QRGenerate> {
   @override
 
   void initState() {
-    controller.text = widget.trainingId;
+    controller.text = widget.qrId;
     super.initState();
   }
 

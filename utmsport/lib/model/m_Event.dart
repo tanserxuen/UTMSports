@@ -46,7 +46,7 @@ void deleteEvents(context, id) async {
 }
 
 void editEvents(context, event) async {
-  print(event);
+  // print(event);
   Navigator.push(
     context,
     MaterialPageRoute(
