@@ -72,63 +72,6 @@ Map getCourtTimeslotDisplay(booked, subject, color, id) {
     startTime.add(DateTime.parse("$dateString ${global.timeslot[min]}"));
     endTime.add(DateTime.parse("$dateString ${global.timeslot[max]}").add(Duration(minutes: 30)));
   });
-  int iterate = 0;
-  // print("---$resourceIds $slots");
-  String tempTimeslot = "", tempCourt = "";
-  // print("====================================== $subject $slots");
-  // for (int j = 0; j < slots.length; j++) {
-  //   var slot = slots[j];
-  //   var slotValue = slot.split(' ');
-  //   String dataTimeslot = slotValue[0], dataCourt = slotValue[1];
-  //   String dateString = date.split(' ')[0];
-  //   String timeString = global.timeslot[int.parse(slotValue[0]) - 1];
-  //
-  //   // print("+++$timeString");
-  //   if (tempCourt == "") {
-  //     // print(
-  //     //     "dataCourt: $dataCourt    tempCourt: $tempCourt    resourceIds $resourceIds");
-  //     tempCourt = dataCourt;
-  //     tempTimeslot = dataTimeslot;
-  //     iterate = 1;
-  //     startTime.add(DateTime.parse("$dateString $timeString"));
-  //     // print(
-  //     //     "null Number of Iterate: $iterate    dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
-  //   } else if (tempCourt == dataCourt) {
-  //     // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
-  //     tempTimeslot = dataTimeslot;
-  //     iterate += 1;
-  //     // print(
-  //     //     "remain ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
-  //   } else if (tempCourt != dataCourt) {
-  //     // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
-  //     tempCourt = dataCourt;
-  //     if (int.parse(tempTimeslot) + 1 != int.parse(dataTimeslot)) {
-  //       startTime.add(DateTime.parse("$dateString $timeString"));
-  //       endTime.add(DateTime.parse("$dateString $timeString")
-  //           .add(Duration(minutes: 30 * iterate)));
-  //       iterate = 1;
-  //     } else {
-  //       iterate += 1;
-  //     }
-  //     tempTimeslot = dataTimeslot;
-  //
-  //     // print(
-  //     //     "updated ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     endTime: $endTime");
-  //   }
-  //   if (j == slots.length - 1) {
-  //     endTime.add(
-  //         DateTime.parse("$dateString $timeString").add(Duration(minutes: 30)));
-  //     // print("$endTime $timeString");
-  //     // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
-  //   }
-  // }
-
-  // print({'subject': subject,
-  //   'color': color,
-  //   'startTime': startTime,
-  //   'endTime': endTime,
-  //   'resourceIds': resourceIds.cast<Object>(),});
-  // print(resourceIds.cast<Object>());
   return {
     'id': id,
     'subject': subject,
@@ -141,13 +84,8 @@ Map getCourtTimeslotDisplay(booked, subject, color, id) {
 
 void getAppointments(appointments, appData) {
   if (appData.length == 0) return;
-  // print(appData);
-
-  var appointmentList = [], subject, color;
+  var appointmentList = [];
   appData.forEach((appDetails) {
-    // subject = appDetails['subject'];
-    // print(appDetails['subject']);
-    // color = Color(int.parse(appDetails['color']));
     appointmentList.add(
       appDetails['startTime'].map(
         (booked) => getCourtTimeslotDisplay(
@@ -161,27 +99,12 @@ void getAppointments(appointments, appData) {
       ),
     );
   });
-  // print(appointmentList);
+
   appointmentList.forEach((e) {
     e.forEach((element) {
-      // print("");
-      // print("");
-      // print("");
-      // print("");
-      // print(" ===================================${element['subject']}");
       for (int i = 0; i < element['startTime'].length; i++) {
-        // print(element['startTime'].length);
-        // print({
-        //   "endTime": element['endTime'],
-        //   "endTimeLength": element['endTime'].length,
-        //   "startTime": element['startTime'],
-        //   "startTimeLength": element['startTime'].length,
-        //   "resourceIds": element['resourceIds'],
-        //   // "i": i,
-        // });
         appointments.add(
           Appointment(
-            // subject: subject,
             subject: "${element['subject']}",
             color: element['color'],
             endTime: element['endTime'][i],
