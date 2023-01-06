@@ -9,7 +9,8 @@ import '../../cm_booking/qr_generator.dart';
 import '../../utils.dart';
 
 class TrainingDetailPage extends StatelessWidget {
-  const TrainingDetailPage({Key? key,required this.trainingId, this.trainingTitle})
+  const TrainingDetailPage(
+      {Key? key, required this.trainingId, this.trainingTitle})
       : super(key: key);
   final trainingId;
   final trainingTitle;
@@ -52,7 +53,10 @@ class TrainingDetailPage extends StatelessWidget {
                                     athleteList.add(matricNo);
                                     var currentTime = DateTime.now();
                                     athleteTimeList.add(currentTime);
-                                    var data = {'athlete': athleteList, 'athletetime': athleteTimeList};
+                                    var data = {
+                                      'athlete': athleteList,
+                                      'athletetime': athleteTimeList
+                                    };
                                     FirebaseFirestore.instance
                                         .collection('training')
                                         .doc(qrcodeId)
@@ -90,7 +94,7 @@ class TrainingDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Session ${trainingTitle}'),
+          title: Text('Training'),
           actions: [
             qrCodeOption(context),
           ],
@@ -98,19 +102,20 @@ class TrainingDetailPage extends StatelessWidget {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection("training")
-              .doc(trainingId)
+              .where('appointmentId', isEqualTo: trainingId)
               .snapshots(),
-          builder: (BuildContext context,
-              AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting)
               return Center(child: CircularProgressIndicator());
             if (snapshot.hasData) {
-              // print(snapshot.data?.data()!['sportId']);
-              var documentSnapshot = snapshot.data?.data();
+              var documentSnapshot = snapshot.data!.docs.first;
+
               String date = DateFormat.yMMMMd('en_US')
                   .format(documentSnapshot!['start_at'].toDate());
               String time = DateFormat.jm()
                   .format(documentSnapshot!['start_at'].toDate());
+              print(documentSnapshot['athlete']);
               // return Text("Data Found");
               return Container(
                 padding: EdgeInsets.all(10),
@@ -175,19 +180,18 @@ class TrainingDetailPage extends StatelessWidget {
                               color: Colors.lightGreen.shade50,
                               borderRadius: BorderRadius.circular(10)),
                           child: ListView.builder(
-                              itemCount: snapshot.data!['athlete'].length,
+                              itemCount: documentSnapshot['athlete'].length,
                               itemBuilder: (BuildContext context, int index) {
-                                final documentSnapshot =
-                                    snapshot.data!['athlete'];
+                                final athletes = documentSnapshot['athlete'];
                                 final timeAttend =
-                                snapshot.data!['athletetime'];
-                                if (documentSnapshot.length == 0)
+                                    documentSnapshot['athletetime'];
+                                if (athletes.length == 0)
                                   return Text('Empty Data');
                                 return StreamBuilder(
                                     stream: FirebaseFirestore.instance
                                         .collection('users')
                                         .where('matric',
-                                            isEqualTo: documentSnapshot[index])
+                                            isEqualTo: athletes[index])
                                         .snapshots(),
                                     builder: (BuildContext context,
                                         AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -202,8 +206,9 @@ class TrainingDetailPage extends StatelessWidget {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(documentSnapshot[index]),
-                                          Text(DateFormat.Hm().format(timeAttend[index].toDate())),
+                                          Text(athletes[index]),
+                                          Text(DateFormat.Hm().format(
+                                              timeAttend[index].toDate())),
                                           Text(
                                               snapshot.data?.docs.first['name'])
                                         ],

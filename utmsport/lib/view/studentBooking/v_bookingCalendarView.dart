@@ -186,7 +186,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CheckIn(qrid: app.notes,),
+                              builder: (context) => CheckIn(id: app.notes,),
                             ),
                           ),
                           child: Text(

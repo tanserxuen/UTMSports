@@ -35,8 +35,11 @@ class TrainingListPage extends StatelessWidget {
                         leading: Icon(Icons.sports_cricket_rounded, color: Colors.orange,),
                         subtitle: Text(time),
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot.id,)));
-                          }
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot['appointmentId'],)));
+                          },
+                          onLongPress: (){
+                            print(documentSnapshot.id);
+                          },
                       ),
                     );
                   }),
