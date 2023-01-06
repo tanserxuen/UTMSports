@@ -9,7 +9,7 @@ import '../../cm_booking/qr_generator.dart';
 import '../../utils.dart';
 
 class TrainingDetailPage extends StatelessWidget {
-  const TrainingDetailPage({Key? key, this.trainingId, this.trainingTitle})
+  const TrainingDetailPage({Key? key,required this.trainingId, this.trainingTitle})
       : super(key: key);
   final trainingId;
   final trainingTitle;
