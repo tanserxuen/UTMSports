@@ -44,10 +44,13 @@ class Utils {
 
   static getCurrentTimeOnly(String timeString) {
     DateTime now = DateTime.now();
-    print(DateTime.now());
-    // String dateString = now.toString().split(' ')[0];
-    // print(DateFormat("HH:mm a").parse("$dateString $timeString.000"));
-    // return DateFormat("HH:mm a").parse("$dateString $timeString.000");
-    return timeString;
+    String dateString = now.toString().split(' ')[0];
+    return DateFormat("HH:mm a").format(DateTime.parse("$dateString $timeString"));
+  }
+
+  static formatTime(String timeString){
+    DateTime now = DateTime.now();
+    String dateString = now.toString().split(' ')[0];
+    return DateFormat("HH:mm a").format(DateTime.parse("$dateString $timeString"));
   }
 }

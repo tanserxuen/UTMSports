@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -8,7 +7,6 @@ import 'package:utmsport/globalVariable.dart' as global;
 import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 import 'package:utmsport/view/shared/v_checkIn.dart';
-import 'package:utmsport/view/studentBooking/v_createStuBooking.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
 
@@ -59,7 +57,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));
       });
-      setState(() => this.appData = _appData);
+      setState(() {
+        this.appData = _appData;
+        print(this.appData);
+      });
     } catch (e) {
       print(e.toString());
       return null;
@@ -84,13 +85,12 @@ class _BookingCalendarState extends State<BookingCalendar> {
     final tomorrow = canShowStudentView
         ? null
         : DateTime(timeNow.year, timeNow.month, timeNow.day, 23, 59, 59);
-    //TODO: think adv can book multiple date, so how to store data to display in calendar view
     return Expanded(
       child: SfCalendar(
         controller: _calendarController,
         view: getCalendarView(isAdmin, stuView),
-        minDate: today,
-        maxDate: tomorrow,
+        // minDate: today,
+        // maxDate: tomorrow,
         showNavigationArrow: isAdmin || stuView ? true : false,
         monthViewSettings: MonthViewSettings(
             appointmentDisplayCount: 4,
@@ -124,19 +124,22 @@ class _BookingCalendarState extends State<BookingCalendar> {
               children: [
                 Text("No appointments booked"),
                 ElevatedButton(
-                    onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateAdvBookingCalendar(),
-                          ),
-                        ),
-                    child: Text("Book now!"))
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateAdvBookingCalendar(),
+                    ),
+                  ),
+                  child: Text("Book now!"),
+                )
               ],
             ),
           ),
         ],
       );
     var app = appointment![0];
+    var additionalData =
+        appData.where((data) => data['id'] == app!.notes).toList()[0];
     var courts = app!.resourceIds
         .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
         .join(', ');
@@ -157,28 +160,31 @@ class _BookingCalendarState extends State<BookingCalendar> {
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                            "${dayFormat.format(app!.startTime).toString()}   ${hourFormat.format(app!.startTime).toString()} - ${hourFormat.format(app!.endTime).toString()}"),
-                        Text("${app!.location}: Court $courts"),
-                      ]),
-                  if (global.getUserRole() == 'admin')
-                    ElevatedButton(
-                      onPressed: () => editAdv(app),
-                      child: Text(
-                        "Edit",
-                      ),
-                    )
-                  else
-                    Wrap(
-                      spacing: 5,
-                      direction: Axis.vertical,
-                      children: [
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: Wrap(
+                        direction: Axis.vertical,
+                        spacing: 5,
+                        children: [
+                          Text(
+                              "${dayFormat.format(app!.startTime).toString()}   ${hourFormat.format(app!.startTime).toString()} - ${hourFormat.format(app!.endTime).toString()}"),
+                          Text("${app!.location}"),
+                        ],
+                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (global.getUserRole() == 'admin')
+                        ElevatedButton(
+                          onPressed: () => editAdv(app),
+                          child: Text(
+                            "Edit",
+                          ),
+                        )
+                      else ...[
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -193,6 +199,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
                             "Check In",
                           ),
                         ),
+                        SizedBox(
+                          width: 5,
+                        ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -202,8 +211,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
                             "Edit",
                           ),
                         )
-                      ],
-                    )
+                      ]
+                    ],
+                  )
                 ],
               )
             ],

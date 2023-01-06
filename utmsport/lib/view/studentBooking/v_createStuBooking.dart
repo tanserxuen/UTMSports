@@ -377,7 +377,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       ...global.timeslot.map((slot) {
-        var time = Utils.getCurrentTimeOnly(slot);
+        var time = Utils.formatTime(slot);
         int index = global.timeslot.indexOf(slot);
         // var timeNow = Utils.getCurrentTimeOnly(slot);
         //TODO: change this
@@ -394,7 +394,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                 ),
               ),
-              Text(" T${index + 1} $slot ")
+              Text(" T${index + 1} $time ")
             ],
           ),
         );

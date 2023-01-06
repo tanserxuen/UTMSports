@@ -46,23 +46,29 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => widget.formType == 'Edit'
-                ? CreateStuBooking(
-                    sportsType: widget.params['sportsType'],
-                    formType: widget.formType,
-                    stuAppModel: widget.params['stuAppModel'],
-                    slotLists: widget.params['slotLists'],
-                    date: widget.params['date'],
-                  )
-                : CreateStuBooking(
-                    sportsType: sportType,
-                  ),
-          ),
+        onPressed: () => sportType == ''
+            ? null
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => widget.formType == 'Edit'
+                      ? CreateStuBooking(
+                          sportsType: widget.params['sportsType'],
+                          formType: widget.formType,
+                          stuAppModel: widget.params['stuAppModel'],
+                          slotLists: widget.params['slotLists'],
+                          date: widget.params['date'],
+                        )
+                      : CreateStuBooking(
+                          sportsType: sportType,
+                        ),
+                ),
+              ),
+        child: Icon(
+          Icons.arrow_forward_rounded,
+          size: 25,
+          color: sportType == '' ? Colors.grey : Colors.blue,
         ),
-        child: Icon(Icons.arrow_forward_rounded, size: 25),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

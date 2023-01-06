@@ -356,7 +356,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       ...timeslot.map((slot) {
-        var time = Utils.getCurrentTimeOnly(slot);
+        var time = Utils.formatTime(slot);
         int index = timeslot.indexOf(slot);
         // var timeNow = Utils.getCurrentTimeOnly(slot);
         //TODO: change this
@@ -373,7 +373,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                 ),
               ),
-              Text(" T${index + 1} $slot ")
+              Text(" T${index + 1} $time ")
             ],
           ),
         );
