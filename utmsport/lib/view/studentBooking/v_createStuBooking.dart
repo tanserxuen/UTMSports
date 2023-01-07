@@ -158,10 +158,13 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16)),
                           onPressed: () {
+                            //if there is court selected
+                            bool canSubmit = RegExp('[1-9]')
+                                .hasMatch(selectedCourtTimeslot.toString());
                             if (!_formKey.currentState!.validate()) {
                             } else {
                               _formKey.currentState!.save();
-                              insertCourtBooking();
+                              if (canSubmit) insertCourtBooking();
                             }
                           },
                         )

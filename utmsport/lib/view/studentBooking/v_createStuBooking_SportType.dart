@@ -46,6 +46,7 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: sportType == '' ? Colors.grey : Colors.blue,
         onPressed: () => sportType == ''
             ? null
             : Navigator.push(
@@ -67,7 +68,6 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         child: Icon(
           Icons.arrow_forward_rounded,
           size: 25,
-          color: sportType == '' ? Colors.grey : Colors.blue,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
