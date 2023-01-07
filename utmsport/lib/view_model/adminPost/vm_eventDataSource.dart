@@ -52,7 +52,8 @@ class EventDataSource extends DataGridSource {
           child: dataGridCell.columnName == 'Action'
               ? LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                  return Row(
+                  return Wrap(
+                    spacing: 5,
                     children: [
                       SizedBox(width: 5),
                       IconButton(padding: EdgeInsets.zero,

@@ -53,29 +53,29 @@ class _EventListState extends State<EventList> {
     return _eventDataSource == null
         ? Center(child: CircularProgressIndicator())
         : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(13, 16, 8, 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("List of Events",
-                              style: TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.w700)),
-                          ElevatedButton(
-                            child: Text("Create"),
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FormScreen(),
-                              ),
-                            ),
-                          ),
-                        ]),
-                  )),
-              Expanded(flex: 6, child: EventDatatableWidget(_eventDataSource)),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(13, 16, 8, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("List of Events",
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w700)),
+                    ElevatedButton(
+                      child: Text("Create"),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FormScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              EventDatatableWidget(_eventDataSource),
             ],
           );
   }

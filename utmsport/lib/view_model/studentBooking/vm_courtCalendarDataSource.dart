@@ -1,7 +1,10 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/globalVariable.dart' as global;
+
+import '../../utils.dart';
 
 class DataSource extends CalendarDataSource {
   DataSource(List<Appointment> source, List<CalendarResource> resourceColl) {
@@ -31,139 +34,111 @@ List<CalendarResource> getCourts(resources) {
   return resources;
 }
 
-Map getCourtTimeslotDisplay(booked, subject, color, id) {
-  String date = booked.keys.toList()[0];
-  List slots = booked.values.toList()[0], times = [];
-  List resourceIds = slots
-      .map((e) => e.split(' ')[1].toString().padLeft(4, '0'))
-      .toSet()
-      .toList();
-  var startTime = [], endTime = [];
-  int iterate = 0;
-  // print("$booked $subject");
-  String tempTimeslot = "", tempCourt = "";
-  // print("====================================== $subject");
-  for (int j = 0; j < slots.length; j++) {
-    var slot = slots[j];
-    var slotValue = slot.split(' ');
-    String dataTimeslot = slotValue[0], dataCourt = slotValue[1];
-    String dateString = date.split(' ')[0];
-    String timeString = global.timeslot[int.parse(slotValue[0]) - 1];
+Map sortSlots(slots) {
+  //to order by courts
+  slots.sort((a, b) {
+    String aCourt = a.split(" ")[1];
+    String bCourt = b.split(" ")[1];
+    return int.parse(aCourt).compareTo(int.parse(bCourt));
+  });
 
-    // print(resourceIds);
-    if (tempCourt == "") {
-      // print(
-      //     "dataCourt: $dataCourt    tempCourt: $tempCourt    resourceIds $resourceIds");
-      tempCourt = dataCourt;
-      tempTimeslot = dataTimeslot;
-      iterate = 1;
-      startTime.add(DateTime.parse("$dateString $timeString"));
-      // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
-      // print(
-      //     "null Number of Iterate: $iterate    dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
-    } else if (tempCourt == dataCourt) {
-      // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
-      tempTimeslot = dataTimeslot;
-      iterate += 1;
-      // endTime.add(DateTime.parse("$dateString $timeString")
-      //     .add(Duration(minutes: 30 * iterate)));
-      // print(
-      //     "remain ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
-    } else if (tempCourt != dataCourt) {
-      // print("dataCourt: $dataCourt    tempCourt: $tempCourt");
-      tempCourt = dataCourt;
-      if (int.parse(tempTimeslot) + 1 != int.parse(dataTimeslot)) {
-        // print(resourceIds);
-        startTime.add(DateTime.parse("$dateString $timeString"));
-        endTime.add(DateTime.parse("$dateString $timeString")
-            .add(Duration(minutes: 30 * iterate)));
-        iterate = 1;
-        // print(int.parse(tempTimeslot) + 1);
-        // print(int.parse(dataTimeslot));
-        // print(resourceIds);
-      } else {
-        iterate += 1;
-      }
-      tempTimeslot = dataTimeslot;
-      // String courtName = dataCourt.toString().padLeft(4, '0');
-      // resourceIds.add("${courtName}" as Object);
+  List bookedCourts =
+      slots.map((e) => e.split(' ')[1].toString()).toSet().toList();
+  List<List<String>> consecutiveTimeslotSort = [];
+  bookedCourts.forEach((court) {
+    //filter slots of the same court number
+    List a = slots.where((f) => f.split(" ")[1] == court).toList();
+    //make one group if the timeslot is consecutive
+    List<List<String>> b = consecutive_groups(
+      a.map<int>((e) => int.parse(e.split(" ")[0])).toList(),
+      a[0].split(" ")[1],
+    );
+    consecutiveTimeslotSort = [...consecutiveTimeslotSort, ...b];
+  });
+  return {'slotsSorted': slots, 'slotsInGroup': consecutiveTimeslotSort};
+}
 
-      // print(
-      //     "updated ${dataCourt} iterate $iterate   dataCourt: $dataCourt    tempCourt: $tempCourt    tempTimeslot: $tempTimeslot     datatimeslot: $dataTimeslot     timeString: $timeString");
-    }
-    if (j == slots.length - 1) {
-      endTime.add(DateTime.parse("$dateString $timeString")
-          .add(Duration(minutes: 30 * iterate)));
-      // resourceIds.add("${dataCourt.toString().padLeft(4, '0')}" as Object);
+List<List<String>> consecutive_groups(List<int> a, String court) {
+  a.sort();
+  List<List<String>> result = [];
+  List<String> temp = [];
+  temp.add("${a[0]} $court");
+
+  for (int i = 0; i < a.length - 1; i++) {
+    if (a[i + 1] == a[i] + 1) {
+      temp.add("${a[i + 1]} $court");
+    } else {
+      result.add(temp);
+      temp = [];
+      temp.add("${a[i + 1]} $court");
     }
   }
+  result.add(temp);
+  return result;
+}
 
-  // print({'subject': subject,
-  //   'color': color,
-  //   'startTime': startTime,
-  //   'endTime': endTime,
-  //   'resourceIds': resourceIds.cast<Object>(),});
-  return {
-    'id': id,
-    'subject': subject,
-    'color': color,
-    'startTime': startTime,
-    'endTime': endTime,
-    'resourceIds': resourceIds.cast<Object>(),
-  };
+void getCourtTimeslotDisplay(appointments, booked, subject, color, id, strt) {
+  String date = booked.keys.toList()[0];
+  List slots = booked.values.toList()[0];
+  var data = sortSlots(slots);
+  slots = data['slotsSorted'];
+  // String courtsInSingleBooking =
+  //     slots.map((e) => e.split(' ')[1].toString()).toSet().toList().join(", ");
+  //
+  // strt.map((e) => e.entries.toList());
+  // String locationString = "";
+  // var slotss = strt.map((e) => e.values.toList()[0]).toList();
+  // var dates = strt.map((e) => e.keys.toList()[0]).toList();
+  // // print(dates);
+  // for (int i = 0; i < dates.length; i++) {
+  //   var courtss= slotss[i].map((e) => e.split(" ")[1]).join(", ");
+  //   var tss= slotss[i].map((e) => e.split(" ")[0]).join(", ");
+  //   int tssMax = int.parse(tss.reduce(math.max) - 1);
+  //   int tssMin = int.parse(tss.reduce(math.min) - 1);
+  //   locationString =
+  //       "$locationString ${Utils.parseDateTimeToFormatDate(DateTime.parse(dates[i]))}: ${global.timeslot[tssMin]}- ${global.timeslot[tssMax]} Court ${courtss}";
+  // }
+  // print("$subject $locationString");
+
+  data['slotsInGroup'].forEach((slotGroup) {
+    String dateString = date.split(' ')[0];
+    String court = slotGroup[0].split(" ")[1].toString().padLeft(4, '0');
+    List<int> timeslots =
+        slotGroup.map<int>((e) => int.parse(e.split(' ')[0])).toList();
+    int max = timeslots.reduce(math.max) - 1;
+    int min = timeslots.reduce(math.min) - 1;
+    appointments.add(
+      Appointment(
+        subject: "$subject",
+        color: color,
+        startTime: DateTime.parse("$dateString ${global.timeslot[min]}"),
+        endTime: DateTime.parse("$dateString ${global.timeslot[max]}")
+            .add(Duration(minutes: 30)),
+        resourceIds: [court].cast<Object>(),
+        notes: id,
+        location: "Sports Hall 1: Court ${slotGroup[0].split(" ")[1]}",
+      ),
+    );
+  });
 }
 
 void getAppointments(appointments, appData) {
   if (appData.length == 0) return;
-  // print(appData);
-
-  var appointmentList = [], subject, color;
+  var appointmentList = [];
   appData.forEach((appDetails) {
-    // subject = appDetails['subject'];
-    // print(appDetails['subject']);
-    // color = Color(int.parse(appDetails['color']));
     appointmentList.add(
-      appDetails['startTime'].map(
+      appDetails['startTime'].forEach(
         (booked) => getCourtTimeslotDisplay(
-          booked,
-          appDetails['subject'],
-          Color(
-            int.parse(appDetails['color']),
-          ),
-          appDetails["id"],
-        ),
+            appointments,
+            booked,
+            appDetails['subject'],
+            Color(
+              int.parse(appDetails['color']),
+            ),
+            appDetails["id"],
+            appDetails['startTime']),
       ),
     );
-  });
-  appointmentList.forEach((e) {
-    e.forEach((element) {
-      // print("");
-      // print("");
-      // print("");
-      // print("");
-      // print(" ===================================");
-      for (int i = 0; i < element['startTime'].length; i++) {
-        // print({
-        //   "endTime": element['endTime'],
-        //   "endTimeLength": element['endTime'].length,
-        //   "startTime": element['startTime'],
-        //   "startTimeLength": element['startTime'].length,
-        //   "resourceIds": element['resourceIds'],
-        //   "i": i,
-        // });
-        appointments.add(
-          Appointment(
-              // subject: subject,
-              subject: "${element['subject']} ${element['resourceIds']}",
-              color: element['color'],
-              endTime: element['endTime'][i],
-              startTime: element['startTime'][i],
-              resourceIds: element['resourceIds'],
-              notes: element['id'],
-              location: "Sports Hall 1"),
-        );
-      }
-    });
   });
 }
 
