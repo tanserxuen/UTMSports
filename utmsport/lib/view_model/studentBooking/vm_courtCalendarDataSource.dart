@@ -186,3 +186,46 @@ List<CalendarView> getAllowedViews(bool isAdmin) => isAdmin
 
 getCalendarView(isAdmin, stuView) =>
     isAdmin || stuView ? CalendarView.month : CalendarView.timelineDay;
+
+Widget scheduleViewHeaderBuilder(
+    BuildContext buildContext, ScheduleViewMonthHeaderDetails details) {
+  final String monthName = _getMonthName(details.date.month);
+  return Stack(
+    children: [
+      Image(
+        image: ExactAssetImage('assets/images/' + monthName + '.png'),
+        fit: BoxFit.contain,
+        width: details.bounds.width,
+        height: details.bounds.height,
+      ),
+    ],
+  );
+}
+
+String _getMonthName(int month) {
+  if (month == 01) {
+    return 'jan';
+  } else if (month == 02) {
+    return 'feb';
+  } else if (month == 03) {
+    return 'mar';
+  } else if (month == 04) {
+    return 'apr';
+  } else if (month == 05) {
+    return 'may';
+  } else if (month == 06) {
+    return 'jun';
+  } else if (month == 07) {
+    return 'jul';
+  } else if (month == 08) {
+    return 'aug';
+  } else if (month == 09) {
+    return 'sept';
+  } else if (month == 10) {
+    return 'oct';
+  } else if (month == 11) {
+    return 'nov';
+  } else {
+    return 'dec';
+  }
+}

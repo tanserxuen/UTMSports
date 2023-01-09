@@ -406,8 +406,12 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   }
 
   void insertCourtBooking() {
+    bool isEditForm = widget.formType == 'Edit';
+    // widget.stuAppModel?['id'] != null && widget.stuAppModel?['id'] != "";
     final _courtBooking = CourtBooking(
-      id: global.FFdb.collection('student_appointment').doc().id,
+      id: isEditForm
+          ? widget.stuAppModel['id']
+          : global.FFdb.collection('student_appointment').doc().id,
       userId: global.USERID,
       startTime: MasterBooking.mapStartTime(selectedCourtTimeslot, [date]),
       endTime: [Timestamp.fromDate(DateTime(now.year, now.month, now.day))],
@@ -435,8 +439,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
     try {
       var _masterBooking;
       final _bookingId = global.FFdb.collection('student_appointment').doc().id;
-      if (widget.stuAppModel?['id'] != null &&
-          widget.stuAppModel?['id'] != "") {
+      if (isEditForm) {
         //update existing student booking
         courtBooking
             .where("id", isEqualTo: widget.stuAppModel['id'])

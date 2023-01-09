@@ -93,8 +93,14 @@ class _BookingCalendarState extends State<BookingCalendar> {
         // maxDate: tomorrow,
         showNavigationArrow: isAdmin || stuView ? true : false,
         monthViewSettings: MonthViewSettings(
-            appointmentDisplayCount: 4,
-            navigationDirection: MonthNavigationDirection.horizontal),
+          appointmentDisplayCount: 4,
+          navigationDirection: MonthNavigationDirection.horizontal,
+          dayFormat: 'EEE',
+        ),
+        scheduleViewSettings: ScheduleViewSettings(
+          hideEmptyScheduleWeek: true,
+        ),
+        scheduleViewMonthHeaderBuilder: scheduleViewHeaderBuilder,
         dataSource: getCalendarBookingData(this.appData),
         showDatePickerButton: canShowStudentView ? true : false,
         allowViewNavigation: canShowStudentView ? true : false,
@@ -106,14 +112,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
           showModalBottomSheet(
             context: context,
             builder: (context) =>
-                _buildBottomModal(details.appointments, context),
+                _buildBottomModal(details.appointments, context, CalendarView),
           );
         },
       ),
     );
   }
 
-  Widget _buildBottomModal(appointment, context) {
+  Widget _buildBottomModal(appointment, context, CalendarView) {
+    print(CalendarView);
     if (appointment == null)
       return Wrap(
         children: [

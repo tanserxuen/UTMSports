@@ -234,6 +234,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               phoneNo: _phoneNo,
               attachment: _attachment,
               personInCharge: _pic,
+              formType: widget.formType,
             );
         }
       },

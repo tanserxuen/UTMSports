@@ -88,8 +88,7 @@ class MasterBooking {
         List<String> ctRow = [];
         for (int col = 0; col <= noOfCourt; col++) {
           if (row == 0 && col == 0)
-            ctRow.add(
-                "B");
+            ctRow.add("B");
           else if (col != 0 && row == 0)
             ctRow.add("C$col");
           else if (col == 0 && row != 0)
@@ -112,11 +111,16 @@ class MasterBooking {
       context,
       selectedCourtTimeslot,
       phoneNo,
-      attachment, personInCharge}) async {
+      attachment,
+      personInCharge,
+      formType}) async {
+    bool isEditForm = formType == 'Edit';
+    // widget.stuAppModel?['id'] != null &&
+    // widget.stuAppModel?['id'] != "";
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final color = getColor(bookingType);
     final _bookingDetails = CourtBooking(
-      id: _bookingId,
+      id: isEditForm ? widget.stuAppModel['id'] : _bookingId,
       userId: global.USERID,
       subject: subject,
       color: color,
@@ -139,8 +143,7 @@ class MasterBooking {
 
     try {
       //update existing adv booking
-      if (widget.stuAppModel?['id'] != null &&
-          widget.stuAppModel?['id'] != "") {
+      if (isEditForm) {
         advCourtBooking
             .where("id", isEqualTo: widget.stuAppModel['id'])
             .get()
