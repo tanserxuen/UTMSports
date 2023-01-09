@@ -1,8 +1,11 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:utmsport/view/training/v_trainingDetail.dart';
+
+import '../shared/v_checkIn.dart';
 
 class TrainingListPage extends StatelessWidget {
   const TrainingListPage({Key? key, this.sportid}) : super(key: key);
@@ -31,14 +34,24 @@ class TrainingListPage extends StatelessWidget {
                     // print(documentSnapshot['startTime'][0]);
                     return Card(
                       child: ListTile(
-                        title: Text(date),
+                        title: Text('${documentSnapshot['subject']}'),
                         leading: Icon(Icons.sports_cricket_rounded, color: Colors.orange,),
-                        subtitle: Text(time),
+                        subtitle: Text('${date} ${time}'),
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot['appointmentId'],)));
+                          FirebaseFirestore.instance.collection('student_appointments').doc(documentSnapshot['appointmentId']).get().then((query){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckIn(id: query.data()!['id'],),
+                              ),
+                            );
+                          });
+
+                          // Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot['appointmentId'],)));
                           },
                           onLongPress: (){
                             print(documentSnapshot.id);
+                            print(documentSnapshot['appointmentId']);
                           },
                       ),
                     );

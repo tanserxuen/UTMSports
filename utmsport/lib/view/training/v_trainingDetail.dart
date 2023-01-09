@@ -15,91 +15,9 @@ class TrainingDetailPage extends StatelessWidget {
   final trainingId;
   final trainingTitle;
 
-  Widget qrCodeOption(BuildContext context) {
-    return global.getUserRole() == "athlete"
-        ? IconButton(
-            icon: Icon(Icons.qr_code_scanner_rounded),
-            color: Colors.yellow,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          QRScan(callback: (qrcodeId, matricNo) async {
-                            //check whether the matricNo is located inside the sportTeam
-                            var trainingRef = await FirebaseFirestore.instance
-                                .collection('training')
-                                .doc(qrcodeId)
-                                .get();
-                            var sprtTeamRef = await FirebaseFirestore.instance
-                                .collection('sportTeam')
-                                .doc(trainingRef.data()!['sportId'])
-                                .get();
-                            if (sprtTeamRef
-                                .data()!['athletes']
-                                .contains(matricNo)) {
-                              var athleteList = [];
-                              var athleteTimeList = [];
-                              FirebaseFirestore.instance
-                                  .collection('training')
-                                  .doc(qrcodeId)
-                                  .get()
-                                  .then(
-                                (training) {
-                                  athleteList = training['athlete'];
-                                  athleteTimeList = training['athletetime'];
-                                  //Perform Data Insert if no matric contain inside trainingDocument
-                                  if (!athleteList.contains(matricNo)) {
-                                    athleteList.add(matricNo);
-                                    var currentTime = DateTime.now();
-                                    athleteTimeList.add(currentTime);
-                                    var data = {
-                                      'athlete': athleteList,
-                                      'athletetime': athleteTimeList
-                                    };
-                                    FirebaseFirestore.instance
-                                        .collection('training')
-                                        .doc(qrcodeId)
-                                        .update(data)
-                                        .then((_) {
-                                      print('updated successsfully');
-                                    });
-                                  }
-                                  Utils.showSnackBar(
-                                      "your matric has been recorded", "red");
-                                },
-                              );
-                            } else {
-                              Utils.showSnackBar(
-                                  "You are not athlete of this sport Team",
-                                  "red");
-                            }
-                          })));
-            },
-          )
-        : IconButton(
-            icon: Icon(Icons.qr_code),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => QRGenerate(
-                            qrId: trainingId,
-                          )));
-            });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Training'),
-          actions: [
-            qrCodeOption(context),
-          ],
-        ),
-        body: StreamBuilder(
+    return StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection("training")
               .where('appointmentId', isEqualTo: trainingId)
@@ -222,6 +140,6 @@ class TrainingDetailPage extends StatelessWidget {
             }
             return Text('Something Error in TrainingDetail.dart');
           },
-        ));
+    );
   }
 }
