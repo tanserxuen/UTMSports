@@ -43,6 +43,7 @@ dependencies:
   time_picker_widget: ^1.0.0+10
   intl: ^0.17.0
   event_bus: ^2.0.0
+  pdf: ^3.8.4
 
 
 dev_dependencies:

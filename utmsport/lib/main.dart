@@ -5,8 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:utmsport/shared/errorPage.dart';
 import 'package:utmsport/utils.dart';
 import 'package:utmsport/view/authentication/v_mainPage.dart';
-import 'package:utmsport/view/adminPost/v_createEvent.dart';
-import 'package:utmsport/view/studentBooking/v_createStuBooking.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,9 +44,7 @@ class MyApp extends StatelessWidget {
 
   void setErrorBuilder() {
     ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-      return Scaffold(
-          body: Center(
-              child: Text("Unexpected error. See console for details.")));
+      return ErrorPage(errorDetails: errorDetails);
     };
   }
 }
