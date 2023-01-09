@@ -160,11 +160,31 @@ class _RequestMeetingDetailState extends State<RequestMeetingDetail> {
                     ListTile(
                       //TODO: Solve the CORS security to display the file
                       onTap: (){
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => ReaderScreen(document['file'])));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReaderScreen(data['file'])));
                       } ,
                       title: Text(data['file'], overflow: TextOverflow.ellipsis,),
                       leading: Icon(Icons.picture_as_pdf, color: Colors.red, size: 32,),
                     ),
+
+                    SizedBox(height: 25,),
+                    Text('Attendence Report', style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18
+                    ),),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      color: Colors.blueGrey[100],
+                      child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                data['description'],
+                                textAlign: TextAlign.justify,
+                              ),
+                            )
+                          ]),
+                    ),
+                    SizedBox(height: 20,),
 
                   ]));
             }

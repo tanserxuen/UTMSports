@@ -16,6 +16,7 @@ class CreateAdvBooking extends StatefulWidget {
   final String formType;
   var slotLists; //List<List<String>>
   dynamic stuAppModel;
+  final sportId;
 
   // ignore: avoid_init_to_null
   CreateAdvBooking({
@@ -24,6 +25,7 @@ class CreateAdvBooking extends StatefulWidget {
     this.slotLists: null,
     this.formType: "Create",
     this.stuAppModel:null,
+    this.sportId,
   }) : super(key: key);
 
   @override

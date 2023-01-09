@@ -6,8 +6,8 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 
 class CreateAdvBookingCalendar extends StatefulWidget {
-  const CreateAdvBookingCalendar({Key? key}) : super(key: key);
-
+  const CreateAdvBookingCalendar({Key? key, this.sportID}) : super(key: key);
+  final sportID;
   @override
   State<CreateAdvBookingCalendar> createState() =>
       _CreateAdvBookingCalendarState();
@@ -16,6 +16,13 @@ class CreateAdvBookingCalendar extends StatefulWidget {
 class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
   final dateRangeController = DateRangePickerController();
   List<DateTime> _dateList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    print(widget.sportID);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +56,7 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
                     ? null
                     : Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            CreateAdvBooking(dateList: this._dateList),
+                            CreateAdvBooking(dateList: this._dateList, sportId: widget.sportID,),
                       )),
               ),
             )

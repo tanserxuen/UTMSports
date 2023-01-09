@@ -35,7 +35,16 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+//        multiDexEnabled true //deb
     }
+
+//    compileOptions {
+//        // Flag to enable support for the new language APIs
+//        coreLibraryDesugaringEnabled true
+//        // Sets Java compatibility to Java 8
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }//deb
 
     buildTypes {
         release {
@@ -53,4 +62,7 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
     implementation 'com.google.firebase:firebase-analytics'
+//    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5' //deb
+//    implementation 'androidx.window:window:1.0.0' //deb
+//    implementation 'androidx.window:window-java:1.0.0' //deb
 }

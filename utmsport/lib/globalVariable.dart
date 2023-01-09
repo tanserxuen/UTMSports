@@ -16,6 +16,8 @@ import 'package:utmsport/view/adminPost/v_latestEventWall.dart';
 import 'package:utmsport/view/studentBooking/v_feedbackForm.dart';
 import 'package:utmsport/view/studentBooking/v_viewFeedbacks.dart';
 
+import 'athlete/listView_training.dart';
+
 // usage:
 // import this file in files that you need these variables and add gloabl.
 
@@ -26,10 +28,15 @@ final FA = FirebaseAuth.instance;
 final USERID = FirebaseAuth.instance.currentUser!.uid;
 final USER = () async => await FFdb.collection("users").doc(USERID).get();
 
+
+
 var _userRole; //private
+var _userMatric;
 setUserRole(data) => _userRole = data['roles'];
+setMatric(data) => _userMatric = data['matric'];
 
 getUserRole() => _userRole;
+getMatric() => _userMatric;
 
 const sports = ['Badminton', 'Squash', 'PingPong'];
 
@@ -82,7 +89,7 @@ STUDENT_ROUTES(user) =>
 
 ATHLETE_ROUTES(user) =>
 //    athlete: cmtan0108@gmail.com     123456
-    [LatestEventWall(), BookingCalendar(), TeamAthletePage(), ProfilePage()];
+    [LatestEventWall(), BookingCalendar(), TeamAthletePage()/*listviewTraining()*/, ProfilePage()];
 
 MANAGER_ROUTES(user) =>
 //    cmtan-2000@graduate.utm.my 123123
