@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -126,7 +125,7 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
             child: Text(courtTimeslot[x][y]));
         break;
       case 'Booked':
-        if (widget.formType == 'Edit') {
+        if (widget.formType == 'Edit' && slots.contains("$x $y")) {
           textWidget = TextButton(
             onPressed: () {
               setState(() {
