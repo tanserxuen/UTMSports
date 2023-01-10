@@ -22,9 +22,9 @@ class Utils {
   }
 
   static parseTimestampToFormatDate(timestamp, {format = null}) {
-    DateTime newDT = timestamp.toDate();
+    DateTime newDT = timestamp?.toDate();
     DateTime dateOnly = new DateTime(newDT.year, newDT.month, newDT.day);
-    if (format != null) return DateFormat(format).format(dateOnly);
+    if (format != null) return DateFormat(format).format(newDT);
     return DateFormat('dd ${DateFormat.MONTH} yyyy').format(dateOnly);
   }
 

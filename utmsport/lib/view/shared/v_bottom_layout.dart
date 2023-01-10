@@ -30,13 +30,8 @@ getActionButton(context) {
             margin: EdgeInsets.all(12),
             child: Column(
               children: [
-                SizedBox(height: 50),
-                Text(
-                  "Advanced Booking",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
                 Expanded(
-                  child: CreateAdvBookingCalendar(),
+                  child: StuBookingChooseSports(),
                 ),
               ],
             ),
@@ -81,7 +76,9 @@ navScreen(user) {
         NavigationDestination(icon: Icon(Icons.add_alarm), label: 'Appts'),
         NavigationDestination(
             icon: Icon(Icons.edit_calendar), label: 'Advance'),
-        NavigationDestination(icon: Icon(Icons.person), label: 'Profile')
+        NavigationDestination(
+            icon: Icon(Icons.library_books), label: 'Reports'),
+        NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
       ];
       break;
     case 'athlete':
