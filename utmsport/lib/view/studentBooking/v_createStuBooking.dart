@@ -9,7 +9,7 @@ import 'package:utmsport/utils.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
 
 class CreateStuBooking extends StatefulWidget {
-  final String sportsType;
+  final String sportType;
   final String formType;
   dynamic stuAppModel;
   var date;
@@ -17,7 +17,7 @@ class CreateStuBooking extends StatefulWidget {
 
   CreateStuBooking({
     Key? key,
-    required this.sportsType,
+    required this.sportType,
     this.date: null,
     this.slotLists: null,
     this.formType: "Create",
@@ -204,7 +204,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
           formType: widget.formType,
           slots: selectedCourtTimeslot[dateIndex],
           index: 0,
-          sportType: widget.sportsType,
+          sportType: widget.sportType,
           setSelectedCourtArrayCallback: setSelectedCourtArray,
           setMasterBookingArrayCallback: setMasterBookingArray,
         ),
@@ -416,7 +416,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       endTime: [Timestamp.fromDate(DateTime(now.year, now.month, now.day))],
       subject: "Student Booking",
       status: "approved",
-      sportType: widget.sportsType,
+      sportType: widget.sportType,
       createdAt: Timestamp.fromDate(DateTime.now()),
       isAllDay: false,
       color: "0x${Colors.deepOrangeAccent.value.toRadixString(16)}",
@@ -451,7 +451,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
             courtBooking.doc(element.id).update(_courtBooking).then((_) async {
               await masterCourtBooking
                   .where("date", isEqualTo: date)
-                  .where("sportType", isEqualTo: widget.sportsType)
+                  .where("sportType", isEqualTo: widget.sportType)
                   .get()
                   .then((value) {
                 _masterBooking = MasterBooking(
@@ -460,7 +460,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                   date: date,
                   userId: global.USERID,
                   bookingId: _bookingId,
-                  sportsType: widget.sportsType,
+                  sportType: widget.sportType,
                 ).masterToJson();
                 print("update stu booking");
                 value.docs.forEach((element) {
@@ -481,7 +481,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         courtBooking.add(_courtBooking).then((_) async {
           await masterCourtBooking
               .where("date", isEqualTo: date)
-              .where("sportType", isEqualTo: widget.sportsType)
+              .where("sportType", isEqualTo: widget.sportType)
               .get()
               .then((value) {
             _masterBooking = MasterBooking(
@@ -490,7 +490,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
               date: date,
               userId: global.USERID,
               bookingId: _bookingId,
-              sportsType: widget.sportsType,
+              sportType: widget.sportType,
             ).masterToJson();
             if (value.docs.length == 0) {
               print("add adv");

@@ -126,7 +126,7 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         default:
           return CreateStuBooking(
             formType: widget.formType,
-            sportsType: widget.params['sportType'],
+            sportType: widget.params['sportType'],
             stuAppModel: widget.params['stuAppModel'],
             slotLists: widget.params['slotLists'],
             date: widget.params['date'],
@@ -141,7 +141,7 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
           );
         default:
           return CreateStuBooking(
-            sportsType: sportType,
+            sportType: sportType,
           );
       }
   }

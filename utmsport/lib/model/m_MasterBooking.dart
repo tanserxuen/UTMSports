@@ -10,14 +10,14 @@ class MasterBooking {
   DateTime date;
   String userId;
   String bookingId;
-  String sportsType;
+  String sportType;
 
   MasterBooking({
     required this.booked_courtTimeslot,
     required this.date,
     required this.userId,
     required this.bookingId,
-    required this.sportsType,
+    required this.sportType,
   });
 
   Map<String, dynamic> masterToJson() => {
@@ -25,7 +25,7 @@ class MasterBooking {
         "date": date,
         "userId": userId,
         "bookingId": bookingId,
-        "sportType": sportsType,
+        "sportType": sportType,
       };
 
   static mapStartTime(selectedCourtTimeslot, dateList) {
@@ -120,93 +120,92 @@ class MasterBooking {
 
     try {
       //update existing adv booking
-      print(widget.sportsType);
-      // if (isEditForm) {
-      //   advCourtBooking
-      //       .where("id", isEqualTo: widget.stuAppModel['id'])
-      //       .get()
-      //       .then((value) {
-      //     value.docs.forEach((element) {
-      //       advCourtBooking
-      //           .doc(element.id)
-      //           .update(_bookingDetails)
-      //           .then((_) async {
-      //         for (int dateIndex = 0;
-      //             dateIndex < widget.dateList.length;
-      //             dateIndex++) {
-      //           var date = widget.dateList[dateIndex];
-      //           _masterBooking = MasterBooking(
-      //             booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-      //                 masterBookingArray[dateIndex]),
-      //             date: date,
-      //             userId: global.USERID,
-      //             bookingId: _bookingId,
-      //             sportsType: widget.sportType,
-      //           ).masterToJson();
-      //
-      //           //update student_appointments
-      //           await masterCourtBooking
-      //               .where("date", isEqualTo: date)
-      //               .where("sportType", isEqualTo: widget.sportsType)
-      //               .get()
-      //               .then((value) {
-      //             value.docs.forEach((element) {
-      //               masterCourtBooking
-      //                   .doc(element.id)
-      //                   .update(_masterBooking)
-      //                   .then((_) {
-      //                 Utils.showSnackBar(
-      //                     "Updated an advanced booking", "green");
-      //                 Navigator.pushNamed(context, '/');
-      //               });
-      //             });
-      //           });
-      //         }
-      //       });
-      //     });
-      //   });
-      // } else {
-      //   //create new adv booking
-      //   advCourtBooking.add(_bookingDetails).then((_) async {
-      //     for (int dateIndex = 0;
-      //         dateIndex < widget.dateList.length;
-      //         dateIndex++) {
-      //       var date = widget.dateList[dateIndex];
-      //       _masterBooking = MasterBooking(
-      //         booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-      //             masterBookingArray[dateIndex]),
-      //         date: date,
-      //         userId: global.USERID,
-      //         bookingId: _bookingId,
-      //         sportsType: widget.sportType,
-      //       ).masterToJson();
-      //       await masterCourtBooking
-      //           .where("date", isEqualTo: date)
-      //           .where("sportType", isEqualTo: widget.sportsType)
-      //           .get()
-      //           .then((value) {
-      //         if (value.docs.length == 0) {
-      //           print("add adv");
-      //           masterCourtBooking.add(_masterBooking).then((_) {
-      //             Utils.showSnackBar("Created an advanced booking", "green");
-      //             Navigator.pushNamed(context, '/');
-      //           });
-      //         } else {
-      //           print("update adv");
-      //           value.docs.forEach((element) {
-      //             masterCourtBooking
-      //                 .doc(element.id)
-      //                 .update(_masterBooking)
-      //                 .then((_) {
-      //               Utils.showSnackBar("Created an advanced booking", "green");
-      //               Navigator.pushNamed(context, '/');
-      //             });
-      //           });
-      //         }
-      //       });
-      //     }
-      //   });
-      // }
+      if (isEditForm) {
+        advCourtBooking
+            .where("id", isEqualTo: widget.stuAppModel['id'])
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            advCourtBooking
+                .doc(element.id)
+                .update(_bookingDetails)
+                .then((_) async {
+              for (int dateIndex = 0;
+                  dateIndex < widget.dateList.length;
+                  dateIndex++) {
+                var date = widget.dateList[dateIndex];
+                _masterBooking = MasterBooking(
+                  booked_courtTimeslot: MasterBooking.nestedArrayToObject(
+                      masterBookingArray[dateIndex]),
+                  date: date,
+                  userId: global.USERID,
+                  bookingId: _bookingId,
+                  sportType: widget.sportType,
+                ).masterToJson();
+
+                //update student_appointments
+                await masterCourtBooking
+                    .where("date", isEqualTo: date)
+                    .where("sportType", isEqualTo: widget.sportType)
+                    .get()
+                    .then((value) {
+                  value.docs.forEach((element) {
+                    masterCourtBooking
+                        .doc(element.id)
+                        .update(_masterBooking)
+                        .then((_) {
+                      Utils.showSnackBar(
+                          "Updated an advanced booking", "green");
+                      Navigator.pushNamed(context, '/');
+                    });
+                  });
+                });
+              }
+            });
+          });
+        });
+      } else {
+        //create new adv booking
+        advCourtBooking.add(_bookingDetails).then((_) async {
+          for (int dateIndex = 0;
+              dateIndex < widget.dateList.length;
+              dateIndex++) {
+            var date = widget.dateList[dateIndex];
+            _masterBooking = MasterBooking(
+              booked_courtTimeslot: MasterBooking.nestedArrayToObject(
+                  masterBookingArray[dateIndex]),
+              date: date,
+              userId: global.USERID,
+              bookingId: _bookingId,
+              sportType: widget.sportType,
+            ).masterToJson();
+            await masterCourtBooking
+                .where("date", isEqualTo: date)
+                .where("sportType", isEqualTo: widget.sportType)
+                .get()
+                .then((value) {
+              if (value.docs.length == 0) {
+                print("add adv");
+                masterCourtBooking.add(_masterBooking).then((_) {
+                  Utils.showSnackBar("Created an advanced booking", "green");
+                  Navigator.pushNamed(context, '/');
+                });
+              } else {
+                print("update adv");
+                value.docs.forEach((element) {
+                  masterCourtBooking
+                      .doc(element.id)
+                      .update(_masterBooking)
+                      .then((_) {
+                    Utils.showSnackBar("Created an advanced booking", "green");
+                    Navigator.pushNamed(context, '/');
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
     } catch (e) {
       Utils.showSnackBar(e.toString(), "red");
     }
@@ -225,7 +224,7 @@ class MasterBooking {
         color = Colors.blueAccent;
         break;
       default: //Others
-        color = Colors.green;
+        color = Colors.greenAccent;
         break;
     }
     return "0x${color.value.toRadixString(16)}";
