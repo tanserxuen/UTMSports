@@ -29,11 +29,11 @@ class TrainingDetailPage extends StatelessWidget {
             if (snapshot.hasData) {
               var documentSnapshot = snapshot.data!.docs.first;
 
-              String date = DateFormat.yMMMMd('en_US')
+              /*String date = DateFormat.yMMMMd('en_US')
                   .format(documentSnapshot!['start_at'].toDate());
               String time = DateFormat.jm()
-                  .format(documentSnapshot!['start_at'].toDate());
-              print(documentSnapshot['athlete']);
+                  .format(documentSnapshot!['start_at'].toDate())*/;
+              print(documentSnapshot['athletes']);
               // return Text("Data Found");
               return Container(
                 padding: EdgeInsets.all(10),
@@ -57,13 +57,18 @@ class TrainingDetailPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Coach: '),
-                          Text(documentSnapshot['coach'])
+                          Text('Coaches: '),
+                          Column(
+                            children: List.generate(documentSnapshot['coaches'].length, (index) {
+                              return Text(documentSnapshot['coaches'][index]);
+                            }),
+                          )
+                          // Text(documentSnapshot['coach'])
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [Text('Training Time: '), Text(time)],
+                        children: [Text('Training Time: '), Text(/*time*/'')],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +95,7 @@ class TrainingDetailPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Text('List Attendance Athlete: '),
+                      Text('List Attendance Athletes: '),
                       Expanded(
                         child: Container(
                           padding: EdgeInsets.all(10),
@@ -98,9 +103,9 @@ class TrainingDetailPage extends StatelessWidget {
                               color: Colors.lightGreen.shade50,
                               borderRadius: BorderRadius.circular(10)),
                           child: ListView.builder(
-                              itemCount: documentSnapshot['athlete'].length,
+                              itemCount: documentSnapshot['athletes'].length,
                               itemBuilder: (BuildContext context, int index) {
-                                final athletes = documentSnapshot['athlete'];
+                                final athletes = documentSnapshot['athletes'];
                                 final timeAttend =
                                     documentSnapshot['athletetime'];
                                 if (athletes.length == 0)

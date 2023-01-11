@@ -34,13 +34,9 @@ class CreateStuBooking extends StatefulWidget {
 class CreateStuBookingState extends State<CreateStuBooking> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _name1 = "";
   String _matric1 = "";
-  String _name2 = "";
   String _matric2 = "";
-  String _name3 = "";
   String _matric3 = "";
-  String _name4 = "";
   String _matric4 = "";
 
   String _sportType = "";
@@ -51,26 +47,18 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   List<List<String>> selectedCourtTimeslot = [];
   List<List<List<String>>> masterBookingArray = [];
 
-  final controllerName1 = TextEditingController();
   final controllerMatric1 = TextEditingController();
-  final controllerName2 = TextEditingController();
   final controllerMatric2 = TextEditingController();
-  final controllerName3 = TextEditingController();
   final controllerMatric3 = TextEditingController();
-  final controllerName4 = TextEditingController();
   final controllerMatric4 = TextEditingController();
 
   @override
   void initState() {
     if (widget.formType == 'Edit') {
       date = widget.date;
-      controllerName1.text = widget.stuAppModel['name1'];
       controllerMatric1.text = widget.stuAppModel['matric1'];
-      controllerName2.text = widget.stuAppModel['name2'];
       controllerMatric2.text = widget.stuAppModel['matric2'];
-      controllerName3.text = widget.stuAppModel['name3'];
       controllerMatric3.text = widget.stuAppModel['matric3'];
-      controllerName4.text = widget.stuAppModel['name4'];
       controllerMatric4.text = widget.stuAppModel['matric4'];
       // _sportType = widget.stuAppModel['sportType'];
     }
@@ -110,10 +98,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         _buildAccordianCourtTimeslot(),
                         Row(
                           children: [
-                            Expanded(child: _buildName1Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
                             Expanded(
                               child: _buildMatric1Field(),
                             )
@@ -121,10 +105,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         ),
                         Row(
                           children: [
-                            Expanded(child: _buildName2Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
                             Expanded(
                               child: _buildMatric2Field(),
                             )
@@ -132,10 +112,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         ),
                         Row(
                           children: [
-                            Expanded(child: _buildName3Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
                             Expanded(
                               child: _buildMatric3Field(),
                             )
@@ -143,10 +119,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                         ),
                         Row(
                           children: [
-                            Expanded(child: _buildName4Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
                             Expanded(
                               child: _buildMatric4Field(),
                             )
@@ -277,22 +249,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
     });
   }
 
-  Widget _buildName1Field() {
-    return TextFormField(
-        controller: controllerName1,
-        decoration: InputDecoration(labelText: "Name 1"),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Name 1 is required";
-          }
-        },
-        onSaved: (value) => _name1 = value!);
-  }
-
   Widget _buildMatric1Field() {
     return TextFormField(
         controller: controllerMatric1,
         decoration: InputDecoration(labelText: "Matric 1"),
+        textInputAction: TextInputAction.next,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Matric 1 is required";
@@ -301,22 +262,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         onSaved: (value) => _matric1 = value!);
   }
 
-  Widget _buildName2Field() {
-    return TextFormField(
-        controller: controllerName2,
-        decoration: InputDecoration(labelText: "Name 2"),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Name 2 is required";
-          }
-        },
-        onSaved: (value) => _name2 = value!);
-  }
-
   Widget _buildMatric2Field() {
     return TextFormField(
         controller: controllerMatric2,
         decoration: InputDecoration(labelText: "Matric 2"),
+        textInputAction: TextInputAction.next,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Matric 2 is required";
@@ -325,22 +275,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         onSaved: (value) => _matric2 = value!);
   }
 
-  Widget _buildName3Field() {
-    return TextFormField(
-        controller: controllerName3,
-        decoration: InputDecoration(labelText: "Name 3"),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Name 3 is required";
-          }
-        },
-        onSaved: (value) => _name3 = value!);
-  }
-
   Widget _buildMatric3Field() {
     return TextFormField(
         controller: controllerMatric3,
         decoration: InputDecoration(labelText: "Matric 3"),
+        textInputAction: TextInputAction.next,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Matric 3 is required";
@@ -349,22 +288,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         onSaved: (value) => _matric3 = value!);
   }
 
-  Widget _buildName4Field() {
-    return TextFormField(
-        controller: controllerName4,
-        decoration: InputDecoration(labelText: "Name 4"),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Name 4 is required";
-          }
-        },
-        onSaved: (value) => _name4 = value!);
-  }
-
   Widget _buildMatric4Field() {
     return TextFormField(
         controller: controllerMatric4,
         decoration: InputDecoration(labelText: "Matric 4"),
+        textInputAction: TextInputAction.next,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Matric 4 is required";
@@ -406,12 +334,14 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   }
 
   void insertCourtBooking() {
+    final _bookingId = global.FFdb.collection('student_appointment').doc().id;
+
     bool isEditForm = widget.formType == 'Edit';
     // widget.stuAppModel?['id'] != null && widget.stuAppModel?['id'] != "";
     final _courtBooking = CourtBooking(
       id: isEditForm
           ? widget.stuAppModel['id']
-          : global.FFdb.collection('student_appointment').doc().id,
+          : _bookingId,
       userId: global.USERID,
       startTime: MasterBooking.mapStartTime(selectedCourtTimeslot, [date]),
       endTime: [Timestamp.fromDate(DateTime(now.year, now.month, now.day))],
@@ -421,14 +351,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       createdAt: Timestamp.fromDate(DateTime.now()),
       isAllDay: false,
       color: "0x${Colors.blueAccent.value.toRadixString(16)}",
-      name1: controllerName1.text.trim(),
-      matric1: controllerMatric1.text.trim(),
-      name2: controllerName2.text.trim(),
-      matric2: controllerMatric2.text.trim(),
-      name3: controllerName3.text.trim(),
-      matric3: controllerMatric3.text.trim(),
-      name4: controllerName4.text.trim(),
-      matric4: controllerMatric4.text.trim(),
+      matric1: controllerMatric1.text.trim().toUpperCase(),
+      matric2: controllerMatric2.text.trim().toUpperCase(),
+      matric3: controllerMatric3.text.trim().toUpperCase(),
+      matric4: controllerMatric4.text.trim().toUpperCase(),
+      bookingType: 'NormalBook',
     ).stuToJson();
 
     CollectionReference courtBooking =
@@ -438,7 +365,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
 
     try {
       var _masterBooking;
-      final _bookingId = global.FFdb.collection('student_appointment').doc().id;
       if (isEditForm) {
         //update existing student booking
         courtBooking
@@ -492,7 +418,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
               print("add adv");
               masterCourtBooking.add(_masterBooking).then((_) {
                 Utils.showSnackBar("Created a booking", "green");
-                Navigator.pushNamed(context, '/');
               });
             } else {
               print("update adv");
@@ -500,15 +425,36 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                 masterCourtBooking
                     .doc(element.id)
                     .update(_masterBooking)
-                    .then((_) {
-                  Utils.showSnackBar("Created a booking", "green");
-                  Navigator.pushNamed(context, '/');
+                    .then((_) async {
+                  // Utils.showSnackBar("Created a booking", "green");
+                  var _data = {
+                    'bookingId': _bookingId,
+                    'created_at': DateTime.now(),
+                    'matrics': [
+                      controllerMatric1.text.trim().toUpperCase(),
+                      controllerMatric2.text.trim().toUpperCase(),
+                      controllerMatric3.text.trim().toUpperCase(),
+                      controllerMatric4.text.trim().toUpperCase()
+                    ],
+                    'status': [false, false, false, false]
+                  };
+                  await FirebaseFirestore.instance.collection('attendance').add(
+                      _data).then((attendance) {
+                    Utils.showSnackBar('document Attendance: ' + attendance.id +
+                        'has been created', "green");
+                    print('document Attendance: ' + attendance.id +
+                        'has been created');
+                  });
+
                 });
               });
             }
           });
+          Navigator.pushNamed(context, '/');
         });
       }
+
+
     } catch (e) {
       print(e);
     }

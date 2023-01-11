@@ -38,15 +38,13 @@ class TrainingListPage extends StatelessWidget {
                         leading: Icon(Icons.sports_cricket_rounded, color: Colors.orange,),
                         subtitle: Text('${date} ${time}'),
                         onTap: (){
-                          FirebaseFirestore.instance.collection('student_appointments').doc(documentSnapshot['appointmentId']).get().then((query){
+                          print(documentSnapshot['appointmentId']);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CheckIn(id: query.data()!['id'],),
+                                builder: (context) => CheckIn(appointmentId: documentSnapshot['appointmentId']),
                               ),
                             );
-                          });
-
                           // Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingDetailPage(trainingTitle: date,trainingId: documentSnapshot['appointmentId'],)));
                           },
                           onLongPress: (){

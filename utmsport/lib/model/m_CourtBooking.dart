@@ -15,13 +15,9 @@ class CourtBooking {
   dynamic endTime; //List<DateTime> to tackle adv
   dynamic dateList; //List<DateTime> to tackle adv
   dynamic resourceIds = [];
-  String name1;
   String matric1;
-  String name2;
   String matric2;
-  String name3;
   String matric3;
-  String name4;
   String matric4;
   String sportType;
 
@@ -54,13 +50,9 @@ class CourtBooking {
 
     //student booking
     this.resourceIds,
-    this.name1: "",
     this.matric1: "",
-    this.name2: "",
     this.matric2: "",
-    this.name3: "",
     this.matric3: "",
-    this.name4: "",
     this.matric4: "",
     this.sportType: "",
 
@@ -107,14 +99,11 @@ class CourtBooking {
         // "resourceIds": resourceIds,
         "isAllDay": isAllDay,
         "color": color,
-        "name1": name1,
         "matric1": matric1,
-        "name2": name2,
         "matric2": matric2,
-        "name3": name3,
         "matric3": matric3,
-        "name4": name4,
         "matric4": matric4,
         "sportType": sportType,
+        "bookingType": bookingType
       };
 }

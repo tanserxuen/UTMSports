@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +12,7 @@ import 'package:utmsport/globalVariable.dart';
 import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/view_model/advBooking/vm_timeslotCourt.dart';
 import 'package:utmsport/utils.dart';
+import 'package:utmsport/globalVariable.dart' as global;
 
 class CreateAdvBooking extends StatefulWidget {
   final List<DateTime> dateList;
@@ -40,7 +43,9 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   String _subject = "";
   String _advType = "";
   String _phoneNo = "";
+  String _sportTeam = "";
   int selectedDays = 0;
+  int _index = 0;
   Reference storageRef = FirebaseStorage.instance.ref();
   List<List<String>> selectedCourtTimeslot = [];
   List<List<List<String>>> masterBookingArray = [];
@@ -49,6 +54,15 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   final picController = TextEditingController();
   final phoneController = TextEditingController();
   final subjectController = TextEditingController();
+
+  final stud1MatrController = TextEditingController();
+  final stud2MatrController = TextEditingController();
+  final stud3MatrController = TextEditingController();
+  final stud4MatrController = TextEditingController();
+  final sportEventController = TextEditingController();
+  final bookingId = global.FFdb.collection('student_appointment').doc().id;
+
+  final descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -66,7 +80,20 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     widget.formType == 'Edit'
         ? selectedCourtTimeslot = widget.slotLists
         : selectedCourtTimeslot = List.generate(selectedDays, (_) => []);
+    _getSportTeam();
     super.initState();
+  }
+  List<String> sportTeam = [];
+
+
+  _getSportTeam() async {
+    await FirebaseFirestore.instance.collection('sportTeam').get().then((query){
+
+      print(query.docs.length);
+      query.docs.forEach((element) {
+        sportTeam.add(element['teamName']);
+      });
+    });
   }
 
   @override
@@ -102,7 +129,8 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                         _buildPhoneNoField(),
                         SizedBox(height: 10),
                         _buildAttachmentField(),
-                        SizedBox(height: 50),
+                        // SizedBox(height: 50),
+                        _additionalField(),
                         _buildSubmitAdvanced(),
                       ],
                     ),
@@ -221,12 +249,11 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               MaterialStateProperty.all(canSubmit ? Colors.blue : Colors.grey)),
       child:
           Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16)),
-      onPressed: () {
+      onPressed: () async {
         if (!_formKey.currentState!.validate()) {
         } else {
           _formKey.currentState!.save();
-          if (canSubmit)
-            MasterBooking.insertAdvBooking(
+          /*if (canSubmit) MasterBooking.insertAdvBooking(
               masterBookingArray: masterBookingArray,
               subject: _subject,
               bookingType: _advType,
@@ -237,7 +264,58 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               attachment: _attachment,
               personInCharge: _pic,
               formType: widget.formType,
-            );
+              bookingId:  bookingId
+            );*/
+          var _data;
+          switch(_advType) {
+            case 'Training':
+              //TODO: Create list of training if user choose many datetime
+              await FirebaseFirestore.instance.collection('sportTeam').where(
+                  'teamName', isEqualTo: _sportTeam).get().then((
+                  sportTeam) async {
+                    print(widget.dateList);
+                    _data = {
+                      'appointmentId': bookingId,
+                      'athletes': [],
+                      'athletetime': [],
+                      'coaches': sportTeam.docs.first['coaches'],
+                      'created_at': DateTime.now(),
+                      'description': descriptionController.text,
+                      'sport': 'p',
+                      'sportId': sportTeam.docs.first.id,
+                      'sportType': sportTeam.docs.first['sportType'],
+                      'start_at': '',
+                      'subject': _subject
+                    };
+
+                /*await FirebaseFirestore.instance.collection('training').add(
+                    _data).then((training) {
+                  Utils.showSnackBar('document Training: ' + training.id +
+                      'has been created', "green");
+                  print('document Training: ' + training.id +
+                      'has been created');                });*/
+              });
+              break;
+            case 'Sport Events':
+              //TODO: ADD DATA REQUIRE FOR SPORT EVENT
+              _data = {
+                'bookingId': bookingId,
+                'created_at': DateTime.now(),
+                'sportEvent' : subjectController.text,
+                'matrics': [],
+              };
+              await FirebaseFirestore.instance.collection('attendEvents').add(
+                  _data).then((attendEvents) {
+                Utils.showSnackBar('document Attendance: ' + attendEvents.id +
+                    'has been created', "green");
+                print('document Attendance: ' + attendEvents.id +
+                    'has been created');
+              });
+              break;
+            case 'Club Events':
+            case 'others':
+          }
+          Navigator.pushNamed(context, '/');
         }
       },
     );
@@ -308,6 +386,166 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
           }
         },
         onSaved: (value) => _phoneNo = value!);
+  }
+
+  Widget _additionalField(){
+    switch(_advType){
+      case 'Training':
+        _sportTeam = sportTeam.first;
+        return Column(
+          children: [
+            DropdownButtonFormField(
+                decoration: InputDecoration(labelText: 'Sport Team'),
+              hint: Text("Booking Type"),
+                isExpanded: true,
+                items: sportTeam.map((option) {
+                var i = sportTeam.indexOf((option));
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text("$option"),
+                );
+                }).toList(),
+                value: _sportTeam,
+                validator: (value) {
+                  if (value == null) return "Booking Type is required.";
+                    return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _sportTeam = value.toString();
+                  });
+              },
+            ),
+            // TextFormField(decoration: const InputDecoration(labelText: 'TrainingTime')),
+            TextFormField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Phone Number is required";
+                }
+              },
+              onSaved: (value) => _phoneNo = value!),
+          ],
+        );
+      case 'Sport Events':
+        return Column(
+          children: [
+            /*Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //Student 1
+              children: [
+                // Expanded(
+                //   child: TextFormField(
+                //     controller: stud1NameController,
+                //     textInputAction: TextInputAction.next,
+                //     autovalidateMode: AutovalidateMode.onUserInteraction,
+                //     validator: (name) => name != null && !name.isNotEmpty
+                //         ? 'Insert Name'
+                //         : null,
+                //     decoration: const InputDecoration(labelText: 'Student Name 1'),
+                //   ),
+                // ),
+                Expanded(
+                  child: TextFormField(
+                    controller: stud1MatrController,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (name) => name != null && !name.isNotEmpty
+                        ? 'Insert Matric'
+                        : null,
+                    decoration: const InputDecoration(labelText: 'Matric 1'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              //Student 2
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Expanded(
+                //   child: TextFormField(
+                //     controller: stud2NameController,
+                //     textInputAction: TextInputAction.next,
+                //     autovalidateMode: AutovalidateMode.onUserInteraction,
+                //     validator: (name) => name != null && !name.isNotEmpty
+                //         ? 'Insert Name'
+                //         : null,
+                //     decoration: const InputDecoration(labelText: 'Student 2'),),
+                // ),
+                Expanded(
+                  child: TextFormField(
+                    controller: stud2MatrController,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (name) => name != null && !name.isNotEmpty
+                        ? 'Insert Matric'
+                        : null,
+                    decoration: const InputDecoration(labelText: 'Matric 2'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              //Student 3
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Expanded(
+                //   child: TextFormField(
+                //     controller: stud3NameController,
+                //     textInputAction: TextInputAction.next,
+                //     autovalidateMode: AutovalidateMode.onUserInteraction,
+                //     validator: (name) => name != null && !name.isNotEmpty
+                //         ? 'Insert Name'
+                //         : null,
+                //     decoration: const InputDecoration(labelText: 'Student 3'),),
+                // ),
+                Expanded(
+                  child: TextFormField(
+                    controller: stud3MatrController,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (name) => name != null && !name.isNotEmpty
+                        ? 'Insert Matric'
+                        : null,
+                    decoration: const InputDecoration(labelText: 'Matric 3'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              //Student 4
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Expanded(
+                //   child: TextFormField(
+                //     controller: stud4NameController,
+                //     textInputAction: TextInputAction.next,
+                //     autovalidateMode: AutovalidateMode.onUserInteraction,
+                //     validator: (name) => name != null && !name.isNotEmpty
+                //         ? 'Insert Name'
+                //         : null,
+                //     decoration: const InputDecoration(labelText: 'Student Name 4'),),
+                // ),
+                Expanded(
+                  child: TextFormField(
+                    controller: stud4MatrController,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (name) => name != null && !name.isNotEmpty
+                        ? 'Insert Matric'
+                        : null,
+                    decoration: const InputDecoration(labelText: 'Matric 4'),
+                  ),
+                ),
+              ],
+            ),*/
+          ],
+        );
+      case 'Club Events':
+      case 'Others':
+    }
+    return Text('');
   }
 
   Widget _buildAttachmentField() {
@@ -383,4 +621,23 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
       })
     ]);
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    dateRangeController.dispose();
+    picController.clear();
+    phoneController.clear();
+    subjectController.clear();
+    stud1NameController.clear();
+    stud1MatrController.clear();
+    stud2NameController.clear();
+    stud2MatrController.clear();
+    stud3NameController.clear();
+    stud3MatrController.clear();
+    stud4NameController.clear();
+    stud4MatrController.clear();
+    super.dispose();
+  }
+
 }

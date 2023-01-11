@@ -113,14 +113,14 @@ class MasterBooking {
       phoneNo,
       attachment,
       personInCharge,
-      formType}) async {
+      formType, bookingId}) async {
     bool isEditForm = formType == 'Edit';
     // widget.stuAppModel?['id'] != null &&
     // widget.stuAppModel?['id'] != "";
-    final _bookingId = global.FFdb.collection('student_appointment').doc().id;
+    // final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final color = getColor(bookingType);
     final _bookingDetails = CourtBooking(
-      id: isEditForm ? widget.stuAppModel['id'] : _bookingId,
+      id: isEditForm ? widget.stuAppModel['id'] : bookingId,
       userId: global.USERID,
       subject: subject,
       color: color,
@@ -162,7 +162,7 @@ class MasterBooking {
                       masterBookingArray[dateIndex]),
                   date: date,
                   userId: global.USERID,
-                  bookingId: _bookingId,
+                  bookingId: bookingId,
                   sportsType: "Badminton", //TODO: Joan Change this
                 ).toJson();
 
@@ -198,7 +198,7 @@ class MasterBooking {
                   masterBookingArray[dateIndex]),
               date: date,
               userId: global.USERID,
-              bookingId: _bookingId,
+              bookingId: bookingId,
               sportsType: "Badminton", //TODO: Joan Change this
             ).toJson();
             await masterCourtBooking
@@ -219,7 +219,6 @@ class MasterBooking {
                       .update(_masterBooking)
                       .then((_) {
                     Utils.showSnackBar("Created an advanced booking", "green");
-                    Navigator.pushNamed(context, '/');
                   });
                 });
               }
