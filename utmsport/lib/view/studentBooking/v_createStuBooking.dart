@@ -15,7 +15,6 @@ class CreateStuBooking extends StatefulWidget {
   var date;
   var slotLists;
 
-  // ignore: avoid_init_to_null
   CreateStuBooking({
     Key? key,
     required this.sportsType,
@@ -72,13 +71,12 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       controllerMatric3.text = widget.stuAppModel['matric3'];
       controllerName4.text = widget.stuAppModel['name4'];
       controllerMatric4.text = widget.stuAppModel['matric4'];
-      // _sportType = widget.stuAppModel['sportType'];
     }
+
     this.selectedDays = 1; //set selected court nested array
     widget.formType == 'Edit'
         ? selectedCourtTimeslot = widget.slotLists
         : selectedCourtTimeslot = List.generate(1, (_) => []);
-    print(selectedCourtTimeslot);
     super.initState();
   }
 
@@ -94,7 +92,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
               SizedBox(
                 height: 50,
               ),
-              Text("Book Court",
+              Text("Normal Court Booking",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               SizedBox(height: 15),
               Card(
@@ -206,6 +204,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
           formType: widget.formType,
           slots: selectedCourtTimeslot[dateIndex],
           index: 0,
+          sportType: widget.sportsType,
           setSelectedCourtArrayCallback: setSelectedCourtArray,
           setMasterBookingArrayCallback: setMasterBookingArray,
         ),
@@ -420,7 +419,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
       sportType: widget.sportsType,
       createdAt: Timestamp.fromDate(DateTime.now()),
       isAllDay: false,
-      color: "0x${Colors.blueAccent.value.toRadixString(16)}",
+      color: "0x${Colors.deepOrangeAccent.value.toRadixString(16)}",
       name1: controllerName1.text.trim(),
       matric1: controllerMatric1.text.trim(),
       name2: controllerName2.text.trim(),
@@ -436,9 +435,12 @@ class CreateStuBookingState extends State<CreateStuBooking> {
     CollectionReference masterCourtBooking =
         global.FFdb.collection('master_booking');
 
+
+
     try {
       var _masterBooking;
       final _bookingId = global.FFdb.collection('student_appointment').doc().id;
+
       if (isEditForm) {
         //update existing student booking
         courtBooking
@@ -449,6 +451,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
             courtBooking.doc(element.id).update(_courtBooking).then((_) async {
               await masterCourtBooking
                   .where("date", isEqualTo: date)
+                  .where("sportType", isEqualTo: widget.sportsType)
                   .get()
                   .then((value) {
                 _masterBooking = MasterBooking(
@@ -458,14 +461,14 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                   userId: global.USERID,
                   bookingId: _bookingId,
                   sportsType: widget.sportsType,
-                ).toJson();
+                ).masterToJson();
                 print("update stu booking");
                 value.docs.forEach((element) {
                   masterCourtBooking
                       .doc(element.id)
                       .update(_masterBooking)
                       .then((_) {
-                    Utils.showSnackBar("Created a booking", "green");
+                    Utils.showSnackBar("Edited a booking", "green");
                     Navigator.pushNamed(context, '/');
                   });
                 });
@@ -478,6 +481,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         courtBooking.add(_courtBooking).then((_) async {
           await masterCourtBooking
               .where("date", isEqualTo: date)
+              .where("sportType", isEqualTo: widget.sportsType)
               .get()
               .then((value) {
             _masterBooking = MasterBooking(
@@ -487,7 +491,7 @@ class CreateStuBookingState extends State<CreateStuBooking> {
               userId: global.USERID,
               bookingId: _bookingId,
               sportsType: widget.sportsType,
-            ).toJson();
+            ).masterToJson();
             if (value.docs.length == 0) {
               print("add adv");
               masterCourtBooking.add(_masterBooking).then((_) {

@@ -18,14 +18,14 @@ class MasterBooking {
     required this.userId,
     required this.bookingId,
     required this.sportsType,
-    // required this.sportsType,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> masterToJson() => {
         "booked_courtTimeslot": booked_courtTimeslot,
         "date": date,
         "userId": userId,
         "bookingId": bookingId,
+        "sportType": sportsType,
       };
 
   static mapStartTime(selectedCourtTimeslot, dateList) {
@@ -41,35 +41,12 @@ class MasterBooking {
   ) {
     List newObjectArray = [];
     for (int i = 0; i < global.timeslot.length + 1; i++) {
-      // print(courtTimeslot[i]);
       var convertedCourtTimeslot = courtTimeslot[i]
           .map((e) => e.contains("Check") ? "Booked" : e)
           .toList();
       newObjectArray.add({'court': convertedCourtTimeslot});
     }
-    // print(newObjectArray);
     return newObjectArray;
-  }
-
-  static void fetchFBObjectToNestedArray(
-      {required List<List<String>> courtTimeslot,
-      noOfTimeslot: 9,
-      noOfCourt}) async {
-    await global.FFdb.collection('master_booking')
-        .where('date', isEqualTo: DateTime(2022, 12, 5))
-        .get()
-        .then((val) {
-      if (val.docs.length == 0)
-        createNestedCTArray(null, null, null,
-            noOfTimeslot: noOfTimeslot, noOfCourt: noOfCourt);
-      else
-        val.docs.forEach((element) {
-          var cts = element['booked_courtTimeslot'];
-          for (int i = 0; i < noOfTimeslot + 1; i++) {
-            courtTimeslot.add(cts[i]['court']);
-          }
-        });
-    });
   }
 
   //create court-timeslot 2d array
@@ -103,20 +80,20 @@ class MasterBooking {
   }
 
   //TODO: cm-add sports-type into master-booking db
-  static void insertAdvBooking(
-      {required String subject,
-      String bookingType: "Sport Events",
-      dynamic widget,
-      required List<List<List<String>>> masterBookingArray,
-      context,
-      selectedCourtTimeslot,
-      phoneNo,
-      attachment,
-      personInCharge,
-      formType}) async {
+  static void insertAdvBooking({
+    required String subject,
+    String bookingType: "Sport Events",
+    dynamic widget,
+    required List<List<List<String>>> masterBookingArray,
+    context,
+    selectedCourtTimeslot,
+    phoneNo,
+    attachment,
+    personInCharge,
+    formType,
+  }) async {
     bool isEditForm = formType == 'Edit';
-    // widget.stuAppModel?['id'] != null &&
-    // widget.stuAppModel?['id'] != "";
+
     final _bookingId = global.FFdb.collection('student_appointment').doc().id;
     final color = getColor(bookingType);
     final _bookingDetails = CourtBooking(
@@ -126,12 +103,12 @@ class MasterBooking {
       color: color,
       status: "Pending",
       createdAt: Timestamp.fromDate(DateTime.now()),
-      personInCharge: personInCharge,
-      attachment: attachment,
       startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
       dateList: widget.dateList,
-      phoneNo: phoneNo,
       bookingType: bookingType,
+      attachment: attachment,
+      phoneNo: phoneNo,
+      personInCharge: personInCharge,
     ).advToJson();
 
     var _masterBooking;
@@ -143,90 +120,93 @@ class MasterBooking {
 
     try {
       //update existing adv booking
-      if (isEditForm) {
-        advCourtBooking
-            .where("id", isEqualTo: widget.stuAppModel['id'])
-            .get()
-            .then((value) {
-          value.docs.forEach((element) {
-            advCourtBooking
-                .doc(element.id)
-                .update(_bookingDetails)
-                .then((_) async {
-              for (int dateIndex = 0;
-                  dateIndex < widget.dateList.length;
-                  dateIndex++) {
-                var date = widget.dateList[dateIndex];
-                _masterBooking = MasterBooking(
-                  booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-                      masterBookingArray[dateIndex]),
-                  date: date,
-                  userId: global.USERID,
-                  bookingId: _bookingId,
-                  sportsType: "Badminton", //TODO: Joan Change this
-                ).toJson();
-
-                //update student_appointments
-                await masterCourtBooking
-                    .where("date", isEqualTo: date)
-                    .get()
-                    .then((value) {
-                  value.docs.forEach((element) {
-                    masterCourtBooking
-                        .doc(element.id)
-                        .update(_masterBooking)
-                        .then((_) {
-                      Utils.showSnackBar(
-                          "Updated an advanced booking", "green");
-                      Navigator.pushNamed(context, '/');
-                    });
-                  });
-                });
-              }
-            });
-          });
-        });
-      } else {
-        //create new adv booking
-        advCourtBooking.add(_bookingDetails).then((_) async {
-          for (int dateIndex = 0;
-              dateIndex < widget.dateList.length;
-              dateIndex++) {
-            var date = widget.dateList[dateIndex];
-            _masterBooking = MasterBooking(
-              booked_courtTimeslot: MasterBooking.nestedArrayToObject(
-                  masterBookingArray[dateIndex]),
-              date: date,
-              userId: global.USERID,
-              bookingId: _bookingId,
-              sportsType: "Badminton", //TODO: Joan Change this
-            ).toJson();
-            await masterCourtBooking
-                .where("date", isEqualTo: date)
-                .get()
-                .then((value) {
-              if (value.docs.length == 0) {
-                print("add adv");
-                masterCourtBooking.add(_masterBooking).then((_) {
-                  Utils.showSnackBar("Created an advanced booking", "green");
-                  Navigator.pushNamed(context, '/');
-                });
-              } else {
-                print("update adv");
-                value.docs.forEach((element) {
-                  masterCourtBooking
-                      .doc(element.id)
-                      .update(_masterBooking)
-                      .then((_) {
-                    Utils.showSnackBar("Created an advanced booking", "green");
-                    Navigator.pushNamed(context, '/');
-                  });
-                });
-              }
-            });
-          }
-        });
-      }
+      print(widget.sportsType);
+      // if (isEditForm) {
+      //   advCourtBooking
+      //       .where("id", isEqualTo: widget.stuAppModel['id'])
+      //       .get()
+      //       .then((value) {
+      //     value.docs.forEach((element) {
+      //       advCourtBooking
+      //           .doc(element.id)
+      //           .update(_bookingDetails)
+      //           .then((_) async {
+      //         for (int dateIndex = 0;
+      //             dateIndex < widget.dateList.length;
+      //             dateIndex++) {
+      //           var date = widget.dateList[dateIndex];
+      //           _masterBooking = MasterBooking(
+      //             booked_courtTimeslot: MasterBooking.nestedArrayToObject(
+      //                 masterBookingArray[dateIndex]),
+      //             date: date,
+      //             userId: global.USERID,
+      //             bookingId: _bookingId,
+      //             sportsType: widget.sportType,
+      //           ).masterToJson();
+      //
+      //           //update student_appointments
+      //           await masterCourtBooking
+      //               .where("date", isEqualTo: date)
+      //               .where("sportType", isEqualTo: widget.sportsType)
+      //               .get()
+      //               .then((value) {
+      //             value.docs.forEach((element) {
+      //               masterCourtBooking
+      //                   .doc(element.id)
+      //                   .update(_masterBooking)
+      //                   .then((_) {
+      //                 Utils.showSnackBar(
+      //                     "Updated an advanced booking", "green");
+      //                 Navigator.pushNamed(context, '/');
+      //               });
+      //             });
+      //           });
+      //         }
+      //       });
+      //     });
+      //   });
+      // } else {
+      //   //create new adv booking
+      //   advCourtBooking.add(_bookingDetails).then((_) async {
+      //     for (int dateIndex = 0;
+      //         dateIndex < widget.dateList.length;
+      //         dateIndex++) {
+      //       var date = widget.dateList[dateIndex];
+      //       _masterBooking = MasterBooking(
+      //         booked_courtTimeslot: MasterBooking.nestedArrayToObject(
+      //             masterBookingArray[dateIndex]),
+      //         date: date,
+      //         userId: global.USERID,
+      //         bookingId: _bookingId,
+      //         sportsType: widget.sportType,
+      //       ).masterToJson();
+      //       await masterCourtBooking
+      //           .where("date", isEqualTo: date)
+      //           .where("sportType", isEqualTo: widget.sportsType)
+      //           .get()
+      //           .then((value) {
+      //         if (value.docs.length == 0) {
+      //           print("add adv");
+      //           masterCourtBooking.add(_masterBooking).then((_) {
+      //             Utils.showSnackBar("Created an advanced booking", "green");
+      //             Navigator.pushNamed(context, '/');
+      //           });
+      //         } else {
+      //           print("update adv");
+      //           value.docs.forEach((element) {
+      //             masterCourtBooking
+      //                 .doc(element.id)
+      //                 .update(_masterBooking)
+      //                 .then((_) {
+      //               Utils.showSnackBar("Created an advanced booking", "green");
+      //               Navigator.pushNamed(context, '/');
+      //             });
+      //           });
+      //         }
+      //       });
+      //     }
+      //   });
+      // }
     } catch (e) {
       Utils.showSnackBar(e.toString(), "red");
     }

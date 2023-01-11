@@ -75,7 +75,7 @@ navScreen(user) {
             icon: Icon(Icons.question_answer), label: 'Feedback'),
         NavigationDestination(icon: Icon(Icons.add_alarm), label: 'Appts'),
         NavigationDestination(
-            icon: Icon(Icons.edit_calendar), label: 'Advance'),
+            icon: Icon(Icons.edit_calendar), label: 'Calendar'),
         NavigationDestination(
             icon: Icon(Icons.library_books), label: 'Reports'),
         NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),

@@ -1,12 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 
 class CreateAdvBookingCalendar extends StatefulWidget {
-  const CreateAdvBookingCalendar({Key? key}) : super(key: key);
+  final String sportType;
+
+  CreateAdvBookingCalendar({Key? key, required this.sportType})
+      : super(key: key);
 
   @override
   State<CreateAdvBookingCalendar> createState() =>
@@ -25,6 +25,12 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
         margin: EdgeInsets.all(12),
         child: Column(
           children: [
+            SizedBox(
+              height: 50,
+            ),
+            Text("Advanced Court Booking",
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
             SfDateRangePicker(
               selectionMode: DateRangePickerSelectionMode.multiple,
               controller: dateRangeController,
@@ -47,10 +53,14 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
                 ),
                 onPressed: () => this._dateList.length <= 0
                     ? null
-                    : Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            CreateAdvBooking(dateList: this._dateList),
-                      )),
+                    : Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CreateAdvBooking(
+                            dateList: this._dateList,
+                            sportType: widget.sportType,
+                          ),
+                        ),
+                      ),
               ),
             )
           ],
@@ -60,7 +70,6 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
   }
 
   void selectionDateChanged(DateRangePickerSelectionChangedArgs args) {
-    List<Timestamp> formattedDates = [];
     setState(() {
       this._dateList = List.castFrom(args.value);
       this._dateList.sort();

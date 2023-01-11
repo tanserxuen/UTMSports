@@ -59,7 +59,6 @@ class _BookingCalendarState extends State<BookingCalendar> {
       });
       setState(() {
         this.appData = _appData;
-        print(this.appData);
       });
     } catch (e) {
       print(e.toString());
@@ -120,7 +119,6 @@ class _BookingCalendarState extends State<BookingCalendar> {
   }
 
   Widget _buildBottomModal(appointment, context, CalendarView) {
-    print(CalendarView);
     if (appointment == null)
       return Wrap(
         children: [
@@ -134,7 +132,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreateAdvBookingCalendar(),
+                      builder: (context) => StuBookingChooseSports(),
                     ),
                   ),
                   child: Text("Book now!"),
@@ -145,11 +143,11 @@ class _BookingCalendarState extends State<BookingCalendar> {
         ],
       );
     var app = appointment![0];
-    var additionalData =
-        appData.where((data) => data['id'] == app!.notes).toList()[0];
-    var courts = app!.resourceIds
-        .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
-        .join(', ');
+    // var additionalData =
+    //     appData.where((data) => data['id'] == app!.notes).toList()[0];
+    // var courts = app!.resourceIds
+    //     .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
+    //     .join(', ');
     var dayFormat = DateFormat("dd MMM yyy");
     var hourFormat = DateFormat("HH:mm a");
     return Wrap(
@@ -186,7 +184,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                     children: [
                       if (global.getUserRole() == 'admin')
                         ElevatedButton(
-                          onPressed: () => editAdv(app),
+                          onPressed: () => editAdvBooking(app),
                           child: Text(
                             "Edit",
                           ),
@@ -254,13 +252,14 @@ class _BookingCalendarState extends State<BookingCalendar> {
         });
         return d;
       }).toList();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => StuBookingChooseSports(
             formType: "Edit",
             params: {
-              'sportsType': val.docs[0]['sportType'],
+              'sportType': val.docs[0]['sportType'],
               'formType': "Edit",
               'stuAppModel': val.docs[0],
               'slotLists': slotLists,
@@ -272,7 +271,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     });
   }
 
-  editAdv(appointment) async {
+  editAdvBooking(appointment) async {
     List<DateTime> dateLists = [];
     List<List<String>> slotLists = [[]];
     await FirebaseFirestore.instance
@@ -299,12 +298,17 @@ class _BookingCalendarState extends State<BookingCalendar> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CreateAdvBooking(
-            dateList: dateLists,
-            formType: "Edit",
-            slotLists: slotLists,
-            stuAppModel: val.docs[0],
-          ),
+          builder: (context) =>
+              StuBookingChooseSports(
+                formType: "Edit",
+                params: {
+                  'sportType': val.docs[0]['sportType'],
+                  'dateList': dateLists,
+                  'formType': "Edit",
+                  'slotLists': slotLists,
+                  'stuAppModel': val.docs[0],
+                },
+              ),
         ),
       );
     });

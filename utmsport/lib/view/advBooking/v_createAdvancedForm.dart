@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -14,15 +13,16 @@ import 'package:utmsport/utils.dart';
 class CreateAdvBooking extends StatefulWidget {
   final List<DateTime> dateList;
   final String formType;
+  final String sportType;
   var slotLists; //List<List<String>>
   dynamic stuAppModel;
 
-  // ignore: avoid_init_to_null
   CreateAdvBooking({
     Key? key,
     required this.dateList,
-    this.slotLists: null,
+    required this.sportType,
     this.formType: "Create",
+    this.slotLists: null,
     this.stuAppModel:null,
   }) : super(key: key);
 
@@ -78,7 +78,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               SizedBox(
                 height: 50,
               ),
-              Text("Advanced Booking",
+              Text("Advanced Court Booking",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               Card(
                 child: _buildLegend(),
@@ -92,7 +92,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Text("${selectedCourtTimeslot.toString()}"),
                         ..._buildAccordianCourtTimeslot(),
                         _buildSubjectField(),
                         _buildTypeField(),
@@ -120,7 +119,6 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
           ? selectedCourtTimeslot[index].add(val)
           : selectedCourtTimeslot[index].removeWhere((item) => item == val);
       selectedCourtTimeslot[index].toSet().toList();
-      print(selectedCourtTimeslot);
     });
   }
 
@@ -158,6 +156,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
             dateList: widget.dateList,
             formType: widget.formType,
             slots: selectedCourtTimeslot[dateIndex],
+            sportType: widget.sportType,
             index: dateIndex,
             setSelectedCourtArrayCallback: setSelectedCourtArray,
             setMasterBookingArrayCallback: setMasterBookingArray,

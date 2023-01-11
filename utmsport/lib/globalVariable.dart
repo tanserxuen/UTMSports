@@ -14,9 +14,6 @@ import 'package:utmsport/view/studentBooking/v_feedbackForm.dart';
 import 'package:utmsport/view/studentBooking/v_viewFeedbacks.dart';
 import 'package:utmsport/view/v_adminReports.dart';
 
-// usage:
-// import this file in files that you need these variables and add gloabl.
-
 //==================Authentication
 final FFdb = FirebaseFirestore.instance;
 final FA = FirebaseAuth.instance;
