@@ -4,8 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
-import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
-import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 import 'package:utmsport/view/shared/v_checkIn.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
@@ -24,6 +22,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
   final isAdmin = global.getUserRole() == 'admin';
 
   CalendarController _calendarController = CalendarController();
+
   final CollectionReference appointmentList =
       FirebaseFirestore.instance.collection("student_appointments");
 
@@ -39,9 +38,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
         child: Padding(
       padding: EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildStudentViewButton(isAdmin, stuView),
+          _buildLegend(),
           _buildAdvancedCalendarView(),
         ],
       ),
@@ -66,13 +65,96 @@ class _BookingCalendarState extends State<BookingCalendar> {
     }
   }
 
-  Widget _buildStudentViewButton(isAdmin, stuView) {
-    return Visibility(
-      visible: isAdmin,
-      child: ElevatedButton(
-        onPressed: () => stuView = true,
-        child: Text("Student View"),
-      ),
+  Widget _buildLegend() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0,8,0,8),
+      child: Wrap(spacing: 6,children: [
+        Wrap(spacing:3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Training"),
+          ],
+        ),
+        Wrap(spacing:3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.deepOrangeAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Student Booking"),
+          ],
+        ),
+        Wrap(spacing:3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.purpleAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Sport Events"),
+          ],
+        ),
+        Wrap(spacing:3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Club Events"),
+          ],
+        ),
+        Wrap(spacing:3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.greenAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Others"),
+          ],
+        ),
+      ]),
     );
   }
 
@@ -298,17 +380,16 @@ class _BookingCalendarState extends State<BookingCalendar> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              StuBookingChooseSports(
-                formType: "Edit",
-                params: {
-                  'sportType': val.docs[0]['sportType'],
-                  'dateList': dateLists,
-                  'formType': "Edit",
-                  'slotLists': slotLists,
-                  'stuAppModel': val.docs[0],
-                },
-              ),
+          builder: (context) => StuBookingChooseSports(
+            formType: "Edit",
+            params: {
+              'sportType': val.docs[0]['sportType'],
+              'dateList': dateLists,
+              'formType': "Edit",
+              'slotLists': slotLists,
+              'stuAppModel': val.docs[0],
+            },
+          ),
         ),
       );
     });
