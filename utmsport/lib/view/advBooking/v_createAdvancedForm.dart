@@ -274,6 +274,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                   'teamName', isEqualTo: _sportTeam).get().then((
                   sportTeam) async {
                     print(widget.dateList);
+                    print(widget.)
                     _data = {
                       'appointmentId': bookingId,
                       'athletes': [],
@@ -629,13 +630,9 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
     picController.clear();
     phoneController.clear();
     subjectController.clear();
-    stud1NameController.clear();
     stud1MatrController.clear();
-    stud2NameController.clear();
     stud2MatrController.clear();
-    stud3NameController.clear();
     stud3MatrController.clear();
-    stud4NameController.clear();
     stud4MatrController.clear();
     super.dispose();
   }
