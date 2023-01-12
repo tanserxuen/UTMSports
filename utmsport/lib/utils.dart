@@ -12,6 +12,7 @@ class Utils {
     if (text == null) return;
     if (color == "green") colorchild = Colors.green;
     if (color == "red") colorchild = Colors.red;
+    if (color == "cyan") colorchild = Colors.cyan;
 
     final snackBar = SnackBar(content: Text(text), backgroundColor: colorchild );
 
@@ -23,9 +24,9 @@ class Utils {
   }
 
   static parseTimestampToFormatDate(timestamp, {format = null}) {
-    DateTime newDT = timestamp.toDate();
+    DateTime newDT = timestamp?.toDate();
     DateTime dateOnly = new DateTime(newDT.year, newDT.month, newDT.day);
-    if (format != null) return DateFormat(format).format(dateOnly);
+    if (format != null) return DateFormat(format).format(newDT);
     return DateFormat('dd ${DateFormat.MONTH} yyyy').format(dateOnly);
   }
 

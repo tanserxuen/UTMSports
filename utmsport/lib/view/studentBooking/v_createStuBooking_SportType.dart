@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+
 import 'package:utmsport/globalVariable.dart' as global;
+import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking.dart';
+import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 
 class StuBookingChooseSports extends StatefulWidget {
   var params;
+  var dateList;
   String formType;
 
   StuBookingChooseSports({
     Key? key,
     this.params: null,
+    this.dateList: null,
     this.formType: "Create",
   }) : super(key: key);
 
@@ -21,21 +26,26 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
 
   @override
   void initState() {
-    if (widget.formType == "Edit") sportType = widget.params['sportsType'];
+    if (widget.formType == "Edit") {
+      sportType = widget.params['sportType'];
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(appBar: AppBar(
+      title: Text(
+        'Calendar',
+        ),
+    ),
       body: Center(
         child: Container(
-          margin: EdgeInsets.all(12),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text("Book Court",
+                Text("Choose Sport Type",
                     style:
                         TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
                 SizedBox(height: 24),
@@ -51,19 +61,7 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
             ? null
             : Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => widget.formType == 'Edit'
-                      ? CreateStuBooking(
-                          sportsType: widget.params['sportsType'],
-                          formType: widget.formType,
-                          stuAppModel: widget.params['stuAppModel'],
-                          slotLists: widget.params['slotLists'],
-                          date: widget.params['date'],
-                        )
-                      : CreateStuBooking(
-                          sportsType: sportType,
-                        ),
-                ),
+                MaterialPageRoute(builder: (context) => redirectToForm()),
               ),
         child: Icon(
           Icons.arrow_forward_rounded,
@@ -75,6 +73,7 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
   }
 
   List<Widget> _buildSportsOptionButton(context) {
+    bool isEditForm = widget.formType == 'Edit';
     List<Widget> buttons = [];
     global.sports.forEach((sport) {
       int index = global.sports.indexOf(sport);
@@ -86,14 +85,14 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
             style: ElevatedButton.styleFrom(
               primary: matchEditValue
                   ? Colors.lightBlueAccent
-                  : widget.formType == 'Edit'
+                  : isEditForm
                       ? Colors.grey
                       : Colors.blue,
-              elevation: !matchEditValue && widget.formType == 'Edit' ? 0 : 4,
+              elevation: !matchEditValue && isEditForm ? 0 : 4,
             ),
             onPressed: () {
               setState(() {
-                widget.formType == 'Edit' ? null : sportType = sport;
+                isEditForm ? null : sportType = sport;
               });
             },
             child: Padding(
@@ -113,5 +112,40 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
         );
     });
     return buttons;
+  }
+
+  redirectToForm() {
+    if (widget.formType == 'Edit')
+      switch (global.getUserRole()) {
+        case "admin":
+        case "manager":
+          return CreateAdvBooking(
+            sportType: sportType,
+            dateList: widget.params['dateList'],
+            formType: widget.params['formType'],
+            slotLists: widget.params['slotLists'],
+            stuAppModel: widget.params['stuAppModel'],
+          );
+        default:
+          return CreateStuBooking(
+            formType: widget.formType,
+            sportType: widget.params['sportType'],
+            stuAppModel: widget.params['stuAppModel'],
+            slotLists: widget.params['slotLists'],
+            date: widget.params['date'],
+          );
+      }
+    else //create
+      switch (global.getUserRole()) {
+        case "admin":
+        case "manager":
+          return CreateAdvBookingCalendar(
+            sportType: sportType,
+          );
+        default:
+          return CreateStuBooking(
+            sportType: sportType,
+          );
+      }
   }
 }

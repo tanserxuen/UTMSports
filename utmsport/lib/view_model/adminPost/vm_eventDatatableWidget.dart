@@ -26,7 +26,7 @@ List<GridColumn> getColumns() => colNames
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,
                 style: TextStyle(fontWeight: FontWeight.bold),
-              ))),
+              ),),),
     )
     .toList();
 

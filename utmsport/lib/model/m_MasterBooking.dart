@@ -10,22 +10,22 @@ class MasterBooking {
   DateTime date;
   String userId;
   String bookingId;
-  String sportsType;
+  String sportType;
 
   MasterBooking({
     required this.booked_courtTimeslot,
     required this.date,
     required this.userId,
     required this.bookingId,
-    required this.sportsType,
-    // required this.sportsType,
+    required this.sportType,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> masterToJson() => {
         "booked_courtTimeslot": booked_courtTimeslot,
         "date": date,
         "userId": userId,
         "bookingId": bookingId,
+        "sportType": sportType,
       };
 
   static mapStartTime(selectedCourtTimeslot, dateList) {
@@ -41,35 +41,12 @@ class MasterBooking {
   ) {
     List newObjectArray = [];
     for (int i = 0; i < global.timeslot.length + 1; i++) {
-      // print(courtTimeslot[i]);
       var convertedCourtTimeslot = courtTimeslot[i]
           .map((e) => e.contains("Check") ? "Booked" : e)
           .toList();
       newObjectArray.add({'court': convertedCourtTimeslot});
     }
-    // print(newObjectArray);
     return newObjectArray;
-  }
-
-  static void fetchFBObjectToNestedArray(
-      {required List<List<String>> courtTimeslot,
-      noOfTimeslot: 9,
-      noOfCourt}) async {
-    await global.FFdb.collection('master_booking')
-        .where('date', isEqualTo: DateTime(2022, 12, 5))
-        .get()
-        .then((val) {
-      if (val.docs.length == 0)
-        createNestedCTArray(null, null, null,
-            noOfTimeslot: noOfTimeslot, noOfCourt: noOfCourt);
-      else
-        val.docs.forEach((element) {
-          var cts = element['booked_courtTimeslot'];
-          for (int i = 0; i < noOfTimeslot + 1; i++) {
-            courtTimeslot.add(cts[i]['court']);
-          }
-        });
-    });
   }
 
   //create court-timeslot 2d array
@@ -126,12 +103,12 @@ class MasterBooking {
       color: color,
       status: "Pending",
       createdAt: Timestamp.fromDate(DateTime.now()),
-      personInCharge: personInCharge,
-      attachment: attachment,
       startTime: mapStartTime(selectedCourtTimeslot, widget.dateList),
       dateList: widget.dateList,
-      phoneNo: phoneNo,
       bookingType: bookingType,
+      attachment: attachment,
+      phoneNo: phoneNo,
+      personInCharge: personInCharge,
     ).advToJson();
 
     var _masterBooking;
@@ -163,12 +140,13 @@ class MasterBooking {
                   date: date,
                   userId: global.USERID,
                   bookingId: bookingId,
-                  sportsType: "Badminton", //TODO: Joan Change this
-                ).toJson();
+                  sportType: widget.sportType,
+                ).masterToJson();
 
                 //update student_appointments
                 await masterCourtBooking
                     .where("date", isEqualTo: date)
+                    .where("sportType", isEqualTo: widget.sportType)
                     .get()
                     .then((value) {
                   value.docs.forEach((element) {
@@ -199,10 +177,11 @@ class MasterBooking {
               date: date,
               userId: global.USERID,
               bookingId: bookingId,
-              sportsType: "Badminton", //TODO: Joan Change this
-            ).toJson();
+              sportType: widget.sportType,
+            ).masterToJson();
             await masterCourtBooking
                 .where("date", isEqualTo: date)
+                .where("sportType", isEqualTo: widget.sportType)
                 .get()
                 .then((value) {
               if (value.docs.length == 0) {
@@ -244,7 +223,7 @@ class MasterBooking {
         color = Colors.blueAccent;
         break;
       default: //Others
-        color = Colors.green;
+        color = Colors.greenAccent;
         break;
     }
     return "0x${color.value.toRadixString(16)}";

@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
-import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
-import 'package:utmsport/view/advBooking/v_createAdvancedForm.dart';
 import 'package:utmsport/view/shared/v_checkIn.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 import 'package:utmsport/view_model/studentBooking/vm_courtCalendarDataSource.dart';
@@ -24,6 +23,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
   final isAdmin = global.getUserRole() == 'admin';
 
   CalendarController _calendarController = CalendarController();
+
   final CollectionReference appointmentList =
       FirebaseFirestore.instance.collection("student_appointments");
 
@@ -39,9 +39,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
         child: Padding(
       padding: EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildStudentViewButton(isAdmin, stuView),
+          _buildLegend(),
           _buildAdvancedCalendarView(),
         ],
       ),
@@ -52,14 +52,12 @@ class _BookingCalendarState extends State<BookingCalendar> {
     List _appData = [];
     try {
       await appointmentList
-          // .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));
       });
       setState(() {
         this.appData = _appData;
-        print(this.appData);
       });
     } catch (e) {
       print(e.toString());
@@ -67,13 +65,101 @@ class _BookingCalendarState extends State<BookingCalendar> {
     }
   }
 
-  Widget _buildStudentViewButton(isAdmin, stuView) {
-    return Visibility(
-      visible: isAdmin,
-      child: ElevatedButton(
-        onPressed: () => stuView = true,
-        child: Text("Student View"),
-      ),
+  Widget _buildLegend() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: Wrap(spacing: 6, runSpacing: 9, children: [
+        Wrap(
+          spacing: 3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Training"),
+          ],
+        ),
+        Wrap(
+          spacing: 3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.deepOrangeAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Student Booking"),
+          ],
+        ),
+        Wrap(
+          spacing: 3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.purpleAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Sport Events"),
+          ],
+        ),
+        Wrap(
+          spacing: 3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Club Events"),
+          ],
+        ),
+        Wrap(
+          spacing: 3,
+          children: [
+            SizedBox(
+              width: 13,
+              height: 13,
+              child: const DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.greenAccent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Text("Others"),
+          ],
+        ),
+      ]),
     );
   }
 
@@ -120,7 +206,6 @@ class _BookingCalendarState extends State<BookingCalendar> {
   }
 
   Widget _buildBottomModal(appointment, context, CalendarView) {
-    print(CalendarView);
     if (appointment == null)
       return Wrap(
         children: [
@@ -134,7 +219,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreateAdvBookingCalendar(),
+                      builder: (context) => StuBookingChooseSports(),
                     ),
                   ),
                   child: Text("Book now!"),
@@ -145,11 +230,11 @@ class _BookingCalendarState extends State<BookingCalendar> {
         ],
       );
     var app = appointment![0];
-    var additionalData =
-        appData.where((data) => data['id'] == app!.notes).toList()[0];
-    var courts = app!.resourceIds
-        .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
-        .join(', ');
+    // var additionalData =
+    //     appData.where((data) => data['id'] == app!.notes).toList()[0];
+    // var courts = app!.resourceIds
+    //     .map((id) => id.replaceAll(new RegExp(r'^0+(?=.)'), ""))
+    //     .join(', ');
     var dayFormat = DateFormat("dd MMM yyy");
     var hourFormat = DateFormat("HH:mm a");
     return Wrap(
@@ -186,7 +271,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                     children: [
                       if (global.getUserRole() == 'admin')
                         ElevatedButton(
-                          onPressed: () => editAdv(app),
+                          onPressed: () => editAdvBooking(app),
                           child: Text(
                             "Edit",
                           ),
@@ -196,10 +281,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
                           style: ElevatedButton.styleFrom(
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          onPressed: () => Navigator.push(
+                          onPressed:
+                              //  TODO: Fetch appointmentID
+                              //  data required : appointmentID to differentiate which appointment
+                              //                : and trainingId
+
+                              () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CheckIn(appointmentId: app.notes,),
+                              builder: (context) => CheckIn(appointmentId: app.notes, slotid: '',),
                             ),
                           ),
                           child: Text(
@@ -254,13 +344,14 @@ class _BookingCalendarState extends State<BookingCalendar> {
         });
         return d;
       }).toList();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => StuBookingChooseSports(
             formType: "Edit",
             params: {
-              'sportsType': val.docs[0]['sportType'],
+              'sportType': val.docs[0]['sportType'],
               'formType': "Edit",
               'stuAppModel': val.docs[0],
               'slotLists': slotLists,
@@ -272,7 +363,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     });
   }
 
-  editAdv(appointment) async {
+  editAdvBooking(appointment) async {
     List<DateTime> dateLists = [];
     List<List<String>> slotLists = [[]];
     await FirebaseFirestore.instance
@@ -299,11 +390,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CreateAdvBooking(
-            dateList: dateLists,
+          builder: (context) => StuBookingChooseSports(
             formType: "Edit",
-            slotLists: slotLists,
-            stuAppModel: val.docs[0],
+            params: {
+              'sportType': val.docs[0]['sportType'],
+              'dateList': dateLists,
+              'formType': "Edit",
+              'slotLists': slotLists,
+              'stuAppModel': val.docs[0],
+            },
           ),
         ),
       );

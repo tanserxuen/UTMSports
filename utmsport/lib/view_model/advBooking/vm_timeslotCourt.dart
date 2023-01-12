@@ -1,16 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:utmsport/model/m_MasterBooking.dart';
 import 'package:utmsport/globalVariable.dart' as global;
 
 class TimeslotCourtTable extends StatefulWidget {
-  int noOfTimeslot = global.timeslot.length;
-  int noOfCourt = global.badmintonCourt;
   final List<DateTime> dateList;
   final String formType;
   final List<String> slots;
   final int index;
+  final String sportType;
   void Function(String, int, String) setSelectedCourtArrayCallback;
   void Function(List<List<String>>, int) setMasterBookingArrayCallback;
 
@@ -19,49 +17,34 @@ class TimeslotCourtTable extends StatefulWidget {
     required this.formType,
     required this.slots,
     required this.index,
+    required this.sportType,
     required this.setSelectedCourtArrayCallback,
     required this.setMasterBookingArrayCallback,
   });
 
   @override
-  State<TimeslotCourtTable> createState() => TimeslotCourtTableState(
-        this.noOfTimeslot,
-        this.noOfCourt,
-        dateList: this.dateList,
-        formType: this.formType,
-        slots: this.slots,
-        index: this.index,
-        setSelectedCourtArrayCallback: this.setSelectedCourtArrayCallback,
-        setMasterBookingArrayCallback: this.setMasterBookingArrayCallback,
-      );
+  State<TimeslotCourtTable> createState() => TimeslotCourtTableState();
 }
 
 class TimeslotCourtTableState extends State<TimeslotCourtTable> {
-  int noOfTimeslot;
-  int noOfCourt;
-  List<DateTime> dateList;
-  String formType;
-  List<String> slots;
-  int index;
-  void Function(String, int, String) setSelectedCourtArrayCallback;
-  void Function(List<List<String>>, int) setMasterBookingArrayCallback;
   bool isFecthingDataDone = false;
-
   List<List<String>> courtTimeslot = [];
-
-  TimeslotCourtTableState(
-    this.noOfTimeslot,
-    this.noOfCourt, {
-    required this.dateList,
-    required this.formType,
-    required this.slots,
-    required this.index,
-    required this.setSelectedCourtArrayCallback,
-    required this.setMasterBookingArrayCallback,
-  });
+  int noOfTimeslot = global.timeslot.length;
+  int noOfCourt = 0;
 
   @override
   void initState() {
+    switch (widget.sportType) {
+      case 'Badminton':
+        noOfCourt = global.badmintonCourt;
+        break;
+      case 'Squash':
+        noOfCourt = global.squashCourt;
+        break;
+      case 'PingPong':
+        noOfCourt = global.pingPongCourt;
+        break;
+    }
     fetchAdvancedData();
     super.initState();
   }
@@ -74,21 +57,19 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   }
 
   Widget _buildCourtGrid(widget) {
-    late int rowLength = widget.noOfCourt + 1;
+    late int rowLength = noOfCourt + 1;
     return Row(
       children: [
         Expanded(
           child: SizedBox(
-            height: 29.0 * widget.noOfTimeslot,
+            height: 29.0 * noOfTimeslot,
             width: 1000,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: rowLength,
-                // mainAxisExtent: 35,
-                // childAspectRatio: 3/2,
               ),
               itemBuilder: _buildGridItems,
-              itemCount: (widget.noOfTimeslot + 1) * (rowLength),
+              itemCount: (noOfTimeslot + 1) * (rowLength),
             ),
           ),
         ),
@@ -97,7 +78,7 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   }
 
   Widget _buildGridItems(BuildContext context, int index) {
-    late int rowLength = widget.noOfCourt + 1;
+    late int rowLength = noOfCourt + 1;
     int courtTimeslotLength = rowLength;
     int x = 0, y = 0;
     x = (index / courtTimeslotLength).floor();
@@ -118,23 +99,26 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
         textWidget = TextButton(
             onPressed: () {
               setState(() {
-                widget.setSelectedCourtArrayCallback("$x $y", index, "add");
+                widget.setSelectedCourtArrayCallback(
+                    "$x $y", widget.index, "add");
                 courtTimeslot[x][y] = "Check";
               });
             },
             child: Text(courtTimeslot[x][y]));
         break;
       case 'Booked':
-        if (widget.formType == 'Edit' && slots.contains("$x $y")) {
+        if (widget.formType == 'Edit' && widget.slots.contains("$x $y")) {
           textWidget = TextButton(
             onPressed: () {
               setState(() {
-                widget.setSelectedCourtArrayCallback("$x $y", index, "remove");
+                widget.setSelectedCourtArrayCallback(
+                    "$x $y", widget.index, "remove");
                 courtTimeslot[x][y] = "";
               });
             },
             child: Icon(
-              Icons.remove_circle_outline,size: 16,
+              Icons.remove_circle_outline,
+              size: 16,
               color: Colors.white,
             ),
           );
@@ -152,7 +136,8 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
           textWidget = TextButton(
             onPressed: () {
               setState(() {
-                widget.setSelectedCourtArrayCallback("$x $y", index, "remove");
+                widget.setSelectedCourtArrayCallback(
+                    "$x $y", widget.index, "remove");
                 courtTimeslot[x][y] = "";
               });
             },
@@ -160,6 +145,7 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
           );
           // containerStyle = Colors.limeAccent;
         } else {
+          // if(courtTimeslot[x][y]==)
           textWidget = Text(
             courtTimeslot[x][y].toString(),
           );
@@ -180,8 +166,10 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
   fetchAdvancedData() async {
     final DateTime date = widget.dateList[widget.index];
     List<List<String>> _courtTimeslot = [];
+    print(widget.dateList);
     await global.FFdb.collection('master_booking')
-        .where('date', whereIn: widget.dateList)
+        .where('date', whereIn: widget.dateList)//get all data matches the values in this date array
+        .where('sportType', isEqualTo: widget.sportType) //get all data that is equal to the sportType
         .get()
         .then((val) {
       _courtTimeslot = MasterBooking.createNestedCTArray(
@@ -194,7 +182,7 @@ class TimeslotCourtTableState extends State<TimeslotCourtTable> {
       setState(() => {
             this.isFecthingDataDone = true,
             courtTimeslot = _courtTimeslot,
-            this.setMasterBookingArrayCallback(courtTimeslot, this.index),
+            widget.setMasterBookingArrayCallback(courtTimeslot, widget.index),
           });
     });
   }

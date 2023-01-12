@@ -12,9 +12,10 @@ import 'package:utmsport/globalVariable.dart' as global;
 class CheckIn extends StatelessWidget {
   const CheckIn({
     Key? key,
-    this.appointmentId,
+    this.appointmentId, this.slotid,
   }) : super(key: key);
   final appointmentId;
+  final slotid;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +37,13 @@ class CheckIn extends StatelessWidget {
             //  Define the DocumentID of appointment by using the
             var appDocId = snapshot.data!.docs.first.id;
             print(appDocId);
-
-            if (bookingType == 'NormalBook') return normalBookView(appDocId, context);
-            if (bookingType == 'Sport Events') return sportEventView(appDocId, context);
-            if (bookingType == 'Training') return trainingView(appDocId, context);
+            print(bookingType);
+            if (bookingType == 'NormalBook')
+              return normalBookView(appDocId, context);
+            if (bookingType == 'Sport Events')
+              return sportEventView(appDocId, context);
+            if (bookingType == 'Training')
+              return trainingView(appDocId, context);
             if (bookingType == 'Club Event') return clubView(appDocId, context);
             return Text('Cannot find specific view');
           }
@@ -104,57 +108,57 @@ class CheckIn extends StatelessWidget {
     );
   }
 
-  Widget sportEventView(String appDocId, BuildContext context){
+  Widget sportEventView(String appDocId, BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('SportEvents'),
         actions: [qrCodeOption('sportEvent', appDocId, context)],
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('attendEvents')
-            .where('bookingId', isEqualTo: appointmentId)
-            .snapshots(),
-        builder: (BuildContext context,
-            AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(child: CircularProgressIndicator());
-          if(snapshot.hasData){
-            final DocumentSnapshot documentSnapshot =
-                snapshot.data!.docs.first;
-            print(snapshot.data!.docs.first['matrics']);
-            return Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  Text(documentSnapshot['sportEvent']),
-                  Text('Attendee'),
-                  ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: documentSnapshot['matrics'].length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(documentSnapshot['matrics'][index]),
-                          ],
-                        );
-                      }),
-                ],
-              ),
-            );
-          }
-          if (snapshot.hasError)
-            return Text('Soemthing error in v_checkin.dart');
-          return Text('null');
-        }
-      ),
+          stream: FirebaseFirestore.instance
+              .collection('attendEvents')
+              .where('bookingId', isEqualTo: appointmentId)
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Center(child: CircularProgressIndicator());
+            if (snapshot.hasData) {
+              final DocumentSnapshot documentSnapshot =
+                  snapshot.data!.docs.first;
+              print(snapshot.data!.docs.first['matrics']);
+              return Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Text(documentSnapshot['sportEvent']),
+                    Text('Attendee'),
+                    ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: documentSnapshot['matrics'].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(documentSnapshot['matrics'][index]),
+                            ],
+                          );
+                        }),
+                  ],
+                ),
+              );
+            }
+            if (snapshot.hasError)
+              return Text('Soemthing error in v_checkin.dart');
+            return Text('null');
+          }),
     );
   }
 
   Widget trainingView(String appDocId, BuildContext context) {
+    print(appointmentId);
+    print(slotid);
     return Scaffold(
         appBar: AppBar(
           title: Text('Training'),
@@ -162,6 +166,7 @@ class CheckIn extends StatelessWidget {
         ),
         body: TrainingDetailPage(
           trainingId: appointmentId,
+          slotid: slotid,
         ));
     return TrainingDetailPage(
       trainingId: appDocId,
@@ -169,7 +174,11 @@ class CheckIn extends StatelessWidget {
   }
 
   Widget clubView(String appDocId, BuildContext context) {
-    return Text('club content');
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('club content'),
+      ),
+    );
   }
 
   Widget otherView(String appDocId, BuildContext context) {
@@ -185,7 +194,7 @@ class CheckIn extends StatelessWidget {
       case 'athlete':
       case 'student':
       case 'staff':
-        if(scanType == 'training'){
+        if (scanType == 'training') {
           print('training');
           return IconButton(
               icon: Icon(Icons.qr_code_scanner_rounded),
@@ -219,9 +228,9 @@ class CheckIn extends StatelessWidget {
                                         "Data Already Scanned", "red");
 
                                   var athleteList =
-                                  training.docs.first['athletes'];
+                                      training.docs.first['athletes'];
                                   var athleteTimeList =
-                                  training.docs.first['athletetime'];
+                                      training.docs.first['athletetime'];
                                   var currentTime = DateTime.now();
                                   athleteList.add(matricNo);
                                   athleteTimeList.add(currentTime);
@@ -242,7 +251,7 @@ class CheckIn extends StatelessWidget {
                               });
                             })));
               });
-        } else if(scanType == 'attendance'){
+        } else if (scanType == 'attendance') {
           print('attendance');
           return IconButton(
               icon: Icon(Icons.qr_code_scanner_rounded),
@@ -279,36 +288,41 @@ class CheckIn extends StatelessWidget {
                               });
                             })));
               });
-        }else if(scanType == 'sportEvent'){
+        } else if (scanType == 'sportEvent') {
           print('sportEvent');
-          return IconButton(icon: Icon(Icons.qr_code_scanner_rounded), color: Colors.yellow, onPressed: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        QRScan(callback: (qrcodeId, matricNo) {
-                          print('Perform User Scan Sport Event');
-                          FirebaseFirestore.instance
-                              .collection('attendEvents')
-                              .where('bookingId', isEqualTo: qrcodeId)
-                              .get()
-                              .then((attendEvent) async {
-
-                            if (attendEvent.docs.first['matrics'].contains(matricNo))
-                              return Utils.showSnackBar("Data Already Scanned", "red");
-
-                            var _matrics = attendEvent.docs.first['matrics'];
-                            _matrics.add(matricNo!);
-                            await FirebaseFirestore.instance
+          return IconButton(
+            icon: Icon(Icons.qr_code_scanner_rounded),
+            color: Colors.yellow,
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          QRScan(callback: (qrcodeId, matricNo) {
+                            print('Perform User Scan Sport Event');
+                            FirebaseFirestore.instance
                                 .collection('attendEvents')
-                                .doc(attendEvent.docs.first.id)
-                                .update({'matrics': _matrics}).then((value) {
-                              Utils.showSnackBar(
-                                  'Attendance Recorded', "green");
+                                .where('bookingId', isEqualTo: qrcodeId)
+                                .get()
+                                .then((attendEvent) async {
+                              if (attendEvent.docs.first['matrics']
+                                  .contains(matricNo))
+                                return Utils.showSnackBar(
+                                    "Data Already Scanned", "red");
+
+                              var _matrics = attendEvent.docs.first['matrics'];
+                              _matrics.add(matricNo!);
+                              await FirebaseFirestore.instance
+                                  .collection('attendEvents')
+                                  .doc(attendEvent.docs.first.id)
+                                  .update({'matrics': _matrics}).then((value) {
+                                Utils.showSnackBar(
+                                    'Attendance Recorded', "green");
+                              });
                             });
-                          });
-                        })));
-          }, );
+                          })));
+            },
+          );
         }
         break;
         break;
@@ -317,18 +331,32 @@ class CheckIn extends StatelessWidget {
         return IconButton(
             icon: Icon(Icons.qr_code),
             color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => QRGenerate(
-                            qrId: appointmentId,
-                          )));
+            onPressed: () async {
+              if (scanType == 'training')
+                await FirebaseFirestore.instance
+                    .collection('training')
+                    .where('appointmentId', isEqualTo: appointmentId)
+                    // .where('start_at')
+                    .get()
+                    .then((training) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => QRGenerate(
+                                qrId: training.docs.first['trainingId'],
+                              )));
+                });
+              else
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => QRGenerate(
+                              qrId: appointmentId,
+                            )));
             });
       default:
-        return IconButton(onPressed: (){}, icon: Icon(Icons.error_outline));
+        return IconButton(onPressed: () {}, icon: Icon(Icons.error_outline));
     }
     return Icon(Icons.error_outline_rounded);
-
   }
 }

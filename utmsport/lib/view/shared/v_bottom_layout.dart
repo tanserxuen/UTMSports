@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
-import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 
 Widget BookingButton(BuildContext context, page) {
@@ -25,23 +24,19 @@ getActionButton(context) {
     case 'admin':
       return BookingButton(
         context,
-        Scaffold(
-          body: Container(
-            margin: EdgeInsets.all(12),
-            child: Column(
-              children: [
-                SizedBox(height: 50),
-                Text(
-                  "Advanced Booking",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-                Expanded(
-                  child: CreateAdvBookingCalendar(),
-                ),
-              ],
-            ),
-          ),
-        ),
+        StuBookingChooseSports(),
+        // Scaffold(
+        //   body: Container(
+        //     margin: EdgeInsets.all(12),
+        //     child: Column(
+        //       children: [
+        //         Expanded(
+        //           child:
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
       );
     case 'athlete':
     case 'coach':
@@ -80,8 +75,10 @@ navScreen(user) {
             icon: Icon(Icons.question_answer), label: 'Feedback'),
         NavigationDestination(icon: Icon(Icons.add_alarm), label: 'Appts'),
         NavigationDestination(
-            icon: Icon(Icons.edit_calendar), label: 'Advance'),
-        NavigationDestination(icon: Icon(Icons.person), label: 'Profile')
+            icon: Icon(Icons.edit_calendar), label: 'Calendar'),
+        NavigationDestination(
+            icon: Icon(Icons.library_books), label: 'Reports'),
+        NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
       ];
       break;
     case 'athlete':

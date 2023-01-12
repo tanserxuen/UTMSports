@@ -12,18 +12,17 @@ class ErrorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
+    return Container(
+      child: Center(
         child: Text(
           "Some error occurred",
           style: const TextStyle(
-            color: Colors.white,
+            // color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        padding: const EdgeInsets.all(8.0),
       ),
-      color: Colors.red,
+      color: Colors.white,
       margin: EdgeInsets.zero,
     );
   }

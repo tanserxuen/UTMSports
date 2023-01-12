@@ -29,14 +29,14 @@ class TrainingListPage extends StatelessWidget {
                   itemCount: snapshot.data?.docs.length,
                   itemBuilder: (BuildContext context,int index){
                     final DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                    String date = DateFormat.yMMMMd('en_US').format(documentSnapshot['start_at'].toDate());
-                    String time = DateFormat.jm().format(documentSnapshot['start_at'].toDate());
+                    // String date = DateFormat.yMMMMd('en_US').format(documentSnapshot['start_at'].toDate());
+                    // String time = DateFormat.jm().format(documentSnapshot['start_at'].toDate());
                     // print(documentSnapshot['startTime'][0]);
                     return Card(
                       child: ListTile(
                         title: Text('${documentSnapshot['subject']}'),
                         leading: Icon(Icons.sports_cricket_rounded, color: Colors.orange,),
-                        subtitle: Text('${date} ${time}'),
+                        // subtitle: Text('${date} ${time}'),
                         onTap: (){
                           print(documentSnapshot['appointmentId']);
                             Navigator.push(

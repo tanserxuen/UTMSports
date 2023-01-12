@@ -31,7 +31,10 @@ class _MyHomePageState extends State<MyHomePage> {
         data: NavigationBarThemeData(
           indicatorColor: Colors.blue.shade100,
           labelTextStyle: MaterialStateProperty.all(
-            TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            TextStyle(
+              fontSize: global.getUserRole() == 'admin' ? 10 : 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         child: NavigationBar(

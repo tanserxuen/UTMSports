@@ -10,10 +10,10 @@ import '../../utils.dart';
 
 class TrainingDetailPage extends StatelessWidget {
   const TrainingDetailPage(
-      {Key? key, required this.trainingId, this.trainingTitle})
+      {Key? key, required this.trainingId, this.slotid,})
       : super(key: key);
   final trainingId;
-  final trainingTitle;
+  final slotid;
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +66,10 @@ class TrainingDetailPage extends StatelessWidget {
                           // Text(documentSnapshot['coach'])
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [Text('Training Time: '), Text(/*time*/'')],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [Text(documentSnapshot['start_at']), Text(/*time*/'')],
+                      // ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
