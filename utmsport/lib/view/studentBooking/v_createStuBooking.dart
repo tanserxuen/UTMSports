@@ -83,6 +83,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Booking',
+        ),
+      ),
       body: Container(
         margin: EdgeInsets.all(12),
         child: SingleChildScrollView(
@@ -96,90 +101,92 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               SizedBox(height: 15),
               Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        _buildLegend(),
-                        SizedBox(height: 15),
-                        _buildAccordianCourtTimeslot(),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName1Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric1Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName2Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric2Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName3Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric3Field(),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(child: _buildName4Field()),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: _buildMatric4Field(),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 50),
-                        ElevatedButton(
-                          child: Text("Submit",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                          onPressed: () {
-                            //if there is court selected
-                            bool canSubmit = RegExp('[1-9]')
-                                .hasMatch(selectedCourtTimeslot.toString());
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
-                              _formKey.currentState!.save();
-                              if (canSubmit) insertCourtBooking();
-                            }
-                          },
-                        )
-                      ],
+                child: Wrap(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: _buildLegend(),
                     ),
-                  ),
+                    SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            _buildAccordianCourtTimeslot(),
+                            Row(
+                              children: [
+                                Expanded(child: _buildName1Field()),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: _buildMatric1Field(),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: _buildName2Field()),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: _buildMatric2Field(),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: _buildName3Field()),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: _buildMatric3Field(),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: _buildName4Field()),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: _buildMatric4Field(),
+                                )
+                              ],
+                            ),
+                            SizedBox(height: 50),
+                            ElevatedButton(
+                              child: Text("Submit",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16)),
+                              onPressed: () {
+                                //if there is court selected
+                                bool canSubmit = RegExp('[1-9]')
+                                    .hasMatch(selectedCourtTimeslot.toString());
+                                if (!_formKey.currentState!.validate()) {
+                                } else {
+                                  _formKey.currentState!.save();
+                                  if (canSubmit) insertCourtBooking();
+                                }
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        child: Icon(Icons.arrow_back_rounded, size: 25),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
 
@@ -373,16 +380,10 @@ class CreateStuBookingState extends State<CreateStuBooking> {
   }
 
   Widget _buildLegend() {
-    return Wrap(children: [
-      Text(
-        "Notes  ",
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-      ),
+    return Wrap(spacing: 15, children: [
       ...global.timeslot.map((slot) {
         var time = Utils.formatTime(slot);
         int index = global.timeslot.indexOf(slot);
-        // var timeNow = Utils.getCurrentTimeOnly(slot);
-        //TODO: change this
         return Padding(
           padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
           child: Wrap(
@@ -392,8 +393,11 @@ class CreateStuBookingState extends State<CreateStuBooking> {
                 height: 13,
                 child: const DecoratedBox(
                   decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
                 ),
               ),
               Text(" T${index + 1} $time ")
@@ -434,8 +438,6 @@ class CreateStuBookingState extends State<CreateStuBooking> {
         FirebaseFirestore.instance.collection('student_appointments');
     CollectionReference masterCourtBooking =
         global.FFdb.collection('master_booking');
-
-
 
     try {
       var _masterBooking;

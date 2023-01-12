@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+
 import 'package:utmsport/model/m_Event.dart';
 import 'package:utmsport/utils.dart';
 
@@ -14,10 +15,8 @@ enum FormType { update, create }
 
 class FormScreen extends StatefulWidget {
   final String formType;
-
   var eventModel;
 
-  // ignore: avoid_init_to_null
   FormScreen({this.formType: "create", this.eventModel: null});
 
   @override
@@ -62,6 +61,76 @@ class FormScreenState extends State<FormScreen> {
         : _setDate;
     controllerPlatform.text = widget.eventModel?.platform ?? "";
     _imageUrl = widget.eventModel?.image ?? _imgPlaceholder;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Events',
+        ),
+      ),
+      body: Container(
+        margin: EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Text(
+                "Create Events",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildEventNameField(),
+                        _buildDescriptionField(),
+                        _buildVenueField(),
+                        _buildDateField(),
+                        _buildPlatformField(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        _buildImageField(),
+                        SizedBox(height: 50),
+                        ElevatedButton(
+                          child: Text(
+                            "Submit",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (!_formKey.currentState!.validate()) {
+                            } else {
+                              _formKey.currentState!.save();
+                              insertEventDetails();
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildEventNameField() {
@@ -215,70 +284,5 @@ class FormScreenState extends State<FormScreen> {
     } on Exception catch (e) {
       print(e);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.all(12),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-              ),
-              Text("Create Events",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        _buildEventNameField(),
-                        _buildDescriptionField(),
-                        _buildVenueField(),
-                        _buildDateField(),
-                        _buildPlatformField(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        _buildImageField(),
-                        SizedBox(height: 50),
-                        ElevatedButton(
-                          child: Text("Submit",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
-                          onPressed: () {
-                            // timer = Timer.periodic(
-                            //     Duration(seconds: 2),
-                            //     (_) => {
-                            if (!_formKey.currentState!.validate()) {
-                            } else {
-                              _formKey.currentState!.save();
-                              insertEventDetails();
-                            }
-                            // });
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
-        child: Icon(Icons.arrow_back_rounded, size: 25),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-    );
   }
 }

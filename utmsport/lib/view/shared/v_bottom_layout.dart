@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:utmsport/globalVariable.dart' as global;
-import 'package:utmsport/view/advBooking/v_createAdvancedCalendar.dart';
 import 'package:utmsport/view/studentBooking/v_createStuBooking_SportType.dart';
 
 Widget BookingButton(BuildContext context, page) {
@@ -25,18 +24,19 @@ getActionButton(context) {
     case 'admin':
       return BookingButton(
         context,
-        Scaffold(
-          body: Container(
-            margin: EdgeInsets.all(12),
-            child: Column(
-              children: [
-                Expanded(
-                  child: StuBookingChooseSports(),
-                ),
-              ],
-            ),
-          ),
-        ),
+        StuBookingChooseSports(),
+        // Scaffold(
+        //   body: Container(
+        //     margin: EdgeInsets.all(12),
+        //     child: Column(
+        //       children: [
+        //         Expanded(
+        //           child:
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
       );
     case 'athlete':
     case 'coach':

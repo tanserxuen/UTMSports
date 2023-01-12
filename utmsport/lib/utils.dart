@@ -11,6 +11,7 @@ class Utils {
     if (text == null) return;
     if (color == "green") colorchild = Colors.green;
     if (color == "red") colorchild = Colors.red;
+    if (color == "cyan") colorchild = Colors.cyan;
 
     final snackBar = SnackBar(content: Text(text), backgroundColor: colorchild );
 

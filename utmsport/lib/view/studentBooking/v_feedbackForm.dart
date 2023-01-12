@@ -117,6 +117,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
   Widget _buildCommentField() {
     return TextFormField(
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
         controller: controllerComment,
         decoration: InputDecoration(labelText: "Comments"),
         validator: (value) {

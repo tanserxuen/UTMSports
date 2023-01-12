@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:utmsport/view_model/PDF/PDFServices.dart';
+import 'package:utmsport/utils.dart';
 
 class AdminReports extends StatefulWidget {
   const AdminReports({Key? key}) : super(key: key);
@@ -55,91 +56,109 @@ class _AdminReportsState extends State<AdminReports> {
           SizedBox(
             height: 10,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Advanced Booking Report"),
-              ElevatedButton(
-                child: Text("View"),
-                onPressed: () async {
-                  final permission = await PDFService().requestPermission();
-                  if (permission) {
-                    await FirebaseFirestore.instance
-                        .collection('student_appointments')
-                        .get()
-                        .then((value) async {
-                      var logo = await rootBundle
-                          .load('assets/images/utmsports_logo.jpeg');
-
-                      var pdf = PDFService().generatePDF(
-                          value.docs, logo, 'Advanced Booking', advColNames);
-                      PDFService().saveAndOpenPDF(pdf);
-                    });
-                  } else {
-                    print("denied");
-                  }
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Training Attendance Report"),
-              ElevatedButton(
-                child: Text("View"),
-                onPressed: () async {
-                  final permission = await PDFService().requestPermission();
-                  if (permission) {
-                    await FirebaseFirestore.instance
-                        .collection('training')
-                        .get()
-                        .then((value) async {
-                      var logo = await rootBundle
-                          .load('assets/images/utmsports_logo.jpeg');
-
-                      var pdf = PDFService().generatePDF(value.docs, logo,
-                          'Training Attendance', trainingColNames);
-                      PDFService().saveAndOpenPDF(pdf);
-                    });
-                  } else {
-                    print("denied");
-                  }
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Student Booking Attendance Report"),
-              ElevatedButton(
-                child: Text("View"),
-                onPressed: () async {
-                  final permission = await PDFService().requestPermission();
-                  if (permission) {
-                    await FirebaseFirestore.instance
-                        .collection('attendance')
-                        .get()
-                        .then((value) async {
-                      var logo = await rootBundle
-                          .load('assets/images/utmsports_logo.jpeg');
-                      var pdf = PDFService().generatePDF(
-                          value.docs,
-                          logo,
-                          'Student Booking Attendance',
-                          studentAttendanceColNames);
-                      PDFService().saveAndOpenPDF(pdf);
-                    });
-                  } else {
-                    print("denied");
-                  }
-                },
-              ),
-            ],
+          Expanded(
+            child: GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 3 / 5,
+              children: _buildReportButtons(),
+            ),
           ),
         ],
       ),
     ));
+  }
+
+  List<Widget> _buildReportButtons() {
+    return [
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(primary: Colors.blue[300]),
+        child: Text(
+          "Advanced Booking Report",
+          style: TextStyle(fontSize: 18),
+        ),
+        onPressed: () async {
+          final permission = await PDFService().requestPermission();
+          if (permission) {
+            await FirebaseFirestore.instance
+                .collection('student_appointments')
+                .get()
+                .then((value) async {
+              var logo =
+                  await rootBundle.load('assets/images/utmsports_logo.jpeg');
+
+              var pdf = PDFService().generatePDF(
+                value.docs,
+                logo,
+                'Advanced Booking',
+                advColNames,
+              );
+              PDFService().saveAndOpenPDF(pdf);
+            });
+          } else {
+            Utils.showSnackBar("Have no permission to file system", "cyan");
+          }
+        },
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(primary: Colors.blue[300]),
+        child: Text(
+          "Training Attendance Report",
+          style: TextStyle(fontSize: 18),
+        ),
+        onPressed: () async {
+          final permission = await PDFService().requestPermission();
+          if (permission) {
+            await FirebaseFirestore.instance
+                .collection('training')
+                .get()
+                .then((value) async {
+              var logo =
+                  await rootBundle.load('assets/images/utmsports_logo.jpeg');
+
+              var pdf = PDFService().generatePDF(
+                value.docs,
+                logo,
+                'Training Attendance',
+                trainingColNames,
+              );
+              PDFService().saveAndOpenPDF(pdf);
+            });
+          } else {
+            Utils.showSnackBar("Have no permission to file system", "cyan");
+          }
+        },
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(primary: Colors.blue[300]),
+        child: Text(
+          "Student Booking Attendance Report",
+          style: TextStyle(fontSize: 18),
+        ),
+        onPressed: () async {
+          final permission = await PDFService().requestPermission();
+          if (permission) {
+            await FirebaseFirestore.instance
+                .collection('attendance')
+                .get()
+                .then((value) async {
+              var logo =
+                  await rootBundle.load('assets/images/utmsports_logo.jpeg');
+              var pdf = PDFService().generatePDF(
+                value.docs,
+                logo,
+                'Student Booking Attendance',
+                studentAttendanceColNames,
+              );
+              PDFService().saveAndOpenPDF(pdf);
+            });
+          } else {
+            Utils.showSnackBar("Have no permission to file system", "cyan");
+          }
+        },
+      ),
+    ];
   }
 }

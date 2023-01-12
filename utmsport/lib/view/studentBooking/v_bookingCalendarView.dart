@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -51,7 +52,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     List _appData = [];
     try {
       await appointmentList
-          // .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((element) => _appData.add(element.data()));
@@ -67,9 +68,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   Widget _buildLegend() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0,8,0,8),
-      child: Wrap(spacing: 6,children: [
-        Wrap(spacing:3,
+      margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: Wrap(spacing: 6, runSpacing: 9, children: [
+        Wrap(
+          spacing: 3,
           children: [
             SizedBox(
               width: 13,
@@ -86,7 +88,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
             Text("Training"),
           ],
         ),
-        Wrap(spacing:3,
+        Wrap(
+          spacing: 3,
           children: [
             SizedBox(
               width: 13,
@@ -103,7 +106,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
             Text("Student Booking"),
           ],
         ),
-        Wrap(spacing:3,
+        Wrap(
+          spacing: 3,
           children: [
             SizedBox(
               width: 13,
@@ -120,7 +124,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
             Text("Sport Events"),
           ],
         ),
-        Wrap(spacing:3,
+        Wrap(
+          spacing: 3,
           children: [
             SizedBox(
               width: 13,
@@ -137,7 +142,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
             Text("Club Events"),
           ],
         ),
-        Wrap(spacing:3,
+        Wrap(
+          spacing: 3,
           children: [
             SizedBox(
               width: 13,

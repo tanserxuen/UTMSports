@@ -34,10 +34,13 @@ class StuBookingChooseSportsState extends State<StuBookingChooseSports> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(appBar: AppBar(
+      title: Text(
+        'Calendar',
+        ),
+    ),
       body: Center(
         child: Container(
-          margin: EdgeInsets.all(12),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

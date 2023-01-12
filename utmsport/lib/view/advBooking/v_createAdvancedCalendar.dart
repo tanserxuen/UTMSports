@@ -19,7 +19,11 @@ class _CreateAdvBookingCalendarState extends State<CreateAdvBookingCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(appBar: AppBar(
+      title: Text(
+        'Calendar',
+      ),
+    ),
       body: SingleChildScrollView(
           child: Container(
         margin: EdgeInsets.all(12),

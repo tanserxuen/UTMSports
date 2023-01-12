@@ -23,7 +23,7 @@ class CreateAdvBooking extends StatefulWidget {
     required this.sportType,
     this.formType: "Create",
     this.slotLists: null,
-    this.stuAppModel:null,
+    this.stuAppModel: null,
   }) : super(key: key);
 
   @override
@@ -52,12 +52,12 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   void initState() {
     this.selectedDays = widget.dateList.length;
 
-    if(widget.formType == 'Edit') {
+    if (widget.formType == 'Edit') {
       picController.text = widget.stuAppModel['personInCharge'];
       phoneController.text = widget.stuAppModel['phoneNo'];
       subjectController.text = widget.stuAppModel['subject'];
       _advType = widget.stuAppModel['bookingType'];
-    }else
+    } else
       _advType = "Sport Events";
 
     //set selected court nested array
@@ -70,6 +70,11 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Calendar',
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(12),
@@ -80,30 +85,33 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               ),
               Text("Advanced Court Booking",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              Card(
-                child: _buildLegend(),
-              ),
               SizedBox(height: 15),
               Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ..._buildAccordianCourtTimeslot(),
-                        _buildSubjectField(),
-                        _buildTypeField(),
-                        _buildPICField(),
-                        _buildPhoneNoField(),
-                        SizedBox(height: 10),
-                        _buildAttachmentField(),
-                        SizedBox(height: 50),
-                        _buildSubmitAdvanced(),
-                      ],
-                    ),
-                  ),
+                child: Wrap(
+                  children: [
+                    _buildLegend(),
+                    SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ..._buildAccordianCourtTimeslot(),
+                            _buildSubjectField(),
+                            _buildTypeField(),
+                            _buildPICField(),
+                            _buildPhoneNoField(),
+                            SizedBox(height: 10),
+                            _buildAttachmentField(),
+                            SizedBox(height: 50),
+                            _buildSubmitAdvanced(),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               )
             ],
@@ -185,7 +193,7 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
               minimumSize: Size(20, 10),
               maximumSize: Size(90, 40),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: EdgeInsets.fromLTRB(7,2,5,2),
+              padding: EdgeInsets.fromLTRB(7, 2, 5, 2),
               shape: StadiumBorder(),
               primary: Colors.lightBlue),
           child: Padding(
@@ -350,16 +358,10 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
   }
 
   Widget _buildLegend() {
-    return Wrap(children: [
-      Text(
-        "Notes  ",
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-      ),
+    return Wrap(spacing: 15, runSpacing: 3, children: [
       ...timeslot.map((slot) {
         var time = Utils.formatTime(slot);
         int index = timeslot.indexOf(slot);
-        // var timeNow = Utils.getCurrentTimeOnly(slot);
-        //TODO: change this
         return Padding(
           padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
           child: Wrap(
@@ -369,8 +371,11 @@ class _CreateAdvBookingState extends State<CreateAdvBooking> {
                 height: 13,
                 child: const DecoratedBox(
                   decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
                 ),
               ),
               Text(" T${index + 1} $time ")
